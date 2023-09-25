@@ -56,14 +56,6 @@ viewTag tag =
         ]
 
 
-viewIcon : IconInfo -> Html Msg
-viewIcon iconInfo =
-    div [ class "iconDiv" ]
-        [ a [ href iconInfo.urlToNavigate ]
-            [ img [ class "icon", src iconInfo.iconImageUrl, style "margin-left" iconInfo.marginLeft ] []
-            ]
-        ]
-
 
 viewSearchBoxDiv : List (Html Msg)
 viewSearchBoxDiv =

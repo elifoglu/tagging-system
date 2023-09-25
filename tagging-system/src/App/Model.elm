@@ -1,10 +1,8 @@
-module App.Model exposing (BioPageModel, ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, totalPageCountRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, totalPageCountRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder, homepage)
 
-import BioGroup.Model exposing (BioGroup)
-import BioItem.Model exposing (BioItem)
 import Browser.Navigation as Nav
 import Content.Model exposing (Content, GotGraphData, GraphData)
-import DataResponse exposing (ContentID, EksiKonserveException, EksiKonserveTopic, GotContent)
+import DataResponse exposing (ContentID, GotContent)
 import Force
 import Graph exposing (Graph, NodeId)
 import Json.Encode as Encode
@@ -84,6 +82,7 @@ type alias InitializedTagPageModel =
     { tag : Tag
     , contents : List Content
     , pagination : Pagination
+    , maybeGraphData: Maybe GraphData
     }
 
 
@@ -98,10 +97,11 @@ type alias AllTagsToShow =
 type alias ContentIDToColorize =
     Maybe ContentID
 
+homepage : Page
+homepage = TagPage (NonInitialized (NonInitializedYetTagPageModel "tumu" Nothing))
 
 type Page
-    = HomePage AllTagsToShow (Maybe GraphData)
-    | ContentPage (Initializable ( Int, Bool ) Content)
+    = ContentPage (Initializable ( Int, Bool ) Content)
     | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
     | CreateContentPage (MaySendRequest CreateContentPageModel CreateContentPageModel)
     | UpdateContentPage UpdateContentPageModel
@@ -109,7 +109,6 @@ type Page
     | UpdateTagPage (MaySendRequest ( UpdateTagPageModel, String ) UpdateTagPageModel)
     | ContentSearchPage String (List Content)
     | GraphPage (Maybe GraphData)
-    | RedirectPage String
     | NotFoundPage
     | MaintenancePage
 
@@ -161,12 +160,6 @@ type alias UpdateTagPageModel =
     { infoContentId : String
     }
 
-
-type alias BioPageModel =
-    { bioGroups : List BioGroup
-    , bioItems : List BioItem
-    , bioItemToShowInfo : Maybe BioItem
-    }
 
 
 setCreateContentPageModel : Content -> CreateContentPageModel

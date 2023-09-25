@@ -10,8 +10,6 @@ import Contents.View exposing (viewContentDivs)
 import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
 import ForceDirectedGraphForGraph exposing (viewGraphForGraphPage)
-import ForceDirectedGraphForHome exposing (viewGraph)
-import Home.View exposing (tagCountCurrentlyShownOnPage, viewHomePageDiv)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Markdown
@@ -30,7 +28,7 @@ view model =
             [ div [ class "header" ] <| viewBreadcrumb model
             , div [ class "body" ]
                 (case model.activePage of
-                    HomePage allTagsToShow maybeGraphData ->
+{-                    HomePage allTagsToShow maybeGraphData ->
                         case maybeGraphData of
                             Just graphData ->
                                 if graphData.veryFirstMomentOfGraphHasPassed then
@@ -56,7 +54,7 @@ view model =
                                     []
 
                             Nothing ->
-                                []
+                                []-}
 
                     ContentPage status ->
                         case status of
@@ -128,9 +126,6 @@ view model =
 
                             Nothing ->
                                 []
-
-                    RedirectPage _ ->
-                        [ text "..." ]
 
                     NotFoundPage ->
                         [ view404Div ]

@@ -1,10 +1,9 @@
-module Requests exposing (createNewTag, getAllTagsResponse, getContent, getHomePageDataResponse, getSearchResult, getTagContents, getTimeZone, getUrlToRedirect, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+module Requests exposing (createNewTag, getAllTagsResponse, getContent, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 
 import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, TotalPageCountRequestModel, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..), PreviewContentModel(..))
-import DataResponse exposing (ContentID, allTagsResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder, homePageDataResponseDecoder)
+import DataResponse exposing (ContentID, allTagsResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder)
 import Http
-import Json.Decode as D
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
 import Task
@@ -25,19 +24,6 @@ getAllTagsResponse =
     Http.get
         { url = apiURL ++ "get-all-tags"
         , expect = Http.expectJson GotAllTagsResponse allTagsResponseDecoder
-        }
-
-
-getHomePageDataResponse : Cmd Msg
-getHomePageDataResponse =
-    Http.post
-        { url = apiURL ++ "get-homepage-data"
-        , body =
-            Http.jsonBody
-                (Encode.object
-                    []
-                )
-        , expect = Http.expectJson GotHomePageDataResponse homePageDataResponseDecoder
         }
 
 
@@ -138,18 +124,4 @@ getSearchResult searchKeyword model =
                     ]
                 )
         , expect = Http.expectJson GotContentSearchResponse contentSearchResponseDecoder
-        }
-
-
-getUrlToRedirect : String -> Cmd Msg
-getUrlToRedirect path =
-    Http.post
-        { url = apiURL ++ "get-url-to-redirect"
-        , body =
-            Http.jsonBody
-                (Encode.object
-                    [ ( "path", Encode.string path )
-                    ]
-                )
-        , expect = Http.expectString GotUrlToRedirectResponse
         }

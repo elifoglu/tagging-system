@@ -6,16 +6,9 @@ import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..
 port title : String -> Cmd a
 
 
-sendDefaultTitle =
-    title "tagging system"
-
-
 sendTitle : Model -> Cmd msg
 sendTitle model =
     case model.activePage of
-        HomePage _ _ ->
-            sendDefaultTitle
-
         ContentPage status ->
             case status of
                 NonInitialized _ ->
@@ -70,21 +63,17 @@ sendTitle model =
                 _ ->
                     Cmd.none
 
+        ContentSearchPage _ _ ->
+            title "içerik ara - tagging system"
+
+        GraphPage _ ->
+            title "graf - tagging system"
+
         NotFoundPage ->
             title "oops - tagging system"
 
         MaintenancePage ->
             title "bakım çalışması - tagging system"
-
-        ContentSearchPage _ _ ->
-            title "içerik ara - tagging system"
-
-
-        GraphPage _ ->
-            title "graf - tagging system"
-
-        RedirectPage _ ->
-            title "tagging system"
 
 
 port consoleLog : String -> Cmd msg

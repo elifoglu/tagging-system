@@ -21,9 +21,6 @@ viewBreadcrumb model =
                     , viewHeaderText initialized.tag.name
                     ]
 
-        HomePage _ _ ->
-            [ viewHomeNavigator True ]
-
         _ ->
             [ viewHomeNavigator False ]
 

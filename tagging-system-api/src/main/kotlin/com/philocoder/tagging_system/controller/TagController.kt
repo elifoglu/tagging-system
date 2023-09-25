@@ -34,21 +34,6 @@ class TagController(
     }
 
     @CrossOrigin
-    @PostMapping("/get-homepage-data")
-    fun getHomePageData(@RequestBody req: HomePageDataRequest): HomePageDataResponse {
-        val allTags: List<Tag> = tagRepository.getAllTags()
-        return HomePageDataResponse(
-            allTagsToShow = allTags.map {
-                TagResponse.createForAllContentsMode(
-                    it,
-                    contentRepository
-                )
-            }
-                .filter { it.contentCount != 0 }
-        )
-    }
-
-    @CrossOrigin
     @PostMapping("/tags")
     fun addTag(@RequestBody req: CreateTagRequest): String =
         Tag.createIfValidForCreation(req, tagRepository)!!

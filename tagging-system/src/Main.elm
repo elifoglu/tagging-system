@@ -11,15 +11,14 @@ import Browser.Navigation as Nav
 import Component.Page.Util exposing (tagsNotLoaded)
 import Content.Model exposing (Content, GraphData)
 import Content.Util exposing (gotContentToContent)
-import DataResponse exposing (ContentID, EksiKonserveException)
+import DataResponse exposing (ContentID)
 import ForceDirectedGraphForContent exposing (graphSubscriptionsForContent, initGraphModelForContent)
 import ForceDirectedGraphForGraph exposing (graphSubscriptionsForGraph, initGraphModelForGraphPage)
-import ForceDirectedGraphForHome exposing (graphSubscriptions, initGraphModel)
+import ForceDirectedGraphForHome exposing (initGraphModel)
 import ForceDirectedGraphUtil exposing (updateGraph)
-import Home.View exposing (tagCountCurrentlyShownOnPage)
 import List
 import Pagination.Model exposing (Pagination)
-import Requests exposing (createNewTag, getAllTagsResponse, getContent, getHomePageDataResponse, getSearchResult, getTagContents, getTimeZone, getUrlToRedirect, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+import Requests exposing (createNewTag, getAllTagsResponse, getContent, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 import Tag.Util exposing (tagById)
 import Task
 import Time
@@ -66,9 +65,6 @@ needAllTagsData page =
         ContentSearchPage _ _ ->
             True
 
-        HomePage _ _ ->
-            False
-
         CreateContentPage _ ->
             False
 
@@ -79,9 +75,6 @@ needAllTagsData page =
             False
 
         GraphPage _ ->
-            False
-
-        RedirectPage _ ->
             False
 
         NotFoundPage ->
@@ -100,16 +93,6 @@ getCmdToSendByPage model =
 
           else
             case model.activePage of
-                HomePage allTagsToShow maybeGraphData ->
-                    if allTagsToShow == Nothing then
-                        getHomePageDataResponse
-
-                    else if maybeGraphData == Nothing then
-                        getWholeGraphData
-
-                    else
-                        Cmd.none
-
                 TagPage status ->
                     case status of
                         NonInitialized initializableTagPageModel ->
@@ -120,8 +103,11 @@ getCmdToSendByPage model =
                                 Nothing ->
                                     Cmd.none
 
-                        Initialized _ ->
-                            Cmd.none
+                        Initialized initializedTagPageModel ->
+                            if initializedTagPageModel.maybeGraphData == Nothing then
+                                getWholeGraphData
+                            else
+                                Cmd.none
 
                 ContentPage status ->
                     case status of
@@ -146,9 +132,6 @@ getCmdToSendByPage model =
 
                         Nothing ->
                             getWholeGraphData
-
-                RedirectPage path ->
-                    getUrlToRedirect path
 
                 _ ->
                     Cmd.none
@@ -282,7 +265,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag contents pagination)
+                                                Initialized (InitializedTagPageModel tag contents pagination Nothing)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -487,7 +470,7 @@ update msg model =
                     let
                         newActivePage =
                             if message == "done" then
-                                HomePage Nothing Nothing
+                                homepage
 
                             else
                                 NotFoundPage
@@ -505,7 +488,7 @@ update msg model =
             let
                 newPage =
                     case model.activePage of
-                        HomePage _ _ ->
+                        TagPage _ ->
                             ContentSearchPage searchKeyword []
 
                         ContentSearchPage _ contentList ->
@@ -519,7 +502,7 @@ update msg model =
 
                 getAllTagsCmdMsg =
                     case model.activePage of
-                        HomePage _ _ ->
+                        TagPage _ ->
                             getCmdToSendByPage newModel
 
                         _ ->
@@ -544,40 +527,24 @@ update msg model =
                 Err _ ->
                     createNewModelAndCmdMsg model MaintenancePage
 
-        -- HOME PAGE & GRAPH --
-        GotHomePageDataResponse res ->
-            case res of
-                Ok gotTagDataResponse ->
-                    case model.activePage of
-                        HomePage _ maybeGraphData ->
-                            let
-                                homePage =
-                                    HomePage (Just gotTagDataResponse.allTagsToShow) maybeGraphData
-
-                                newModel =
-                                    { model | activePage = homePage }
-                            in
-                            ( newModel, getCmdToSendByPage newModel )
-
-                        _ ->
-                            createNewModelAndCmdMsg model MaintenancePage
-
-                Err _ ->
-                    createNewModelAndCmdMsg model MaintenancePage
-
         GotGraphData res ->
             case res of
                 Ok gotGraphData ->
                     let
                         newModel =
                             case model.activePage of
-                                HomePage allTags maybeGraphData ->
-                                    case maybeGraphData of
-                                        Just _ ->
+                                TagPage initializable ->
+                                    case initializable of
+                                        NonInitialized _ ->
                                             model
 
-                                        Nothing ->
-                                            { model | activePage = HomePage allTags (Just (GraphData gotGraphData (initGraphModel gotGraphData) False Nothing)) }
+                                        Initialized i ->
+                                            case i.maybeGraphData of
+                                                Just _ ->
+                                                    model
+
+                                                Nothing ->
+                                                     { model | activePage = TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination (Just (GraphData gotGraphData (initGraphModel gotGraphData) False Nothing)))) }
 
                                 GraphPage maybeGraphData ->
                                     case maybeGraphData of
@@ -606,20 +573,26 @@ update msg model =
 
         ColorizeContentOnGraph contentID ->
             ( case model.activePage of
-                HomePage a maybeGraphData ->
-                    case maybeGraphData of
-                        Just gd ->
-                            let
-                                newGraphData =
-                                    Just { gd | contentToColorize = Just contentID }
-
-                                newHomePage =
-                                    HomePage a newGraphData
-                            in
-                            { model | activePage = newHomePage }
-
-                        Nothing ->
+                TagPage initializable ->
+                    case initializable of
+                        NonInitialized _ ->
                             model
+
+                        Initialized i ->
+                            case i.maybeGraphData of
+                                Just gd ->
+                                    let
+                                        newGraphData =
+                                            Just { gd | contentToColorize = Just contentID }
+
+                                        newTagPage =
+                                            TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination newGraphData))
+                                    in
+                                    { model | activePage = newTagPage }
+
+                                Nothing ->
+                                    model
+
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
@@ -656,20 +629,26 @@ update msg model =
 
         UncolorizeContentOnGraph ->
             ( case model.activePage of
-                HomePage a maybeGraphData ->
-                    case maybeGraphData of
-                        Just gd ->
-                            let
-                                newGraphData =
-                                    Just { gd | contentToColorize = Nothing }
-
-                                newHomePage =
-                                    HomePage a newGraphData
-                            in
-                            { model | activePage = newHomePage }
-
-                        Nothing ->
+                TagPage initializable ->
+                    case initializable of
+                        NonInitialized _ ->
                             model
+
+                        Initialized i ->
+                            case i.maybeGraphData of
+                                Just gd ->
+                                    let
+                                        newGraphData =
+                                            Just { gd | contentToColorize = Nothing }
+
+                                        newTagPage =
+                                            TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination newGraphData))
+                                    in
+                                    { model | activePage = newTagPage }
+
+                                Nothing ->
+                                    model
+
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
@@ -706,6 +685,7 @@ update msg model =
 
         otherMsg ->
             case model.activePage of
+{- TAG PAGE İÇİN GÜNCELLENECEK TODOTODO
                 HomePage allTags maybeGraphData ->
                     case maybeGraphData of
                         Just gd ->
@@ -720,6 +700,7 @@ update msg model =
 
                         Nothing ->
                             ( model, Cmd.none )
+-}
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
@@ -763,6 +744,7 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.activePage of
+{-
         HomePage allTags maybeGraphData ->
             case maybeGraphData of
                 Just gd ->
@@ -774,6 +756,7 @@ subscriptions model =
 
                 Nothing ->
                     Sub.none
+-}
 
         GraphPage maybeGraphData ->
             case maybeGraphData of
