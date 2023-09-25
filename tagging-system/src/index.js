@@ -2,9 +2,6 @@ import './style.css';
 //import './style_dark.css'; -- add this line to enable dark mode
 import {Elm} from './Main.elm';
 
-
-
-
 let obj = {
 
 };

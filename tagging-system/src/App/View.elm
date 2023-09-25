@@ -9,7 +9,7 @@ import ContentSearch.View exposing (viewSearchContentDiv)
 import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
 import ForceDirectedGraphForGraph exposing (viewGraphForGraphPage)
-import ForceDirectedGraphForHome exposing (viewGraph)
+import ForceDirectedGraphForTag exposing (viewGraph)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Markdown

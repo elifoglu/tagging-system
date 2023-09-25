@@ -6,8 +6,8 @@ import Html.Attributes exposing (class, href, style)
 
 
 viewHomeNavigator : Bool -> Html Msg
-viewHomeNavigator currentPageIsHome =
-    if currentPageIsHome then
+viewHomeNavigator currentTagIsHomeTag =
+    if currentTagIsHomeTag then
         span [ class "headerItem homeNavigator", style "cursor" "pointer" ]
             [ b [ style "font-weight" "bolder" ]
                 [ text "tagging-system" ]

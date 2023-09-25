@@ -2,10 +2,8 @@ package com.philocoder.tagging_system.controller
 
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.CreateTagRequest
-import com.philocoder.tagging_system.model.request.HomePageDataRequest
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.model.response.AllTagsResponse
-import com.philocoder.tagging_system.model.response.HomePageDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
 import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.TagRepository

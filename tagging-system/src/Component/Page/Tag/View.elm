@@ -3,7 +3,7 @@ module Tag.View exposing (..)
 import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
 import Contents.View exposing (viewContentDivs)
-import Html exposing (Html, a, b, br, div, img, input, p, span, text)
+import Html exposing (Html, a, b, br, div, input, span, text)
 import Html.Attributes exposing (class, href, placeholder, style, type_, value)
 import Html.Events exposing (onInput)
 import Pagination.View exposing (viewPagination)
@@ -16,7 +16,7 @@ viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
 viewTagPageDiv initialized allTags =
     div []
         ([ div
-            [ class "homepage homepageTagsFont"
+            [ class "tagPageTagsFont"
             , style "width" "auto"
             ]
             [ viewParentTagsDiv initialized.tag allTags
@@ -62,7 +62,7 @@ viewTag : Tag -> Html Msg
 viewTag tag =
     span []
         [ a
-            [ class "homepageTagA"
+            [ class "tagPageTagA"
             , href
                 ("/tags/"
                     ++ tag.tagId

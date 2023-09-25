@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, totalPageCountRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder, homepage)
+module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, homepage)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content, GotGraphData, GraphData)
@@ -204,13 +204,6 @@ getTagContentsRequestModelEncoder model =
                 Nothing ->
                     Encode.int 1
           )
-        ]
-
-
-totalPageCountRequestModelEncoder : TotalPageCountRequestModel -> Encode.Value
-totalPageCountRequestModelEncoder model =
-    Encode.object
-        [ ( "tagId", Encode.string model.tagId )
         ]
 
 

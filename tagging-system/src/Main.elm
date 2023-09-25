@@ -1,4 +1,4 @@
-module Main exposing (main, needAllTagsData)
+module Main exposing (main)
 
 import App.Model exposing (..)
 import App.Msg exposing (ContentInputType(..), Msg(..), TagInputType(..))
@@ -14,7 +14,7 @@ import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import ForceDirectedGraphForContent exposing (graphSubscriptionsForContent, initGraphModelForContent)
 import ForceDirectedGraphForGraph exposing (graphSubscriptionsForGraph, initGraphModelForGraphPage)
-import ForceDirectedGraphForHome exposing (graphSubscriptions, initGraphModel)
+import ForceDirectedGraphForTag exposing (graphSubscriptions, initGraphModel)
 import ForceDirectedGraphUtil exposing (updateGraph)
 import List
 import Pagination.Model exposing (Pagination)
@@ -50,45 +50,11 @@ init flags url key =
     )
 
 
-needAllTagsData : Page -> Bool
-needAllTagsData page =
-    case page of
-        ContentPage _ ->
-            True
-
-        TagPage _ ->
-            True
-
-        UpdateContentPage _ ->
-            True
-
-        ContentSearchPage _ _ ->
-            True
-
-        CreateContentPage _ ->
-            False
-
-        CreateTagPage _ ->
-            False
-
-        UpdateTagPage _ ->
-            False
-
-        GraphPage _ ->
-            False
-
-        NotFoundPage ->
-            False
-
-        MaintenancePage ->
-            False
-
-
 getCmdToSendByPage : Model -> Cmd Msg
 getCmdToSendByPage model =
     Cmd.batch
         [ sendTitle model
-        , if tagsNotLoaded model && needAllTagsData model.activePage then
+        , if tagsNotLoaded model then
             getAllTagsResponse
 
           else
@@ -527,6 +493,7 @@ update msg model =
                 Err _ ->
                     createNewModelAndCmdMsg model MaintenancePage
 
+        -- GRAPH --
         GotGraphData res ->
             case res of
                 Ok gotGraphData ->
@@ -704,7 +671,6 @@ update msg model =
 
                                  Nothing ->
                                      ( model, Cmd.none)
-
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of

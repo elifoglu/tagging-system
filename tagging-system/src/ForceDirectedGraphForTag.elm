@@ -1,4 +1,4 @@
-module ForceDirectedGraphForHome exposing (graphSubscriptions, initGraphModel, viewGraph)
+module ForceDirectedGraphForTag exposing (graphSubscriptions, initGraphModel, viewGraph)
 
 import App.GraphModel exposing (GraphModel)
 import App.Model exposing (Entity, Model)

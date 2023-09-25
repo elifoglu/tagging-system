@@ -90,18 +90,18 @@ hr {
 }
 
 
-.homepageTagsFont {
+.tagPageTagsFont {
     font-size: 13px;
     letter-spacing: 0.5px;
     word-spacing: 0.2px;
     line-height: 20px;
 }
 
-.homepageTagA {
+.tagPageTagA {
     text-decoration: none;
 }
 
-.homepageTagA:hover {
+.tagPageTagA:hover {
     font-size: 14px;
 }
 
