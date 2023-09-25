@@ -1,8 +1,8 @@
-module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag, getGraphDataOfTag)
+module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 
 import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, TotalPageCountRequestModel, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..), PreviewContentModel(..))
-import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder)
+import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder)
 import Http
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
@@ -50,27 +50,6 @@ getContent contentId =
         , expect = Http.expectJson GotContent contentDecoder
         }
 
-
-getGraphDataOfTag : String -> Cmd Msg
-getGraphDataOfTag tagId =
-    Http.post
-        { url = apiURL ++ "graph-data-of-tag"
-        , body =
-            Http.jsonBody
-                (Encode.object
-                    [ ( "tagId", Encode.string tagId )
-                    ]
-                )
-        , expect = Http.expectJson GotGraphData gotGraphDataDecoder
-        }
-
-
-getWholeGraphData : Cmd Msg
-getWholeGraphData =
-    Http.get
-        { url = apiURL ++ "graph-data"
-        , expect = Http.expectJson GotGraphData gotGraphDataDecoder
-        }
 
 postNewContent : CreateContentPageModel -> Cmd Msg
 postNewContent model =

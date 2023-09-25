@@ -19,7 +19,6 @@ viewCreateContentDiv createContentPageModel =
                 [ viewInput "text" "id" createContentPageModel.id (ContentInputChanged Id)
                 , viewInput "text" "title (empty if does not exist)" createContentPageModel.title (ContentInputChanged Title)
                 , viewInput "text" "tagNames (use comma to separate)" createContentPageModel.tags (ContentInputChanged Tags)
-                , viewInput "text" "refIDs (use comma to separate)" createContentPageModel.refs (ContentInputChanged Refs)
                 , span [] [ text "!!don't forget to add search text manually if you will give a reference to ekşi/medium instead of bringing the full text here!!" ]
                 , viewContentTextArea "content" createContentPageModel.text (ContentInputChanged Text)
                 , div []

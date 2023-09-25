@@ -4,6 +4,5 @@ data class UpdateContentRequest(
     val id: Int?,
     override val title: String?,
     override val text: String,
-    override val tags: String,
-    override val refs: String?,
+    override val tags: String
 ) : ContentRequest

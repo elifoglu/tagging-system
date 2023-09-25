@@ -41,23 +41,7 @@ class DataController(
         val allData = AllData(
             contents = allContents,
             tags = allTags,
-            homeTagId = req.homeTagId,
-            wholeGraphData = contentService.createWholeGraphData(allContents),
-            graphDataOfContents = allContents.map {
-                it.contentId to contentService.createGraphDataForContent(
-                    it,
-                    allContents
-                )
-            }
-                .toMap(),
-            graphDataOfTags = allTags.map {
-                it.tagId to contentService.createGraphDataForTag(
-                    it,
-                    allContents,
-                    allTags
-                )
-            }
-                .toMap()
+            homeTagId = req.homeTagId
         )
         dataHolder.addAllData(allData)
         return "ok"
