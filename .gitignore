@@ -1,0 +1,56 @@
+### tagging-system ###
+
+tagging-system/build/*
+tagging-system/nohup.out
+tagging-system/elm-stuff
+tagging-system/repl-temp-*
+tagging-system/tagging-system.iml
+tagging-system/backup/*
+tagging-system/.idea/*
+
+
+
+
+### tagging-system-api ###
+
+
+tagging-system-api/target/
+tagging-system-api/!.mvn/wrapper/maven-wrapper.jar
+tagging-system-api/!**/src/main/**
+tagging-system-api/!**/src/test/**
+
+### STS ###
+tagging-system-api/.apt_generated
+tagging-system-api/.classpath
+tagging-system-api/.factorypath
+tagging-system-api/.project
+tagging-system-api/.settings
+tagging-system-api/.springBeans
+tagging-system-api/.sts4-cache
+
+### IntelliJ IDEA ###
+tagging-system-api/.idea
+tagging-system-api/*.iws
+tagging-system-api/*.iml
+tagging-system-api/*.ipr
+
+### VS Code ###
+tagging-system-api/.vscode/
+tagging-system-api/.todo
+
+
+
+
+### other ###
+
+
+### Todo file ###
+tagging-system-api/todo
+
+### Data file ###
+tagging-system-api/data.json
+
+### Data push script ###
+tagging-system-api/push_data.sh
+tagging-system-api/
+
