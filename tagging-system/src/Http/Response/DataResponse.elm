@@ -27,6 +27,8 @@ type alias ContentReadResponse =
 type alias GotTag =
     { tagId : String
     , name : String
+    , parentTags : List String
+    , childTags : List String
     , contentCount : Int
     , infoContentId : Maybe Int
     }
@@ -154,9 +156,11 @@ refConnectionDecoder =
 
 tagDecoder : Decoder GotTag
 tagDecoder =
-    map4 GotTag
+    map6 GotTag
         (field "tagId" string)
         (field "name" string)
+        (field "parentTags" (D.list string))
+        (field "childTags" (D.list string))
         (field "contentCount" int)
         (field "infoContentId" (maybe int))
 

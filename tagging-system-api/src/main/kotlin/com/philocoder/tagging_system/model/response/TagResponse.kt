@@ -6,6 +6,8 @@ import com.philocoder.tagging_system.repository.ContentRepository
 data class TagResponse(
     val tagId: String,
     val name: String,
+    val parentTags: List<String>,
+    val childTags: List<String>,
     val contentCount: Int,
     val infoContentId: Int?
 ) {
@@ -18,6 +20,8 @@ data class TagResponse(
             TagResponse(
                 tagId = tag.tagId,
                 name = tag.name,
+                parentTags = tag.parentTags,
+                childTags = tag.childTags,
                 contentCount = repo.getContentCount(tag.name),
                 infoContentId = tag.infoContentId
             )

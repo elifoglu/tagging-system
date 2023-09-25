@@ -17,6 +17,7 @@ import Html.Attributes exposing (..)
 import Markdown
 import NotFound.View exposing (view404Div)
 import Pagination.View exposing (viewPagination)
+import Tags.View exposing (viewChildTagsDiv, viewParentTagsDiv)
 import UpdateContent.View exposing (viewUpdateContentDiv)
 import UpdateTag.View exposing (viewUpdateTagDiv)
 
@@ -30,33 +31,32 @@ view model =
             , div [ class "body" ]
                 (case model.activePage of
                     HomePage allTagsToShow maybeGraphData ->
-                            case maybeGraphData of
-                                Just graphData ->
-                                    if graphData.veryFirstMomentOfGraphHasPassed then
-                                        let
-                                            tagsCount =
-                                                tagCountCurrentlyShownOnPage allTagsToShow
+                        case maybeGraphData of
+                            Just graphData ->
+                                if graphData.veryFirstMomentOfGraphHasPassed then
+                                    let
+                                        tagsCount =
+                                            tagCountCurrentlyShownOnPage allTagsToShow
 
-                                            initialMarginTop =
-                                                50
+                                        initialMarginTop =
+                                            50
 
-                                            heightOfASingleTagAsPx =
-                                                20
+                                        heightOfASingleTagAsPx =
+                                            20
 
-                                            marginTopForGraph : Int
-                                            marginTopForGraph =
-                                                initialMarginTop + round (toFloat tagsCount * heightOfASingleTagAsPx)
-                                        in
-                                        [ viewHomePageDiv allTagsToShow
-                                        , div [ class "graph", style "margin-top" (String.fromInt marginTopForGraph ++ "px") ] [ viewGraph graphData.graphData.contentIds graphData.graphModel tagsCount graphData.contentToColorize ]
-                                        ]
+                                        marginTopForGraph : Int
+                                        marginTopForGraph =
+                                            initialMarginTop + round (toFloat tagsCount * heightOfASingleTagAsPx)
+                                    in
+                                    [ viewHomePageDiv allTagsToShow
+                                    , div [ class "graph", style "margin-top" (String.fromInt marginTopForGraph ++ "px") ] [ viewGraph graphData.graphData.contentIds graphData.graphModel tagsCount graphData.contentToColorize ]
+                                    ]
 
-                                    else
-                                        []
-
-                                Nothing ->
+                                else
                                     []
 
+                            Nothing ->
+                                []
 
                     ContentPage status ->
                         case status of
@@ -74,9 +74,11 @@ view model =
                                 []
 
                             Initialized initialized ->
-                                viewContentDivs model.maybeContentFadeOutData initialized.contents
-                                    ++ [ viewPagination initialized.tag initialized.pagination
-                                       ]
+                                [ viewParentTagsDiv initialized.tag, viewChildTagsDiv initialized.tag ]
+                                    ++ (viewContentDivs model.maybeContentFadeOutData initialized.contents
+                                            ++ [ viewPagination initialized.tag initialized.pagination
+                                               ]
+                                       )
 
                     CreateContentPage status ->
                         case status of
@@ -110,7 +112,6 @@ view model =
                             RequestSent _ ->
                                 [ text "..." ]
 
-
                     ContentSearchPage searchKeyword contents ->
                         [ viewSearchContentDiv searchKeyword contents ]
 
@@ -136,7 +137,6 @@ view model =
 
                     MaintenancePage ->
                         [ text "*bakım çalışması*" ]
-
                 )
             ]
         ]
