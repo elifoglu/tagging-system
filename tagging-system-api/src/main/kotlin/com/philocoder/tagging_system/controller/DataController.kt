@@ -35,16 +35,26 @@ class DataController(
                 parentToChildTagMap[parentTagId] = childTagIds
             }
         }
+        val allTags = req.tags.map { Tag.createWith(it, parentToChildTagMap) }
+        val allContents = req.contents
 
         val allData = AllData(
-            contents = req.contents,
-            tags = req.tags.map { Tag.createWith(it, parentToChildTagMap) },
+            contents = allContents,
+            tags = allTags,
             homeTagId = req.homeTagId,
-            wholeGraphData = contentService.createWholeGraphData(req.contents),
-            graphDataOfContents = req.contents.map {
+            wholeGraphData = contentService.createWholeGraphData(allContents),
+            graphDataOfContents = allContents.map {
                 it.contentId to contentService.createGraphDataForContent(
                     it,
-                    req.contents
+                    allContents
+                )
+            }
+                .toMap(),
+            graphDataOfTags = allTags.map {
+                it.tagId to contentService.createGraphDataForTag(
+                    it,
+                    allContents,
+                    allTags
                 )
             }
                 .toMap()

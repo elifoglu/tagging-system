@@ -7,5 +7,6 @@ data class AllData(
     val tags: List<Tag>,
     val homeTagId: String,
     val wholeGraphData: GraphData,
-    val graphDataOfContents: Map<ContentID, GraphData>
+    val graphDataOfContents: Map<ContentID, GraphData>,
+    val graphDataOfTags: Map<TagID, GraphData>
 )

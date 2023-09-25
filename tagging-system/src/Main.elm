@@ -18,7 +18,7 @@ import ForceDirectedGraphForTag exposing (graphSubscriptions, initGraphModel)
 import ForceDirectedGraphUtil exposing (updateGraph)
 import List
 import Pagination.Model exposing (Pagination)
-import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+import Requests exposing (createNewTag, getContent, getGraphDataOfTag, getInitialData, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 import Tag.Util exposing (tagById)
 import Task
 import Time
@@ -80,7 +80,7 @@ getCmdToSendByPage model =
 
                         Initialized initializedTagPageModel ->
                             if initializedTagPageModel.maybeGraphData == Nothing then
-                                getWholeGraphData
+                                getGraphDataOfTag initializedTagPageModel.tag.tagId
 
                             else
                                 Cmd.none

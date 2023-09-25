@@ -34,6 +34,11 @@ class ContentController(
         dataHolder.data!!.wholeGraphData
 
     @CrossOrigin
+    @PostMapping("/graph-data-of-tag")
+    fun getGraphDataOfTag(@RequestBody req: GraphDataOfTagRequest): GraphData =
+        dataHolder.data!!.graphDataOfTags[req.tagId]!!
+
+    @CrossOrigin
     @PostMapping("/get-content")
     fun getContent(@RequestBody req: GetContentRequest): ContentResponse {
         return ContentResponse.createWith(

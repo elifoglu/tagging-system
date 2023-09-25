@@ -86,6 +86,10 @@ class ContentService(
         return getGraphDataResponseViaContentRefDataList(finalRefList, allContents)
     }
 
+    fun createGraphDataForTag(tag: Tag, allContents: List<Content>, allTags: List<Tag>): GraphData {
+        return GraphData.empty
+    }
+
     fun updateGraphDataOfAllContents() {
         dataHolder.data = dataHolder.data!!.copy(
             wholeGraphData = createWholeGraphData(dataHolder.data!!.contents),
