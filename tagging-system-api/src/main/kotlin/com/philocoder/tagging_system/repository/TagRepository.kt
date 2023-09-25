@@ -35,6 +35,10 @@ open class TagRepository(
         dataHolder.clearTags()
     }
 
+    fun getHomeTag(): String {
+        return dataHolder.getAllData()!!.homeTagId
+    }
+
     private fun getEntities(
         page: Int = 1,
         size: Int = 10000,

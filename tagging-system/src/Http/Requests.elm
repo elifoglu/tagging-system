@@ -1,8 +1,8 @@
-module Requests exposing (createNewTag, getAllTagsResponse, getContent, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 
 import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, TotalPageCountRequestModel, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..), PreviewContentModel(..))
-import DataResponse exposing (ContentID, allTagsResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder)
+import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder)
 import Http
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
@@ -19,11 +19,11 @@ getTimeZone =
     Task.perform GotTimeZone Time.here
 
 
-getAllTagsResponse : Cmd Msg
-getAllTagsResponse =
+getInitialData : Cmd Msg
+getInitialData =
     Http.get
-        { url = apiURL ++ "get-all-tags"
-        , expect = Http.expectJson GotAllTagsResponse allTagsResponseDecoder
+        { url = apiURL ++ "get-initial-data"
+        , expect = Http.expectJson GotInitialDataResponse initialDataResponseDecoder
         }
 
 
@@ -42,8 +42,8 @@ getTagContents tag maybePage =
         }
 
 
-getContent : Int -> Model -> Cmd Msg
-getContent contentId model =
+getContent : Int -> Cmd Msg
+getContent contentId =
     Http.post
         { url = apiURL ++ "get-content"
         , body = Http.jsonBody (getContentRequestModelEncoder (GetContentRequestModel contentId))
@@ -113,8 +113,8 @@ updateExistingTag tagId model =
         }
 
 
-getSearchResult : String -> Model -> Cmd Msg
-getSearchResult searchKeyword model =
+getSearchResult : String -> Cmd Msg
+getSearchResult searchKeyword =
     Http.post
         { url = apiURL ++ "search"
         , body =

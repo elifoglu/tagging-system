@@ -4,7 +4,7 @@ import App.Model exposing (CreateContentPageModel, CreateTagPageModel, Page, Upd
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (GotGraphData)
-import DataResponse exposing (AllTagsResponse, ContentID, ContentSearchResponse, ContentsResponse, GotContent)
+import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, ContentsResponse, GotContent)
 import Graph exposing (NodeId)
 import Http
 import Tag.Model exposing (Tag)
@@ -15,7 +15,7 @@ import Url
 type Msg
     = UrlRequested Browser.UrlRequest
     | UrlChanged Url.Url
-    | GotAllTagsResponse (Result Http.Error AllTagsResponse)
+    | GotInitialDataResponse (Result Http.Error InitialDataResponse)
     | GotGraphData (Result Http.Error GotGraphData)
     | GotSearchInput String
     | GotContentSearchResponse (Result Http.Error ContentSearchResponse)

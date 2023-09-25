@@ -2,15 +2,11 @@ package com.philocoder.tagging_system.service
 
 import arrow.core.Tuple2
 import com.philocoder.tagging_system.model.ContentID
-import com.philocoder.tagging_system.model.entity.Content
-import com.philocoder.tagging_system.model.entity.ContentRefData
-import com.philocoder.tagging_system.model.entity.Ref
-import com.philocoder.tagging_system.model.entity.Tag
+import com.philocoder.tagging_system.model.entity.*
 import com.philocoder.tagging_system.model.request.ContentsOfTagRequest
 import com.philocoder.tagging_system.model.request.SearchContentRequest
 import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.ContentsResponse
-import com.philocoder.tagging_system.model.entity.GraphData
 import com.philocoder.tagging_system.model.response.SearchContentResponse
 import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.DataHolder
@@ -26,7 +22,8 @@ class ContentService(
 ) {
 
     fun getContentsResponse(req: ContentsOfTagRequest): ContentsResponse {
-        val tag: Tag = tagRepository.findEntity(req.tagId)
+        val tagIdToUse = if (req.tagId == "tagging-system-home-page") tagRepository.getHomeTag() else req.tagId
+        val tag: Tag = tagRepository.findEntity(tagIdToUse)
             ?: return ContentsResponse.empty
         val contentResponses = repository
             .getContentsForTag(req.page, req.size, tag)

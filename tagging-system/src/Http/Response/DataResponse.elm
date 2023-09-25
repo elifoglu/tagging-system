@@ -1,11 +1,11 @@
-module DataResponse exposing (AllTagsResponse, ContentID, ContentSearchResponse, ContentsResponse, GotContent, GotContentDate, GotTag, allTagsResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder)
+module DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, ContentsResponse, GotContent, GotContentDate, GotTag, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder, gotGraphDataDecoder)
 
 import Content.Model exposing (GotGraphData, Ref, RefConnection)
 import Json.Decode as D exposing (Decoder, field, int, map, map2, map3, map6, maybe, string)
 
 
-type alias AllTagsResponse =
-    { allTags : List GotTag }
+type alias InitialDataResponse =
+    { allTags : List GotTag, homeTagId: String }
 
 
 
@@ -40,10 +40,11 @@ type alias ContentSearchResponse =
     }
 
 
-allTagsResponseDecoder : Decoder AllTagsResponse
-allTagsResponseDecoder =
-    map AllTagsResponse
+initialDataResponseDecoder : Decoder InitialDataResponse
+initialDataResponseDecoder =
+    map2 InitialDataResponse
         (field "allTags" (D.list tagDecoder))
+        (field "homeTagId" string)
 
 
 contentsResponseDecoder : Decoder ContentsResponse

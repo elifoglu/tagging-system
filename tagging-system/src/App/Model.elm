@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, homepage)
+module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, TagIdInputType(..))
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content, GotGraphData, GraphData)
@@ -15,6 +15,7 @@ type alias Model =
     { log : String
     , key : Nav.Key
     , allTags : List Tag
+    , homeTagId : String
     , activePage : Page
     , localStorage : LocalStorage
     , waitingForContentCheckResponse : Bool
@@ -73,16 +74,21 @@ type UpdateContentPageModel
 
 
 type alias NonInitializedYetTagPageModel =
-    { tagId : String
+    { tagId : TagIdInputType
     , maybePage : Maybe Int
     }
+
+
+type TagIdInputType
+    = HomeInput
+    | IdInput String
 
 
 type alias InitializedTagPageModel =
     { tag : Tag
     , contents : List Content
     , pagination : Pagination
-    , maybeGraphData: Maybe GraphData
+    , maybeGraphData : Maybe GraphData
     }
 
 
@@ -97,8 +103,11 @@ type alias AllTagsToShow =
 type alias ContentIDToColorize =
     Maybe ContentID
 
+
 homepage : Page
-homepage = TagPage (NonInitialized (NonInitializedYetTagPageModel "tumu" Nothing))
+homepage =
+    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput Nothing))
+
 
 type Page
     = ContentPage (Initializable ( Int, Bool ) Content)
@@ -159,7 +168,6 @@ type alias CreateTagPageModel =
 type alias UpdateTagPageModel =
     { infoContentId : String
     }
-
 
 
 setCreateContentPageModel : Content -> CreateContentPageModel

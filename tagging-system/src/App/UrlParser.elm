@@ -1,6 +1,6 @@
 module App.UrlParser exposing (pageBy)
 
-import App.Model exposing (CreateContentPageModel, CreateTagPageModel, Initializable(..), LocalStorage, MaySendRequest(..), NonInitializedYetTagPageModel, Page(..), UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, homepage)
+import App.Model exposing (CreateContentPageModel, CreateTagPageModel, Initializable(..), LocalStorage, MaySendRequest(..), NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, homepage)
 import Url
 import Url.Parser exposing ((</>), (<?>), Parser, int, map, oneOf, parse, s, string, top)
 import Url.Parser.Query as Query
@@ -22,7 +22,7 @@ routeParser =
 
 nonInitializedTagPageMapper : String -> Maybe Int -> Page
 nonInitializedTagPageMapper tagId maybePage =
-    TagPage (NonInitialized (NonInitializedYetTagPageModel tagId maybePage ))
+    TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagId) maybePage ))
 
 
 nonInitializedContentPageMapper : Int -> Maybe String -> Page

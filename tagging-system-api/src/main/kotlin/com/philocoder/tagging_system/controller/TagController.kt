@@ -3,7 +3,7 @@ package com.philocoder.tagging_system.controller
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
-import com.philocoder.tagging_system.model.response.AllTagsResponse
+import com.philocoder.tagging_system.model.response.InitialDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
 import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.TagRepository
@@ -17,17 +17,18 @@ class TagController(
 ) {
 
     @CrossOrigin
-    @GetMapping("/get-all-tags")
-    fun getAllTags(): AllTagsResponse {
+    @GetMapping("/get-initial-data")
+    fun getInitialData(): InitialDataResponse {
         val allTags: List<Tag> = tagRepository.getAllTags()
-        return AllTagsResponse(
+        return InitialDataResponse(
             allTags = allTags.map {
                 TagResponse.createForAllContentsMode(
                     it,
                     contentRepository
                 )
             }
-                .filter { it.contentCount != 0 }
+                .filter { it.contentCount != 0 },
+            homeTagId = tagRepository.getHomeTag()
         )
     }
 

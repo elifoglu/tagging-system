@@ -18,7 +18,7 @@ import ForceDirectedGraphForTag exposing (graphSubscriptions, initGraphModel)
 import ForceDirectedGraphUtil exposing (updateGraph)
 import List
 import Pagination.Model exposing (Pagination)
-import Requests exposing (createNewTag, getAllTagsResponse, getContent, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, getWholeGraphData, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 import Tag.Util exposing (tagById)
 import Task
 import Time
@@ -43,7 +43,7 @@ init flags url key =
             pageBy url
 
         model =
-            Model "log" key [] page LocalStorage False Time.utc
+            Model "log" key [] "" page LocalStorage False Time.utc
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -55,14 +55,23 @@ getCmdToSendByPage model =
     Cmd.batch
         [ sendTitle model
         , if tagsNotLoaded model then
-            getAllTagsResponse
+            getInitialData
 
           else
             case model.activePage of
                 TagPage status ->
                     case status of
                         NonInitialized initializableTagPageModel ->
-                            case tagById model.allTags initializableTagPageModel.tagId of
+                            let
+                                tagId =
+                                    case initializableTagPageModel.tagId of
+                                        HomeInput ->
+                                            model.homeTagId
+
+                                        IdInput id ->
+                                            id
+                            in
+                            case tagById model.allTags tagId of
                                 Just tag ->
                                     getTagContents tag initializableTagPageModel.maybePage
 
@@ -72,13 +81,14 @@ getCmdToSendByPage model =
                         Initialized initializedTagPageModel ->
                             if initializedTagPageModel.maybeGraphData == Nothing then
                                 getWholeGraphData
+
                             else
                                 Cmd.none
 
                 ContentPage status ->
                     case status of
                         NonInitialized ( contentId, _ ) ->
-                            getContent contentId model
+                            getContent contentId
 
                         Initialized _ ->
                             Cmd.none
@@ -86,7 +96,7 @@ getCmdToSendByPage model =
                 UpdateContentPage status ->
                     case status of
                         NotInitializedYet contentID ->
-                            getContent contentID model
+                            getContent contentID
 
                         _ ->
                             Cmd.none
@@ -140,12 +150,12 @@ update msg model =
         GotTimeZone zone ->
             ( { model | timeZone = zone }, Cmd.none )
 
-        GotAllTagsResponse res ->
+        GotInitialDataResponse res ->
             case res of
-                Ok gotTagDataResponse ->
+                Ok got ->
                     let
                         newModel =
-                            { model | allTags = gotTagDataResponse.allTags }
+                            { model | allTags = got.allTags, homeTagId = got.homeTagId }
                     in
                     ( newModel, getCmdToSendByPage newModel )
 
@@ -318,7 +328,7 @@ update msg model =
 
         GetContentToCopyForContentCreation contentId ->
             ( model
-            , getContent contentId model
+            , getContent contentId
             )
 
         GotContentToPreviewForCreatePage createContentPageModel result ->
@@ -474,7 +484,7 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-            ( newModel, Cmd.batch [ sendTitle newModel, getAllTagsCmdMsg, getSearchResult searchKeyword newModel, Dom.focus "contentSearchInput" |> Task.attempt FocusResult ] )
+            ( newModel, Cmd.batch [ sendTitle newModel, getAllTagsCmdMsg, getSearchResult searchKeyword, Dom.focus "contentSearchInput" |> Task.attempt FocusResult ] )
 
         GotContentSearchResponse res ->
             case res of
@@ -511,7 +521,7 @@ update msg model =
                                                     model
 
                                                 Nothing ->
-                                                     { model | activePage = TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination (Just (GraphData gotGraphData (initGraphModel gotGraphData) False Nothing)))) }
+                                                    { model | activePage = TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination (Just (GraphData gotGraphData (initGraphModel gotGraphData) False Nothing)))) }
 
                                 GraphPage maybeGraphData ->
                                     case maybeGraphData of
@@ -559,7 +569,6 @@ update msg model =
 
                                 Nothing ->
                                     model
-
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
@@ -616,7 +625,6 @@ update msg model =
                                 Nothing ->
                                     model
 
-
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
                         Just gd ->
@@ -653,24 +661,24 @@ update msg model =
         otherMsg ->
             case model.activePage of
                 TagPage initializable ->
-                     case initializable of
-                         NonInitialized _ ->
-                             ( model, Cmd.none)
+                    case initializable of
+                        NonInitialized _ ->
+                            ( model, Cmd.none )
 
-                         Initialized i ->
-                             case i.maybeGraphData of
-                                 Just gd ->
-                                     let
-                                         newGraphData =
-                                             Just (GraphData gd.graphData (updateGraph otherMsg gd.graphModel) True gd.contentToColorize)
+                        Initialized i ->
+                            case i.maybeGraphData of
+                                Just gd ->
+                                    let
+                                        newGraphData =
+                                            Just (GraphData gd.graphData (updateGraph otherMsg gd.graphModel) True gd.contentToColorize)
 
-                                         newTagPage =
-                                             TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination newGraphData))
-                                     in
-                                     ( { model | activePage = newTagPage }, Cmd.none )
+                                        newTagPage =
+                                            TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination newGraphData))
+                                    in
+                                    ( { model | activePage = newTagPage }, Cmd.none )
 
-                                 Nothing ->
-                                     ( model, Cmd.none)
+                                Nothing ->
+                                    ( model, Cmd.none )
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
@@ -715,18 +723,17 @@ subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.activePage of
         TagPage initializable ->
-             case initializable of
-                 NonInitialized _ ->
-                     Sub.none
+            case initializable of
+                NonInitialized _ ->
+                    Sub.none
 
-                 Initialized i ->
-                     case i.maybeGraphData of
-                         Just gd ->
-                             graphSubscriptions gd.graphModel 0
+                Initialized i ->
+                    case i.maybeGraphData of
+                        Just gd ->
+                            graphSubscriptions gd.graphModel 0
 
-                         Nothing ->
-                             Sub.none
-
+                        Nothing ->
+                            Sub.none
 
         GraphPage maybeGraphData ->
             case maybeGraphData of
