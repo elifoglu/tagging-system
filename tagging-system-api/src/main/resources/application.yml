@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: tagging-system-api
+
+server:
+  port: 8090
+  compression:
+    enabled: true
+    mime-types: application/json
+    min-response-size: 1024
+  connection-timeout: 5000

@@ -1,0 +1,543 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    font-style: normal;
+    font-variant: normal;
+    text-transform: none;
+    background: rgba(255, 255, 255, 0.25);
+    color: #202020;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.header {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.body {
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+    max-width: 600px;
+    width: auto;
+}
+
+.title {
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    word-spacing: 0.1px;
+    font-weight: bold;
+}
+
+.refsDiv {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+}
+
+.contentFont {
+    font-size: 13px;
+    letter-spacing: 0.7px;
+    word-spacing: 0.2px;
+}
+
+.contentCountOfTag {
+    font-size: 11.6px;
+}
+
+.contentInfoDiv {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+    margin-bottom: 20px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    margin: 35px 0 35px 0;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.headerItem {
+    padding: 10px;
+    border: 0;
+    border-radius: 2px;
+    outline: none;
+    appearance: none;
+    text-align: center;
+    display: inline-block;
+    vertical-align: baseline;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+    word-spacing: 0.1px;
+    font-weight: normal;
+    cursor: default;
+}
+
+.homeNavigator {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.iconsContainer {
+    display: inline-block;
+    padding-left: 4px;
+}
+
+.bioPageIconsContainer {
+    padding-left: 6px;
+    padding-top: 3px;
+    font-size: 25px;
+}
+
+.homeNavigator:hover {
+    background: #c9c9c9;
+}
+
+.iconDiv {
+    align-self: center;
+    align-content: center;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.iconOnHeader img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+.homepageTagsFont {
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.2px;
+    line-height: 20px;
+}
+
+.homepageTagA {
+    text-decoration: none;
+}
+
+.homepageTagA:hover {
+    font-size: 14px;
+}
+
+a {
+    color: #202020;
+}
+
+.tagLink {
+    text-decoration: none;
+    color: #202020;
+}
+
+.tagLink:hover {
+    color: #505050;
+}
+
+.paginationButton {
+    min-width: 27px;
+    margin: 2px;
+    padding: 4px;
+    border: none;
+    border-radius: 2px;
+    color: #ffffff;
+    cursor: pointer;
+    background-color: #202020;
+}
+
+.paginationButton:hover {
+    color: #c2c2c2;
+}
+
+.currentPaginationButton {
+    background: transparent;
+    color: #202020;
+    min-width: 0;
+    cursor: default;
+    font-size: 20px;
+    padding: 2px;
+}
+
+.currentPaginationButton:hover {
+    color: #202020;
+}
+
+.navToContent {
+    width: 15px;
+    height: auto;
+    align-content: center;
+    align-self: center;
+}
+
+.contentPageToggleChecked {
+    width: 15px;
+    margin-left: 4px;
+    height: auto;
+    align-content: center;
+    align-self: center;
+    cursor: pointer;
+}
+
+.icon {
+    margin-top: 3px;
+    width: 20px;
+    height: auto;
+    align-content: center;
+    align-self: center;
+}
+
+.icon:hover {
+    width: 22px;
+}
+
+.showMoreIconsIcon {
+    width: 31px;
+    cursor: pointer;
+    margin-left: -6px;
+}
+
+.showMoreIconsIcon:hover {
+    width: 31px;
+    margin-left: -3px;
+}
+
+input[type='radio'] {
+    accent-color: #202020;
+}
+
+.contentSearchInput {
+    border: 1px solid #202020;
+    border-radius: 2px;
+    padding-top: 2px;
+    width: 55px;
+    font-size: 13px;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+input:focus {
+    outline: none;
+}
+
+.markdownDiv p {
+    margin-block-start: 25px;
+}
+
+.textToHighlight {
+    background-color: yellow;
+}
+
+.navToTagDesc {
+    width: 13px;
+    vertical-align: middle;
+    margin-bottom: 2px;
+}
+
+.navToTagDesc:hover {
+    width: 15px;
+}
+
+.bioGroup {
+    display: inline-block;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 5px;
+    margin-bottom: 10px;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 12.5px;
+    cursor: pointer;
+    border-radius: 2px;
+    border: 1px solid #202020;
+    background: white;
+}
+
+.bioGroup:hover {
+    background: #f3f2f2;
+}
+
+.bioGroup-active {
+    background: #202020;
+    color: white;
+}
+
+.bioGroup-active:hover {
+    background: #343434;
+}
+
+.bioGroup-iconish {
+    width: 15px;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 3px;
+    margin-left: 5px;
+    margin-bottom: 1px;
+    border-radius: 5px;
+}
+
+.bioGroup-iconish:hover {
+    background: #f3f2f2;
+}
+
+.bioGroup-iconish-active {
+    background: #f3f2f2;
+}
+
+.bioGroup-iconish-active:hover {
+    background: #f3f2f2;
+}
+
+.bioItem {
+    display: inline-block;
+    padding: 0px 5px;
+    margin-left: 5px;
+    margin-bottom: 10px;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 13px;
+    border-radius: 0px;
+    border: 1px solid #202020;
+    cursor: default;
+    background: none;
+}
+
+.bioItem:hover {
+    background: #f3f2f2;
+}
+
+.bioItemHasAnInfo {
+    cursor: pointer;
+}
+
+.bioItemSeparator {
+    display: inline-block;
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-left: 5px;
+    margin-bottom: 10px;
+    font-size: 17px;
+}
+
+.bioGroupInfoContainer {
+    display: flex;
+    margin-bottom: -22px;
+    margin-top: -20px;
+}
+
+.bioGroupInfoP {
+    margin-left: 4px;
+    font-size: 12.9px;
+}
+
+.openBioItemInfo {
+    width: 13px;
+    vertical-align: middle;
+    margin-bottom: 5px;
+    margin-right: -2px;
+    cursor: pointer;
+}
+
+.openBioGroupInfo {
+    width: 13px;
+    vertical-align: middle;
+    margin-bottom: 5px;
+    margin-right: -2px;
+    cursor: crosshair;
+}
+
+.goToBioItemExternalLink {
+    width: 11px;
+    vertical-align: middle;
+    margin-bottom: 5px;
+    margin-left: 2px;
+    margin-right: -1px;
+}
+
+.bioItemInfoContainer {
+    display: inline-block;
+    margin: 0 25px 10px 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 13px;
+    border-radius: 1px;
+    border: 1px solid #bcbcbc;
+}
+
+.bioItemInfoMarkdownP p {
+    margin: auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.bioItemInfoMarkdownP p:before {
+    content: "";
+    display: block;
+    background: url("/public/info-gray.svg") no-repeat;
+    width: 15px;
+    height: 15px;
+    float: left;
+    margin: 0 3px 0 0;
+}
+
+.bioHrefAtHomePage {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.searchContentInfoText {
+    padding-top: -5px;
+    padding-left: 5px;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 13px;
+}
+
+.logoutButton {
+    padding: 0px 4px 0px 4px;
+    border: 1px solid #202020;
+    border-radius: 3px;
+    color: #202020;
+    cursor: pointer;
+    background-color: #ffffff;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.2px;
+    line-height: 20px;
+}
+
+.logoutButton:hover {
+    background-color: #202020;
+    color: #ffffff;
+}
+
+.loginRegisterButton {
+    padding: 0px 4px 0px 4px;
+    border: 1px solid #202020;
+    border-radius: 3px;
+    color: #ffffff;
+    cursor: pointer;
+    background-color: #202020;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.2px;
+    line-height: 20px;
+    width: 50px;
+    margin: 2px;
+}
+
+.loginRegisterButton:hover {
+    background-color: #474747;
+    color: #ffffff;
+}
+
+input[type='checkbox'] {
+    accent-color: #202020;
+}
+
+.graph {
+    position: fixed;
+    box-shadow: 0px 0px 5px 1px #202020;
+    z-index: -1;
+    width: 275px;
+    height: 275px;
+    display: block;
+    align-items: center;
+}
+
+.graphForGraphPage {
+    position: fixed;
+    box-shadow: 0px 0px 5px 1px #202020;
+    z-index: -1;
+    width: 800px;
+    height: 800px;
+    display: block;
+    align-items: center;
+}
+
+.graphPageInformationText {
+    position: fixed;
+    margin-top: 805px;
+    color: #202020;
+    font-size: 11px;
+}
+.graphForContent {
+    box-shadow: 0px 0px 5px 1px #202020;
+    width: 275px;
+    height: 275px;
+    display: block;
+    align-items: center;
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+
+.eksiKonserveDiv {
+    font-family: 'Times New Roman', Times, serif;
+    padding: 8px;
+    background-color: #dcffce;
+    border-width: 1px;
+    border-style: solid;
+    border-color: green;
+    border-radius: 3px;
+    width: fit-content;
+}
+
+.eksiKonserveDiv a {
+    color: darkblue;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.eksiKonserveDiv a:hover {
+    color: gray;
+    text-decoration: underline;
+}
+
+.eksiKonserveUrlDiv {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.deleteEksiKonserveTopicButton {
+    margin-right: 8px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    color: #202020;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.deleteAllEksiKonserveTopicsButton {
+    border: 1px solid #000;
+    border-radius: 2px;
+    color: #202020;
+    cursor: pointer;
+    background-color: #ffffff;
+    float: right;
+}
+
+.eksiKonserveExceptionToggleButton {
+    margin: 3px;
+    border: 1px solid #000;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.deleteAllEkşiKonserveExceptionsButton {
+    margin: 3px;
+    border: 1px solid #000;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.updateContentLink {
+    text-underline: none;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.2px;
+    margin: 2px;
+}
