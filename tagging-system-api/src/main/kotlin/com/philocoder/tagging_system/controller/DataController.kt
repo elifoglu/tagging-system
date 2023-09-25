@@ -23,6 +23,7 @@ class DataController(
         val allData = AllData(
             contents = req.contents,
             tags = req.tags,
+            homeTagId = req.homeTagId,
             wholeGraphData = contentService.createWholeGraphData(req.contents),
             graphDataOfContents = req.contents.map {
                 it.contentId to contentService.createGraphDataForContent(
@@ -42,7 +43,8 @@ class DataController(
         val allData: AllData = dataHolder.getAllData() ?: return null
         return GetAllDataResponse(
             allData.contents.sortedBy { it.contentId },
-            allData.tags
+            allData.tags,
+            allData.homeTagId
         )
     }
 

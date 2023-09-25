@@ -4,10 +4,12 @@ import arrow.core.extensions.list.foldable.exists
 import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.repository.TagRepository
+import java.util.*
 
 data class Tag(
     val tagId: String,
     val name: String,
+    val parentTags: List<String>,
     val infoContentId: Int?
 ) {
 
@@ -33,6 +35,7 @@ data class Tag(
             return Tag(
                 tagId = req.tagId,
                 name = req.name,
+                parentTags = Collections.emptyList(),
                 infoContentId = null
             )
         }

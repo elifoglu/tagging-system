@@ -21,25 +21,10 @@ viewHomePageDiv allTagsToShow =
         )
 
 
-tagNamesToHideOnHomePage : List String
-tagNamesToHideOnHomePage =
-    [ "beni oku" ]
-
-
 tagsToShow : Maybe (List Tag) -> List Tag
 tagsToShow allTagsToShow =
-    let
-        maybeTags = allTagsToShow
+    Maybe.withDefault [] allTagsToShow
 
-        tags =
-            Maybe.withDefault [] maybeTags
-
-        --this will never happen
-        removeTagsToHide =
-            tags
-                |> List.filter (\tag -> not (List.member tag.name tagNamesToHideOnHomePage))
-    in
-    removeTagsToHide
 
 
 tagCountCurrentlyShownOnPage : Maybe (List Tag) -> Int

@@ -5,5 +5,6 @@ import com.philocoder.tagging_system.model.entity.Tag
 
 data class GetAllDataResponse(
     val contents: List<Content>,
-    val tags: List<Tag>
+    val tags: List<Tag>,
+    val homeTagId: String
 )
