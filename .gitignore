@@ -50,5 +50,6 @@ todo
 ### Data file ###
 data.json
 
-### Data push script ###
+### Data push and pull scripts ###
 push_data.sh
+pull_data.sh
