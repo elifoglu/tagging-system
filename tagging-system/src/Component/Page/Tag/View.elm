@@ -3,12 +3,13 @@ module Tag.View exposing (..)
 import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
 import Contents.View exposing (viewContentDivs)
-import Home.View exposing (viewTag)
-import Html exposing (Html, br, div, text)
-import Html.Attributes exposing (class, style)
+import Html exposing (Html, a, b, br, div, img, input, p, span, text)
+import Html.Attributes exposing (class, href, placeholder, style, type_, value)
+import Html.Events exposing (onInput)
 import Pagination.View exposing (viewPagination)
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
+import TagInfoIcon.View exposing (viewTagInfoIcon)
 
 
 viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
@@ -20,6 +21,7 @@ viewTagPageDiv initialized allTags =
             ]
             [ viewParentTagsDiv initialized.tag allTags
             , viewChildTagsDiv initialized.tag allTags
+            , viewSearchBoxDiv
             ]
          ]
             ++ (viewContentDivs initialized.contents
@@ -31,18 +33,48 @@ viewTagPageDiv initialized allTags =
 
 viewParentTagsDiv : Tag -> List Tag -> Html Msg
 viewParentTagsDiv tag allTags =
-    viewTagsDiv (tag.parentTags |> List.map (tagByIdForced allTags))
+    viewTagsDiv "parent tags" (tag.parentTags |> List.map (tagByIdForced allTags))
 
 
 viewChildTagsDiv : Tag -> List Tag -> Html Msg
 viewChildTagsDiv tag allTags =
-    viewTagsDiv (tag.childTags |> List.map (tagByIdForced allTags))
+    viewTagsDiv "child tags" (tag.childTags |> List.map (tagByIdForced allTags))
 
 
-viewTagsDiv : List Tag -> Html Msg
-viewTagsDiv tags =
-    div [ style "margin-top" "20px" ]
-        (tags
-            |> List.map viewTag
-            |> List.intersperse (br [] [])
-        )
+viewTagsDiv : String -> List Tag -> Html Msg
+viewTagsDiv tagListHeader tags =
+    if List.length tags > 0 then
+        div [ style "margin-top" "20px" ]
+            (b [ style "font-weight" "bolder" ] [ text tagListHeader ]
+                :: (br [] []
+                        :: (tags
+                                |> List.map viewTag
+                                |> List.intersperse (br [] [])
+                           )
+                   )
+            )
+
+    else
+        text ""
+
+
+viewTag : Tag -> Html Msg
+viewTag tag =
+    span []
+        [ a
+            [ class "homepageTagA"
+            , href
+                ("/tags/"
+                    ++ tag.tagId
+                )
+            ]
+            [ text tag.name ]
+        , text " "
+        , viewTagInfoIcon tag
+        ]
+
+
+viewSearchBoxDiv : Html Msg
+viewSearchBoxDiv =
+    div [ style "margin-top" "5px", style "margin-bottom" "10px", style "margin-left" "-5px" ]
+        [ input [ type_ "text", class "contentSearchInput", placeholder "search...", value "", onInput GotSearchInput, style "margin-left" "5px" ] [] ]
