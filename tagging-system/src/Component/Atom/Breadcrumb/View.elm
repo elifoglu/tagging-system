@@ -16,7 +16,7 @@ viewBreadcrumb model =
                     [ viewHomeNavigator False ]
 
                 Initialized initialized ->
-                    [ viewHomeNavigator False
+                    [ viewHomeNavigator (model.homeTagId == initialized.tag.tagId)
                     , viewHeaderText " >> "
                     , viewHeaderText initialized.tag.name
                     ]
