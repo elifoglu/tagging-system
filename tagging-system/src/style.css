@@ -246,14 +246,24 @@ input[type='checkbox'] {
     accent-color: #202020;
 }
 
-.graph {
-    position: fixed;
+.graphForTagPage {
     box-shadow: 0px 0px 5px 1px #202020;
-    z-index: -1;
     width: 275px;
     height: 275px;
     display: block;
     align-items: center;
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+
+.graphForContentPage {
+    box-shadow: 0px 0px 5px 1px #202020;
+    width: 275px;
+    height: 275px;
+    display: block;
+    align-items: center;
+    margin-top: 25px;
+    margin-bottom: 40px;
 }
 
 .graphForGraphPage {
@@ -271,16 +281,6 @@ input[type='checkbox'] {
     margin-top: 805px;
     color: #202020;
     font-size: 11px;
-}
-
-.graphForContent {
-    box-shadow: 0px 0px 5px 1px #202020;
-    width: 275px;
-    height: 275px;
-    display: block;
-    align-items: center;
-    margin-top: 25px;
-    margin-bottom: 40px;
 }
 
 .updateContentLink {

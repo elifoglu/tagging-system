@@ -6,16 +6,15 @@ import Breadcrumb.View exposing (viewBreadcrumb)
 import Browser exposing (Document)
 import Content.View exposing (viewContentDiv)
 import ContentSearch.View exposing (viewSearchContentDiv)
-import Contents.View exposing (viewContentDivs)
 import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
 import ForceDirectedGraphForGraph exposing (viewGraphForGraphPage)
+import ForceDirectedGraphForHome exposing (viewGraph)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Markdown
 import NotFound.View exposing (view404Div)
-import Pagination.View exposing (viewPagination)
-import Tags.View exposing (viewChildTagsDiv, viewParentTagsDiv)
+import Tag.View exposing (viewTagPageDiv)
 import UpdateContent.View exposing (viewUpdateContentDiv)
 import UpdateTag.View exposing (viewUpdateTagDiv)
 
@@ -28,33 +27,24 @@ view model =
             [ div [ class "header" ] <| viewBreadcrumb model
             , div [ class "body" ]
                 (case model.activePage of
-{-                    HomePage allTagsToShow maybeGraphData ->
-                        case maybeGraphData of
-                            Just graphData ->
-                                if graphData.veryFirstMomentOfGraphHasPassed then
-                                    let
-                                        tagsCount =
-                                            tagCountCurrentlyShownOnPage allTagsToShow
+                    TagPage status ->
+                        case status of
+                            NonInitialized _ ->
+                                []
 
-                                        initialMarginTop =
-                                            50
+                            Initialized initialized ->
+                                case initialized.maybeGraphData of
+                                    Just graphData ->
+                                        if graphData.veryFirstMomentOfGraphHasPassed then
+                                            [ div [ class "graphForTagPage", style "margin-top" "50px" ] [ viewGraph graphData.graphData.contentIds graphData.graphModel 0 graphData.contentToColorize ]
+                                            , viewTagPageDiv initialized model.allTags
+                                            ]
 
-                                        heightOfASingleTagAsPx =
-                                            20
+                                        else
+                                            []
 
-                                        marginTopForGraph : Int
-                                        marginTopForGraph =
-                                            initialMarginTop + round (toFloat tagsCount * heightOfASingleTagAsPx)
-                                    in
-                                    [ viewHomePageDiv allTagsToShow
-                                    , div [ class "graph", style "margin-top" (String.fromInt marginTopForGraph ++ "px") ] [ viewGraph graphData.graphData.contentIds graphData.graphModel tagsCount graphData.contentToColorize ]
-                                    ]
-
-                                else
-                                    []
-
-                            Nothing ->
-                                []-}
+                                    Nothing ->
+                                        []
 
                     ContentPage status ->
                         case status of
@@ -65,18 +55,6 @@ view model =
                                 [ viewContentDiv Nothing content
                                 , a [ href ("/update/content/" ++ String.fromInt content.contentId), class "updateContentLink" ] [ text "(update this content)" ]
                                 ]
-
-                    TagPage status ->
-                        case status of
-                            NonInitialized _ ->
-                                []
-
-                            Initialized initialized ->
-                                [ viewParentTagsDiv initialized.tag, viewChildTagsDiv initialized.tag ]
-                                    ++ (viewContentDivs initialized.contents
-                                            ++ [ viewPagination initialized.tag initialized.pagination
-                                               ]
-                                       )
 
                     CreateContentPage status ->
                         case status of

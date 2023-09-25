@@ -1,6 +1,5 @@
 module Home.View exposing (..)
 
-import App.Model exposing (IconInfo, Model, Page(..))
 import App.Msg exposing (Msg(..))
 import Html exposing (Html, a, br, div, img, input, span, text)
 import Html.Attributes exposing (class, href, placeholder, src, style, type_, value)

@@ -14,7 +14,7 @@ import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import ForceDirectedGraphForContent exposing (graphSubscriptionsForContent, initGraphModelForContent)
 import ForceDirectedGraphForGraph exposing (graphSubscriptionsForGraph, initGraphModelForGraphPage)
-import ForceDirectedGraphForHome exposing (initGraphModel)
+import ForceDirectedGraphForHome exposing (graphSubscriptions, initGraphModel)
 import ForceDirectedGraphUtil exposing (updateGraph)
 import List
 import Pagination.Model exposing (Pagination)
@@ -685,22 +685,26 @@ update msg model =
 
         otherMsg ->
             case model.activePage of
-{- TAG PAGE İÇİN GÜNCELLENECEK TODOTODO
-                HomePage allTags maybeGraphData ->
-                    case maybeGraphData of
-                        Just gd ->
-                            let
-                                newGraphData =
-                                    Just (GraphData gd.graphData (updateGraph otherMsg gd.graphModel) True gd.contentToColorize)
+                TagPage initializable ->
+                     case initializable of
+                         NonInitialized _ ->
+                             ( model, Cmd.none)
 
-                                newHomePage =
-                                    HomePage allTags newGraphData
-                            in
-                            ( { model | activePage = newHomePage }, Cmd.none )
+                         Initialized i ->
+                             case i.maybeGraphData of
+                                 Just gd ->
+                                     let
+                                         newGraphData =
+                                             Just (GraphData gd.graphData (updateGraph otherMsg gd.graphModel) True gd.contentToColorize)
 
-                        Nothing ->
-                            ( model, Cmd.none )
--}
+                                         newTagPage =
+                                             TagPage (Initialized (InitializedTagPageModel i.tag i.contents i.pagination newGraphData))
+                                     in
+                                     ( { model | activePage = newTagPage }, Cmd.none )
+
+                                 Nothing ->
+                                     ( model, Cmd.none)
+
 
                 GraphPage maybeGraphData ->
                     case maybeGraphData of
@@ -744,19 +748,19 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     case model.activePage of
-{-
-        HomePage allTags maybeGraphData ->
-            case maybeGraphData of
-                Just gd ->
-                    let
-                        totalTagCountCurrentlyShownOnPage =
-                            tagCountCurrentlyShownOnPage allTags
-                    in
-                    graphSubscriptions gd.graphModel totalTagCountCurrentlyShownOnPage
+        TagPage initializable ->
+             case initializable of
+                 NonInitialized _ ->
+                     Sub.none
 
-                Nothing ->
-                    Sub.none
--}
+                 Initialized i ->
+                     case i.maybeGraphData of
+                         Just gd ->
+                             graphSubscriptions gd.graphModel 0
+
+                         Nothing ->
+                             Sub.none
+
 
         GraphPage maybeGraphData ->
             case maybeGraphData of

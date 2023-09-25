@@ -2,14 +2,12 @@ module UpdateContent.View exposing (viewUpdateContentDiv)
 
 import App.Model exposing (CreateContentPageModel, Model, UpdateContentPageData)
 import App.Msg exposing (ContentInputType(..), Msg(..), PreviewContentModel(..))
-import Component.Page.Util exposing (flipBoolAndToStr)
 import Content.Model exposing (Content)
 import Content.View exposing (viewContentDiv)
 import DataResponse exposing (ContentID)
-import Html exposing (Html, br, button, div, hr, input, label, span, text, textarea)
-import Html.Attributes exposing (checked, name, placeholder, style, type_, value)
-import Html.Events exposing (on, onClick, onInput)
-import Json.Decode as Decode
+import Html exposing (Html, br, button, div, hr, input, text, textarea)
+import Html.Attributes exposing (placeholder, style, type_, value)
+import Html.Events exposing (onClick, onInput)
 
 
 viewUpdateContentDiv : UpdateContentPageData -> Maybe Content -> ContentID -> Html Msg

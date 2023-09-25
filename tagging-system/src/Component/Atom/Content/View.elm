@@ -23,7 +23,7 @@ viewContentDiv textToHighlight content =
 
             else if graphData.veryFirstMomentOfGraphHasPassed then
                 div []
-                    [ div [ class "graphForContent" ] [ viewGraphForContent content.contentId graphData.graphData.contentIds graphData.graphModel graphData.contentToColorize ]
+                    [ div [ class "graphForContentPage" ] [ viewGraphForContent content.contentId graphData.graphData.contentIds graphData.graphModel graphData.contentToColorize ]
                     , viewContentDivWithoutGraph textToHighlight content
                     ]
 

@@ -2,12 +2,10 @@ module CreateContent.View exposing (viewCreateContentDiv)
 
 import App.Model exposing (CreateContentPageModel, Model)
 import App.Msg exposing (ContentInputType(..), Msg(..), PreviewContentModel(..))
-import Component.Page.Util exposing (flipBoolAndToStr)
 import Content.View exposing (viewContentDiv)
-import Html exposing (Html, br, button, div, hr, input, label, span, text, textarea)
-import Html.Attributes exposing (checked, name, placeholder, style, type_, value)
-import Html.Events exposing (on, onClick, onInput)
-import Json.Decode as Decode
+import Html exposing (Html, br, button, div, hr, input, span, text, textarea)
+import Html.Attributes exposing (placeholder, style, type_, value)
+import Html.Events exposing (onClick, onInput)
 
 
 viewCreateContentDiv : CreateContentPageModel -> Html Msg
