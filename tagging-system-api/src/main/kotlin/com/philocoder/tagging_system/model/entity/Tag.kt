@@ -61,7 +61,7 @@ data class Tag(
                 name = t.name,
                 parentTags = t.parentTags,
                 childTags = parentToChildTagMap[t.tagId]!!,
-                infoContentId = null
+                infoContentId = t.infoContentId
             )
         }
 
@@ -70,7 +70,7 @@ data class Tag(
                 tagId = t.tagId,
                 name = t.name,
                 parentTags = t.parentTags,
-                infoContentId = null
+                infoContentId = t.infoContentId
             )
         }
     }
