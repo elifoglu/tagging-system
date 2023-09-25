@@ -49,7 +49,9 @@ todo
 
 ### Data file ###
 data.json
+no-references-and-graphs.json
 
 ### Data push and pull scripts ###
 push_data.sh
 pull_data.sh
+no_refs_push_data.sh
