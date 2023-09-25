@@ -40,10 +40,6 @@ tagCountCurrentlyShownOnPage allTags =
         tagsCount
 
 
-
--- if all contents are read, we show an info message to user about it and its height is exactly one-tag-view-long. so, this is just a correction for "user read all blog/all contents" case
-
-
 viewTag : Tag -> Html Msg
 viewTag tag =
     span []
