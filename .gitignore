@@ -45,12 +45,10 @@ tagging-system-api/.todo
 
 
 ### Todo file ###
-tagging-system-api/todo
+todo
 
 ### Data file ###
-tagging-system-api/data.json
+data.json
 
 ### Data push script ###
-tagging-system-api/push_data.sh
-tagging-system-api/
-
+push_data.sh
