@@ -23,7 +23,7 @@ viewTagsDiv tagIds =
             |> List.intersperse (br [] [])
           )
 {-        (tag.parentTags
-            |> List.map (viewContentDiv dataToFadeContent Nothing)
+            |> List.map (viewContentDiv Nothing)
             |> List.intersperse (hr [] [])
         )-}
 

@@ -1,10 +1,9 @@
 module Content.View exposing (viewContentDiv)
 
-import App.Model exposing (MaybeContentFadeOutData, MaybeTextToHighlight)
+import App.Model exposing (MaybeTextToHighlight)
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content, GotGraphData)
 import Content.Util exposing (maybeDateText, maybeTagsOfContent)
-import DataResponse exposing (ContentID)
 import ForceDirectedGraphForContent exposing (viewGraphForContent)
 import Html exposing (Html, a, div, img, p, span, text)
 import Html.Attributes exposing (class, href, src, style, title)
@@ -12,29 +11,29 @@ import Markdown exposing (defaultOptions)
 import Tag.Model exposing (Tag)
 
 
-viewContentDiv : MaybeContentFadeOutData -> MaybeTextToHighlight -> Content -> Html Msg
-viewContentDiv dataToFadeContent textToHighlight content =
+viewContentDiv : MaybeTextToHighlight -> Content -> Html Msg
+viewContentDiv textToHighlight content =
     case content.graphDataIfGraphIsOn of
         Nothing ->
-            viewContentDivWithoutGraph dataToFadeContent textToHighlight content
+            viewContentDivWithoutGraph textToHighlight content
 
         Just graphData ->
             if List.isEmpty graphData.graphData.contentIds then
-                viewContentDivWithoutGraph dataToFadeContent textToHighlight content
+                viewContentDivWithoutGraph textToHighlight content
 
             else if graphData.veryFirstMomentOfGraphHasPassed then
                 div []
                     [ div [ class "graphForContent" ] [ viewGraphForContent content.contentId graphData.graphData.contentIds graphData.graphModel graphData.contentToColorize ]
-                    , viewContentDivWithoutGraph dataToFadeContent textToHighlight content
+                    , viewContentDivWithoutGraph textToHighlight content
                     ]
 
             else
                 text ""
 
 
-viewContentDivWithoutGraph : MaybeContentFadeOutData -> MaybeTextToHighlight -> Content -> Html Msg
-viewContentDivWithoutGraph dataToFadeContent textToHighlight content =
-    p [ style "opacity" (getOpacityLevel content.contentId dataToFadeContent) ]
+viewContentDivWithoutGraph : MaybeTextToHighlight -> Content -> Html Msg
+viewContentDivWithoutGraph textToHighlight content =
+    p [ ]
         [ div []
             [ div [ class "title" ] [ viewContentTitle content.title ]
             , viewRefsTextOfContent content
@@ -44,19 +43,6 @@ viewContentDivWithoutGraph dataToFadeContent textToHighlight content =
         , viewContentInfoDiv content
         ]
 
-
-getOpacityLevel : ContentID -> MaybeContentFadeOutData -> String
-getOpacityLevel contentId maybeContentFadeData =
-    case maybeContentFadeData of
-        Just data ->
-            if contentId == data.contentIdToFade then
-                String.fromFloat data.opacityLevel
-
-            else
-                "1"
-
-        Nothing ->
-            "1"
 
 
 viewContentTitle : Maybe String -> Html Msg

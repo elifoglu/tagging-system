@@ -1,4 +1,4 @@
-module App.Model exposing (BioPageModel, ContentFadeOutData, ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeContentFadeOutData, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, totalPageCountRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+module App.Model exposing (BioPageModel, ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, setCreateContentPageModel, setUpdateContentPageModel, totalPageCountRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 
 import BioGroup.Model exposing (BioGroup)
 import BioItem.Model exposing (BioItem)
@@ -19,7 +19,6 @@ type alias Model =
     , allTags : List Tag
     , activePage : Page
     , localStorage : LocalStorage
-    , maybeContentFadeOutData : MaybeContentFadeOutData
     , waitingForContentCheckResponse : Bool
     , timeZone : Time.Zone
     }
@@ -35,18 +34,6 @@ type alias OpacityLevel =
 
 type alias ContentToAddToBottom =
     Maybe GotContent
-
-
-type alias ContentFadeOutData =
-    { opacityLevel : OpacityLevel
-    , contentIdToFade : ContentID
-    , newPageCountToSet : Int
-    , contentToAddToBottom : ContentToAddToBottom
-    }
-
-
-type alias MaybeContentFadeOutData =
-    Maybe ContentFadeOutData
 
 
 type alias MaybeTextToHighlight =

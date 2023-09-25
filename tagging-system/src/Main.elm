@@ -44,7 +44,7 @@ init flags url key =
             pageBy url
 
         model =
-            Model "log" key [] page LocalStorage Nothing False Time.utc
+            Model "log" key [] page LocalStorage False Time.utc
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -795,17 +795,6 @@ subscriptions model =
 
                 NonInitialized _ ->
                     Sub.none
-
-        TagPage _ ->
-            let
-                subForContentFadeOut =
-                    if model.maybeContentFadeOutData /= Nothing then
-                        Time.every 80 Tick
-
-                    else
-                        Sub.none
-            in
-            subForContentFadeOut
 
         _ ->
             Sub.none

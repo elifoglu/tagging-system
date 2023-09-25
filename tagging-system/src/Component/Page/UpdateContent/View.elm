@@ -28,7 +28,7 @@ viewUpdateContentDiv updateContentPageData maybeContentToPreview contentId =
             , hr [] []
             , case maybeContentToPreview of
                 Just content ->
-                    viewContentDiv Nothing Nothing content
+                    viewContentDiv Nothing content
 
                 Nothing ->
                     text "invalid content, or no content at all"

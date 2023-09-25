@@ -26,7 +26,7 @@ viewSearchContentDiv searchKeyword contents =
             ]
         , div [ style "margin-top" "20px" ]
             (contents
-                |> List.map (viewContentDiv Nothing (Just searchKeyword))
+                |> List.map (viewContentDiv (Just searchKeyword))
                 |> List.intersperse (hr [] [])
             )
         ]

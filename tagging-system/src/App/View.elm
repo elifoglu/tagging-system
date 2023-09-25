@@ -64,7 +64,7 @@ view model =
                                 []
 
                             Initialized content ->
-                                [ viewContentDiv Nothing Nothing content
+                                [ viewContentDiv Nothing content
                                 , a [ href ("/update/content/" ++ String.fromInt content.contentId), class "updateContentLink" ] [ text "(update this content)" ]
                                 ]
 
@@ -75,7 +75,7 @@ view model =
 
                             Initialized initialized ->
                                 [ viewParentTagsDiv initialized.tag, viewChildTagsDiv initialized.tag ]
-                                    ++ (viewContentDivs model.maybeContentFadeOutData initialized.contents
+                                    ++ (viewContentDivs initialized.contents
                                             ++ [ viewPagination initialized.tag initialized.pagination
                                                ]
                                        )
