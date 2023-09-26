@@ -5,19 +5,16 @@ import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.AddAllDataRequest
 import com.philocoder.tagging_system.model.request.GetAllDataResponse
 import com.philocoder.tagging_system.repository.DataHolder
-import com.philocoder.tagging_system.service.ContentService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 
 @RestController
 class DataController(
-    private val dataHolder: DataHolder,
-    private val contentService: ContentService
+    private val dataHolder: DataHolder
 ) {
 
     @CrossOrigin
