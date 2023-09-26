@@ -53,15 +53,14 @@ hr {
     background: rgba(0, 0, 0, 0.15);
 }
 
+.searchBoxInHeader {
+    padding: 5px;
+    display: inline-block;
+}
+
 .homeNavigator {
     padding: 10px;
-    border: 0;
-    border-radius: 2px;
-    outline: none;
-    appearance: none;
-    text-align: center;
     display: inline-block;
-    vertical-align: baseline;
     font-size: 15px;
     letter-spacing: 0.5px;
     word-spacing: 0.1px;
@@ -124,34 +123,6 @@ a {
 
 .tagLink:hover {
     color: #505050;
-}
-
-.paginationButton {
-    min-width: 27px;
-    margin: 2px;
-    padding: 4px;
-    border: none;
-    border-radius: 2px;
-    color: #ffffff;
-    cursor: pointer;
-    background-color: #202020;
-}
-
-.paginationButton:hover {
-    color: #c2c2c2;
-}
-
-.currentPaginationButton {
-    background: transparent;
-    color: #202020;
-    min-width: 0;
-    cursor: default;
-    font-size: 20px;
-    padding: 2px;
-}
-
-.currentPaginationButton:hover {
-    color: #202020;
 }
 
 .navToContent {

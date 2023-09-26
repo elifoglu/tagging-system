@@ -4,11 +4,9 @@ import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
 import Content.View exposing (viewContentDiv)
-import Html exposing (Html, a, b, br, div, hr, img, input, span, text)
-import Html.Attributes exposing (class, href, placeholder, src, style, type_, value)
-import Html.Events exposing (onInput)
+import Html exposing (Html, a, b, br, div, hr, img, span, text)
+import Html.Attributes exposing (class, href, src, style)
 import Markdown exposing (defaultOptions)
-import Pagination.View exposing (viewPagination)
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
 import TagInfoIcon.View exposing (viewTagInfoIcon)
@@ -28,7 +26,6 @@ viewLeftFrame initialized allTags =
         [ div [ style "margin-top" "20px", style "margin-left" "20px", style "font-size" "14px" ] [ b [] [ text ("#" ++ initialized.tag.name) ] ]
         , viewTagsDiv initialized.tag.parentTags allTags "/up.png"
         , viewTagsDiv initialized.tag.childTags allTags "/down.png"
-        , viewSearchBoxDiv
         ]
 
 
@@ -53,7 +50,6 @@ viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
     div [ class "rightFrameOnTagPage" ]
         [ viewContentsDiv initialized.contents
-        , viewPagination initialized.tag initialized.pagination
         ]
 
 
@@ -68,7 +64,7 @@ viewContentsDiv contents =
                     contentTexts =
                         contents
                             |> List.map (\c -> " [•](/contents/" ++ String.fromInt c.contentId ++ ") " ++ c.text)
-                            |> List.intersperse "  \n\n"
+                            |> List.intersperse "  \n"
                  in
                  String.concat contentTexts
                 )
@@ -96,9 +92,3 @@ viewTag tag =
         , text " "
         , viewTagInfoIcon tag
         ]
-
-
-viewSearchBoxDiv : Html Msg
-viewSearchBoxDiv =
-    div [ style "margin-top" "20px", style "margin-left" "25px" ]
-        [ input [ type_ "text", class "contentSearchInput", placeholder "search...", value "", onInput GotSearchInput ] [] ]

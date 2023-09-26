@@ -21,10 +21,3 @@ a:hover {
 .tagLink:hover {
     color: white;
 }
-
-.paginationButton {
-    color: white;
-}
-.paginationButton:hover {
-    color: lightgray;
-}

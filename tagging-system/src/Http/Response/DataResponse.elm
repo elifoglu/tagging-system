@@ -9,7 +9,7 @@ type alias InitialDataResponse =
 
 
 type alias ContentsResponse =
-    { totalPageCount : Int, contents : List GotContent }
+    { contents : List GotContent }
 
 
 type alias GotTag =
@@ -48,8 +48,7 @@ initialDataResponseDecoder =
 
 contentsResponseDecoder : Decoder ContentsResponse
 contentsResponseDecoder =
-    map2 ContentsResponse
-        (field "totalPageCount" int)
+    map ContentsResponse
         (field "contents" (D.list contentDecoder))
 
 

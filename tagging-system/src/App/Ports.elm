@@ -28,11 +28,7 @@ sendTitle model =
                     Cmd.none
 
                 Initialized initialized ->
-                    if initialized.pagination.currentPage == 1 then
-                        title (initialized.tag.name ++ " - tagging system")
-
-                    else
-                        title (initialized.tag.name ++ " " ++ " (" ++ String.fromInt initialized.pagination.currentPage ++ ") - tagging system")
+                    title (initialized.tag.name ++ " - tagging system")
 
         CreateContentPage _ ->
             title "create new content - tagging system"

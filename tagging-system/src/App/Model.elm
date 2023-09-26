@@ -1,10 +1,9 @@
-module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, TagIdInputType(..))
+module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, GotContent)
 import Json.Encode as Encode
-import Pagination.Model exposing (Pagination)
 import Tag.Model exposing (Tag)
 import Time
 
@@ -70,7 +69,6 @@ type TagIdInputType
 type alias InitializedTagPageModel =
     { tag : Tag
     , contents : List Content
-    , pagination : Pagination
     }
 
 
@@ -109,12 +107,6 @@ type alias GetContentRequestModel =
 
 
 type alias GetTagContentsRequestModel =
-    { tagId : String
-    , page : Maybe Int
-    }
-
-
-type alias TotalPageCountRequestModel =
     { tagId : String
     }
 
@@ -181,14 +173,6 @@ getTagContentsRequestModelEncoder : GetTagContentsRequestModel -> Encode.Value
 getTagContentsRequestModelEncoder model =
     Encode.object
         [ ( "tagId", Encode.string model.tagId )
-        , ( "page"
-          , case model.page of
-                Just page ->
-                    Encode.int page
-
-                Nothing ->
-                    Encode.int 1
-          )
         ]
 
 

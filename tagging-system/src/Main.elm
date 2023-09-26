@@ -12,7 +12,6 @@ import Component.Page.Util exposing (tagsNotLoaded)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import List
-import Pagination.Model exposing (Pagination)
 import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 import Tag.Util exposing (tagById)
 import Task
@@ -68,7 +67,7 @@ getCmdToSendByPage model =
                             in
                             case tagById model.allTags tagId of
                                 Just tag ->
-                                    getTagContents tag initializableTagPageModel.maybePage
+                                    getTagContents tag
 
                                 Nothing ->
                                     Cmd.none
@@ -205,15 +204,12 @@ update msg model =
                                         currentPage =
                                             Maybe.withDefault 1 nonInitialized.maybePage
 
-                                        pagination =
-                                            Pagination currentPage contentsResponse.totalPageCount
-
                                         contents =
                                             List.map (gotContentToContent model) contentsResponse.contents
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag contents pagination)
+                                                Initialized (InitializedTagPageModel tag contents)
 
                                         newModel =
                                             { model | activePage = newPage }

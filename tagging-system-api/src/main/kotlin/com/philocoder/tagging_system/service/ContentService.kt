@@ -23,13 +23,11 @@ class ContentService(
         val tag: Tag = tagRepository.findEntity(tagIdToUse)
             ?: return ContentsResponse.empty
         val contentResponses = repository
-            .getContentsForTag(req.page, req.size, tag)
+            .getContentsForTag(tag)
             .map { ContentResponse.createWith(it) }
         val contentCount =
             repository.getContentCount(tag.name)
-        val totalPageCount =
-            if (contentCount % req.size == 0) contentCount / req.size else (contentCount / req.size) + 1
-        return ContentsResponse(totalPageCount, contentResponses)
+        return ContentsResponse(contentResponses)
     }
 
     fun getContentsResponseByKeywordSearch(

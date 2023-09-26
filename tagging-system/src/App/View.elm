@@ -11,6 +11,7 @@ import HomeNavigator.View exposing (viewHomeNavigator)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import NotFound.View exposing (view404Div)
+import SearchBox.View exposing (viewSearchBoxDiv)
 import Tag.View exposing (viewTagPageDiv)
 import UpdateContent.View exposing (viewUpdateContentDiv)
 import UpdateTag.View exposing (viewUpdateTagDiv)
@@ -21,7 +22,7 @@ view model =
     { title = "tagging system"
     , body =
         [ div []
-            [ div [ class "header" ] [ viewHomeNavigator model ]
+            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage ]
             , div [ class "body" ]
                 (case model.activePage of
                     TagPage status ->

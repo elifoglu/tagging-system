@@ -1,6 +1,6 @@
 module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 
-import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, TotalPageCountRequestModel, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..), PreviewContentModel(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder)
 import Http
@@ -27,13 +27,12 @@ getInitialData =
         }
 
 
-getTagContents : Tag -> Maybe Int -> Cmd Msg
-getTagContents tag maybePage =
+getTagContents : Tag -> Cmd Msg
+getTagContents tag =
     let
         getTagContentsRequestModel : GetTagContentsRequestModel
         getTagContentsRequestModel =
             GetTagContentsRequestModel tag.tagId
-                maybePage
     in
     Http.post
         { url = apiURL ++ "contents-of-tag"
