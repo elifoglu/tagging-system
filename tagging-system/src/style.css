@@ -83,8 +83,31 @@ hr {
     background: #c9c9c9;
 }
 
+.leftFrameOnTagPage {
+    width: 15%;
+    float: left;
+    margin-left: 10px;
+}
 
-.tagPageTagsFont {
+.rightFrameOnTagPage {
+    width: 60%;
+    float: left;
+}
+
+.tagsDiv {
+    display: flex;
+    margin-top: 20px;
+}
+
+.tagsDivChild {
+    flex: 1;
+}
+
+.tagsDivFirstChild {
+    flex: 0.2;
+}
+
+.leftFrameTagsFont {
     font-size: 13px;
     letter-spacing: 0.5px;
     word-spacing: 0.2px;
@@ -191,6 +214,12 @@ input:focus {
     width: 15px;
 }
 
+.upAndDownIcons {
+    width: 13px;
+    vertical-align: middle;
+    margin-bottom: 2px;
+}
+
 .searchContentInfoText {
     padding-top: -5px;
     padding-left: 5px;
@@ -246,19 +275,4 @@ input[type='checkbox'] {
     letter-spacing: 0.5px;
     word-spacing: 0.2px;
     margin: 2px;
-}
-
-.parentFrameOnTagPage {
-    border: 3px solid #fff;
-}
-
-.leftFrameOnTagPage {
-    width: 12%;
-    float: left;
-    margin-left: 10px;
-}
-
-.rightFrameOnTagPage {
-    width: 70%;
-    float: left;
 }

@@ -7,11 +7,11 @@ import Html exposing (Html, div, hr)
 import Html.Attributes exposing (style)
 
 
-viewContentDivs : List Content -> List (Html Msg)
+viewContentDivs : List Content -> Html Msg
 viewContentDivs contents =
-    [ div [ style "margin-top" "20px" ]
+    div [ ]
         (contents
             |> List.map (viewContentDiv Nothing)
             |> List.intersperse (hr [] [])
         )
-    ]
+
