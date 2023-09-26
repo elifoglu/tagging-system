@@ -2,9 +2,7 @@ module Tag.View exposing (..)
 
 import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
-import Content.Model exposing (Content)
-import Content.View exposing (viewContentDiv)
-import Html exposing (Html, a, b, br, div, hr, img, span, text)
+import Html exposing (Html, a, b, br, div, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
 import Markdown exposing (defaultOptions)
 import Tag.Model exposing (Tag)
@@ -49,26 +47,10 @@ viewTagsDiv tagIds allTags iconSrc =
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
     div [ class "rightFrameOnTagPage" ]
-        [ viewContentsDiv initialized.contents initialized.condensedContentText
+        [ Markdown.toHtmlWith { defaultOptions | sanitize = False }
+            [ class "markdownDiv contentFont" ]
+            initialized.condensedContentText
         ]
-
-
-viewContentsDiv : List Content -> String -> Html Msg
-viewContentsDiv contents condensedContentText =
-    if "condensedView" == "condensedView" then
-        div []
-            [ Markdown.toHtmlWith { defaultOptions | sanitize = False }
-                [ class "markdownDiv contentFont" ]
-                condensedContentText
-            ]
-
-    else
-        div []
-            (contents
-                |> List.map (viewContentDiv Nothing)
-                |> List.intersperse (hr [] [])
-            )
-
 
 viewTag : Tag -> Html Msg
 viewTag tag =
