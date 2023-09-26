@@ -3,9 +3,8 @@ package com.philocoder.tagging_system.controller
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.request.*
 import com.philocoder.tagging_system.model.response.ContentResponse
-import com.philocoder.tagging_system.model.response.ContentsResponse
+import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
-import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.TagRepository
 import com.philocoder.tagging_system.service.ContentService
@@ -17,16 +16,13 @@ class ContentController(
     private val contentRepository: ContentRepository,
     private val tagRepository: TagRepository,
     private val service: ContentService,
-    private val dataHolder: DataHolder
 ) {
 
     @CrossOrigin
     @PostMapping("/contents-of-tag")
-    fun get(@RequestBody req: ContentsOfTagRequest): ContentsResponse {
+    fun get(@RequestBody req: ContentsOfTagRequest): TagTextResponse {
         return service.getContentsResponse(req)
     }
-
-
 
 
     @CrossOrigin

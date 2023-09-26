@@ -25,12 +25,5 @@ data class TagResponse(
                 contentCount = repo.getContentCount(tag.name),
                 infoContentId = tag.infoContentId
             )
-
-        fun createForAllContentsMode(
-            tag: Tag,
-            repo: ContentRepository
-        ): TagResponse =
-            create(tag, repo)
-
     }
 }

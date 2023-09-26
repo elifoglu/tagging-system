@@ -1,4 +1,4 @@
-module DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent, GotContentDate, GotTag, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
+module DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent, GotContentDate, GotTag, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder, GotTagTextPart)
 
 import Json.Decode as D exposing (Decoder, field, int, map, map2, map5, map6, maybe, string)
 
@@ -9,8 +9,11 @@ type alias InitialDataResponse =
 
 
 type alias TagDataResponse =
-    { contents : List GotContent
-    , condensedContentText : String }
+    { textParts : List GotTagTextPart }
+
+type alias GotTagTextPart =
+    { tag : GotTag
+    , contents : List GotContent }
 
 
 type alias GotTag =
@@ -49,9 +52,8 @@ initialDataResponseDecoder =
 
 tagDataResponseDecoder : Decoder TagDataResponse
 tagDataResponseDecoder =
-    map2 TagDataResponse
-        (field "contents" (D.list contentDecoder))
-        (field "condensedContentText" string)
+    map TagDataResponse
+        (field "textParts" (D.list tagTextPartDecoder))
 
 
 contentSearchResponseDecoder : Decoder ContentSearchResponse
@@ -79,6 +81,13 @@ contentDecoder =
         (field "contentId" int)
         (field "content" string)
         (field "tags" (D.list string))
+
+
+tagTextPartDecoder : Decoder GotTagTextPart
+tagTextPartDecoder =
+    map2 GotTagTextPart
+        (field "tag" tagDecoder)
+        (field "contents" (D.list contentDecoder))
 
 
 

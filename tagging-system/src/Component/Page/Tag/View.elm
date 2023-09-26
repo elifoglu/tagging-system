@@ -4,15 +4,15 @@ import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
 import Html exposing (Html, a, b, br, div, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
-import Markdown exposing (defaultOptions)
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
+import Tag.TagTextUtil exposing (viewTagText)
 import TagInfoIcon.View exposing (viewTagInfoIcon)
 
 
 viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
 viewTagPageDiv initialized allTags =
-    div []
+    div [ style "margin-top" "27px"]
         [ viewLeftFrame initialized allTags
         , viewRightFrame initialized
         ]
@@ -21,7 +21,7 @@ viewTagPageDiv initialized allTags =
 viewLeftFrame : InitializedTagPageModel -> List Tag -> Html Msg
 viewLeftFrame initialized allTags =
     div [ class "leftFrameOnTagPage leftFrameTagsFont" ]
-        [ div [ style "margin-top" "20px", style "margin-left" "20px", style "font-size" "14px" ] [ b [] [ text ("#" ++ initialized.tag.name) ] ]
+        [ div [ style "margin-left" "20px", style "font-size" "14px" ] [ b [] [ text ("#" ++ initialized.tag.name) ] ]
         , viewTagsDiv initialized.tag.parentTags allTags "/up.png"
         , viewTagsDiv initialized.tag.childTags allTags "/down.png"
         ]
@@ -47,9 +47,7 @@ viewTagsDiv tagIds allTags iconSrc =
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
     div [ class "rightFrameOnTagPage" ]
-        [ Markdown.toHtmlWith { defaultOptions | sanitize = False }
-            [ class "markdownDiv contentFont" ]
-            initialized.condensedContentText
+        [ viewTagText initialized.tag initialized.textParts
         ]
 
 viewTag : Tag -> Html Msg

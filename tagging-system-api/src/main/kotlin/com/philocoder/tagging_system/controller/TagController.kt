@@ -22,7 +22,7 @@ class TagController(
         val allTags: List<Tag> = tagRepository.getAllTags()
         return InitialDataResponse(
             allTags = allTags.map {
-                TagResponse.createForAllContentsMode(
+                TagResponse.create(
                     it,
                     contentRepository
                 )

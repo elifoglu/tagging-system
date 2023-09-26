@@ -2,9 +2,10 @@ module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTa
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
-import DataResponse exposing (ContentID, GotContent)
+import DataResponse exposing (ContentID, GotContent, GotTagTextPart)
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
+import TagTextPart.Model exposing (TagTextPart)
 import Time
 
 
@@ -67,8 +68,7 @@ type TagIdInputType
 
 type alias InitializedTagPageModel =
     { tag : Tag
-    , contents : List Content
-    , condensedContentText: String
+    , textParts : List TagTextPart
     }
 
 

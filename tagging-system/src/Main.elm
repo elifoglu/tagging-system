@@ -14,6 +14,7 @@ import DataResponse exposing (ContentID)
 import List
 import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, postNewContent, previewContent, updateExistingContent, updateExistingTag)
 import Tag.Util exposing (tagById)
+import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
 import Time
 import Url
@@ -201,12 +202,12 @@ update msg model =
                             case status of
                                 NonInitialized _ ->
                                     let
-                                        contents =
-                                            List.map (gotContentToContent model) tagDataResponse.contents
+                                        tagTextParts = List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textParts
+
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag contents tagDataResponse.condensedContentText)
+                                                Initialized (InitializedTagPageModel tag tagTextParts)
 
                                         newModel =
                                             { model | activePage = newPage }
