@@ -1,7 +1,6 @@
 package com.philocoder.tagging_system.service
 
 import arrow.core.Tuple2
-import arrow.core.extensions.list.monadLogic.interleave
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.repository.ContentRepository
