@@ -2,12 +2,12 @@ module App.View exposing (view)
 
 import App.Model exposing (..)
 import App.Msg exposing (Msg(..))
-import Breadcrumb.View exposing (viewBreadcrumb)
 import Browser exposing (Document)
 import Content.View exposing (viewContentDiv)
 import ContentSearch.View exposing (viewSearchContentDiv)
 import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
+import HomeNavigator.View exposing (viewHomeNavigator)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import NotFound.View exposing (view404Div)
@@ -21,7 +21,7 @@ view model =
     { title = "tagging system"
     , body =
         [ div []
-            [ div [ class "header" ] <| viewBreadcrumb model
+            [ div [ class "header" ] [ viewHomeNavigator model ]
             , div [ class "body" ]
                 (case model.activePage of
                     TagPage status ->

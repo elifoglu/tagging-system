@@ -2,8 +2,9 @@ module Tag.View exposing (..)
 
 import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
-import Contents.View exposing (viewContentDivs)
-import Html exposing (Html, a, b, br, div, img, input, span, text)
+import Content.Model exposing (Content)
+import Content.View exposing (viewContentDiv)
+import Html exposing (Html, a, b, br, div, hr, img, input, span, text)
 import Html.Attributes exposing (class, href, placeholder, src, style, type_, value)
 import Html.Events exposing (onInput)
 import Pagination.View exposing (viewPagination)
@@ -23,7 +24,8 @@ viewTagPageDiv initialized allTags =
 viewLeftFrame : InitializedTagPageModel -> List Tag -> Html Msg
 viewLeftFrame initialized allTags =
     div [ class "leftFrameOnTagPage leftFrameTagsFont" ]
-        [ viewTagsDiv initialized.tag.parentTags allTags "/up.png"
+        [ div [ style "margin-top" "20px", style "margin-left" "20px", style "font-size" "14px" ] [ b [] [ text ("#" ++ initialized.tag.name) ] ]
+        , viewTagsDiv initialized.tag.parentTags allTags "/up.png"
         , viewTagsDiv initialized.tag.childTags allTags "/down.png"
         , viewSearchBoxDiv
         ]
@@ -49,7 +51,11 @@ viewTagsDiv tagIds allTags iconSrc =
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
     div [ class "rightFrameOnTagPage" ]
-        [ viewContentDivs initialized.contents
+        [ div []
+            (initialized.contents
+                |> List.map (viewContentDiv Nothing)
+                |> List.intersperse (hr [] [])
+            )
         , viewPagination initialized.tag initialized.pagination
         ]
 
