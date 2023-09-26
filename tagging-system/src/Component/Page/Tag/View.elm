@@ -7,6 +7,7 @@ import Content.View exposing (viewContentDiv)
 import Html exposing (Html, a, b, br, div, hr, img, input, span, text)
 import Html.Attributes exposing (class, href, placeholder, src, style, type_, value)
 import Html.Events exposing (onInput)
+import Markdown exposing (defaultOptions)
 import Pagination.View exposing (viewPagination)
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
@@ -51,13 +52,34 @@ viewTagsDiv tagIds allTags iconSrc =
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
     div [ class "rightFrameOnTagPage" ]
-        [ div []
-            (initialized.contents
+        [ viewContentsDiv initialized.contents
+        , viewPagination initialized.tag initialized.pagination
+        ]
+
+
+viewContentsDiv : List Content -> Html Msg
+viewContentsDiv contents =
+    if "condensedView" == "condensedView" then
+        div []
+            [ Markdown.toHtmlWith { defaultOptions | sanitize = False }
+                [ class "markdownDiv contentFont" ]
+                (let
+                    contentTexts : List String
+                    contentTexts =
+                        contents
+                            |> List.map (\c -> " [•](/contents/" ++ String.fromInt c.contentId ++ ") " ++ c.text)
+                            |> List.intersperse "  \n\n"
+                 in
+                 String.concat contentTexts
+                )
+            ]
+
+    else
+        div []
+            (contents
                 |> List.map (viewContentDiv Nothing)
                 |> List.intersperse (hr [] [])
             )
-        , viewPagination initialized.tag initialized.pagination
-        ]
 
 
 viewTag : Tag -> Html Msg

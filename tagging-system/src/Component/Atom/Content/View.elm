@@ -12,14 +12,13 @@ import Tag.Model exposing (Tag)
 
 viewContentDiv : MaybeTextToHighlight -> Content -> Html Msg
 viewContentDiv textToHighlight content =
-                p [ ]
-                    [ div []
-                        [ div [ class "title" ] [ viewContentTitle content.title ]
-                        , viewMarkdownTextOfContent content textToHighlight
-                        ]
-                    , viewContentInfoDiv content
-                    ]
-
+    p []
+        [ div []
+            [ div [ class "title" ] [ viewContentTitle content.title ]
+            , viewMarkdownTextOfContent content textToHighlight
+            ]
+        , viewContentInfoDiv content
+        ]
 
 
 viewContentTitle : Maybe String -> Html Msg
