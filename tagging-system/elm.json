@@ -4,7 +4,6 @@
         "src",
         "src/Component",
         "src/Component/Atom",
-        "src/Component/Molecule",
         "src/Component/Page",
         "src/Http",
         "src/Http/Response"
