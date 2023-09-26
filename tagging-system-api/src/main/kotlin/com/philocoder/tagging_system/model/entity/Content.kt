@@ -15,7 +15,6 @@ data class Content(
     val contentId: ContentID,
     val content: String?,
     val tags: List<String>,
-    val refs: List<ContentID>?,
     val dateAsTimestamp: Long,
     val textToSearchOn: String?
 ) {
@@ -51,24 +50,12 @@ data class Content(
                 return null
             }
 
-            //check if every entered ref id exists
-            val refs = if (req.refs.isNullOrEmpty()) null else {
-                val refIds = req.refs.split(",").map { it.toInt() }
-                val allRefIdsExists = refIds.forAll { refId ->
-                    allContents.exists { it.contentId == refId }
-                }
-                if (!allRefIdsExists) {
-                    return null
-                }
-                refIds
-            }
 
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = req.id.toInt(),
                 content = req.text,
                 tags = tagNames,
-                refs = refs,
                 dateAsTimestamp = Calendar.getInstance().timeInMillis,
                 textToSearchOn = null
             )
@@ -96,25 +83,11 @@ data class Content(
                 return null
             }
 
-            //check if every entered ref id exists
-            val allContents = contentRepository.getEntities()
-            val refs = if (req.refs.isNullOrEmpty()) null else {
-                val refIds = req.refs!!.split(",").map { it.toInt() }
-                val allRefIdsExists = refIds.forAll { refId ->
-                    allContents.exists { it.contentId == refId }
-                }
-                if (!allRefIdsExists) {
-                    return null
-                }
-                refIds
-            }
-
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = contentId,
                 content = req.text,
                 tags = tagNames,
-                refs = refs,
                 dateAsTimestamp = Calendar.getInstance().timeInMillis,
                 textToSearchOn = null
             )
@@ -148,25 +121,11 @@ data class Content(
             val existingContent: Content = contentRepository.findEntity(contentId.toString())
                 ?: return null
 
-            //check if every entered ref id exists
-            val allContents = contentRepository.getEntities()
-            val refs = if (req.refs.isNullOrEmpty()) null else {
-                val refIds = req.refs.split(",").map { it.toInt() }
-                val allRefIdsExists = refIds.forAll { refId ->
-                    allContents.exists { it.contentId == refId }
-                }
-                if (!allRefIdsExists) {
-                    return null
-                }
-                refIds
-            }
-
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = contentId,
                 content = req.text,
                 tags = tagNames,
-                refs = refs,
                 dateAsTimestamp = existingContent.dateAsTimestamp,
                 textToSearchOn = existingContent.textToSearchOn
             )

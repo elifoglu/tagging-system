@@ -1,7 +1,6 @@
 package com.philocoder.tagging_system.controller
 
 import com.philocoder.tagging_system.model.entity.Content
-import com.philocoder.tagging_system.model.entity.GraphData
 import com.philocoder.tagging_system.model.request.*
 import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.ContentsResponse
@@ -11,7 +10,6 @@ import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.TagRepository
 import com.philocoder.tagging_system.service.ContentService
 import org.springframework.web.bind.annotation.*
-import java.util.*
 
 
 @RestController
@@ -28,23 +26,14 @@ class ContentController(
         return service.getContentsResponse(req)
     }
 
-    @CrossOrigin
-    @GetMapping("/graph-data")
-    fun getAllGraphData(): GraphData =
-        dataHolder.data!!.wholeGraphData
 
-    @CrossOrigin
-    @PostMapping("/graph-data-of-tag")
-    fun getGraphDataOfTag(@RequestBody req: GraphDataOfTagRequest): GraphData =
-        dataHolder.data!!.graphDataOfTags[req.tagId]!!
+
 
     @CrossOrigin
     @PostMapping("/get-content")
     fun getContent(@RequestBody req: GetContentRequest): ContentResponse {
         return ContentResponse.createWith(
-            contentRepository.findEntity(req.contentID)!!,
-            contentRepository,
-            service
+            contentRepository.findEntity(req.contentID)!!
         )
     }
 
@@ -55,9 +44,8 @@ class ContentController(
             .apply {
                 contentRepository.addEntity(contentId.toString(), this)
                 Thread.sleep(1000)
-                service.updateGraphDataOfAllContents()
             }
-            .let { ContentResponse.createWith(it, contentRepository, null) }
+            .let { ContentResponse.createWith(it) }
 
     @CrossOrigin
     @PostMapping("/contents/{contentId}")
@@ -70,16 +58,14 @@ class ContentController(
                 contentRepository.deleteEntity(contentId)
                 Thread.sleep(1000)
                 contentRepository.addEntity(contentId, this)
-                Thread.sleep(1000)
-                service.updateGraphDataOfAllContents()
             }
-            .let { ContentResponse.createWith(it, contentRepository, null) }
+            .let { ContentResponse.createWith(it) }
 
     @CrossOrigin
     @PostMapping("/preview-content")
     fun previewContent(@RequestBody req: CreateContentRequest): ContentResponse =
         Content.createIfValidForPreview(req.id.toInt(), req, contentRepository, tagRepository)!!
-            .let { ContentResponse.createWith(it, contentRepository, null) }
+            .let { ContentResponse.createWith(it) }
 
     @CrossOrigin
     @PostMapping("/search")

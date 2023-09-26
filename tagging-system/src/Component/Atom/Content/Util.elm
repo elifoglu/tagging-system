@@ -1,7 +1,7 @@
 module Content.Util exposing (gotContentToContent, maybeDateText, maybeTagsOfContent)
 
 import App.Model exposing (Model)
-import Content.Model exposing (Content, ContentDate, GraphData)
+import Content.Model exposing (Content, ContentDate)
 import DataResponse exposing (GotContent, GotContentDate, GotTag)
 import Date exposing (format)
 import Maybe.Extra exposing (values)
@@ -20,10 +20,6 @@ gotContentToContent model gotContent =
         gotContent.tags
             |> List.map (tagNameToTag model.allTags)
             |> values
-    , refs = gotContent.refs
-    , furtherReadingRefs = gotContent.furtherReadingRefs
-    , gotGraphData = gotContent.graphData
-    , graphDataIfGraphIsOn = Nothing
     }
 
 

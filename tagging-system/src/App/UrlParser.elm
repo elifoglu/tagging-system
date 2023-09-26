@@ -10,34 +10,24 @@ routeParser : Parser (Page -> a) a
 routeParser =
     oneOf
         [ map homepage top
-        , map nonInitializedTagPageMapper (s "tags" </> string <?> Query.int "page")
-        , map nonInitializedContentPageMapper (s "contents" </> int <?> Query.string "graph")
-        , map (CreateContentPage (NoRequestSentYet (CreateContentPageModel Nothing "" "" "" "" "" ""))) (s "create" </> s "content")
+        , map nonInitializedTagPageMapper (s "tags" </> string)
+        , map nonInitializedContentPageMapper (s "contents" </> int)
+        , map (CreateContentPage (NoRequestSentYet (CreateContentPageModel Nothing "" "" "" "" ""))) (s "create" </> s "content")
         , map nonInitializedUpdateContentPageMapper (s "update" </> s "content" </> int)
         , map (CreateTagPage (NoRequestSentYet (CreateTagPageModel "" ""))) (s "create" </> s "tag")
         , map nonInitializedUpdateTagPageMapper (s "update" </> s "tag" </> string)
-        , map grafPageMapper (s "g")
         ]
 
 
-nonInitializedTagPageMapper : String -> Maybe Int -> Page
-nonInitializedTagPageMapper tagId maybePage =
-    TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagId) maybePage ))
+nonInitializedTagPageMapper : String -> Page
+nonInitializedTagPageMapper tagId =
+    TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagId) ))
 
 
-nonInitializedContentPageMapper : Int -> Maybe String -> Page
-nonInitializedContentPageMapper contentId maybeGraphIsOn =
+nonInitializedContentPageMapper : Int -> Page
+nonInitializedContentPageMapper contentId =
     ContentPage
-        (NonInitialized
-            ( contentId
-            , case maybeGraphIsOn of
-                Just "true" ->
-                    True
-
-                _ ->
-                    False
-            )
-        )
+        (NonInitialized  contentId)
 
 
 nonInitializedUpdateContentPageMapper : Int -> Page
@@ -48,11 +38,6 @@ nonInitializedUpdateContentPageMapper contentId =
 nonInitializedUpdateTagPageMapper : String -> Page
 nonInitializedUpdateTagPageMapper tagId =
     UpdateTagPage (NoRequestSentYet ( UpdateTagPageModel "", tagId ))
-
-
-grafPageMapper : Page
-grafPageMapper =
-    GraphPage Nothing
 
 
 pageBy : Url.Url -> Page

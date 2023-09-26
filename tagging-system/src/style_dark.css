@@ -11,10 +11,6 @@ a:hover {
     color: #c9c9c9;
 }
 
-.headerItem {
-    color: #ffffff;
-}
-
 .homeNavigator:hover {
     background: #c9c9c9;
 }
@@ -24,11 +20,4 @@ a:hover {
 }
 .tagLink:hover {
     color: white;
-}
-
-.paginationButton {
-    color: white;
-}
-.paginationButton:hover {
-    color: lightgray;
 }

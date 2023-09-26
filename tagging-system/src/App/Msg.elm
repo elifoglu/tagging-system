@@ -3,9 +3,7 @@ module App.Msg exposing (..)
 import App.Model exposing (CreateContentPageModel, CreateTagPageModel, Page, UpdateContentPageData, UpdateTagPageModel)
 import Browser
 import Browser.Dom as Dom
-import Content.Model exposing (GotGraphData)
-import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, ContentsResponse, GotContent)
-import Graph exposing (NodeId)
+import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
 import Http
 import Tag.Model exposing (Tag)
 import Time
@@ -16,14 +14,10 @@ type Msg
     = UrlRequested Browser.UrlRequest
     | UrlChanged Url.Url
     | GotInitialDataResponse (Result Http.Error InitialDataResponse)
-    | GotGraphData (Result Http.Error GotGraphData)
     | GotSearchInput String
     | GotContentSearchResponse (Result Http.Error ContentSearchResponse)
     | FocusResult (Result Dom.Error ())
-    | GoToContentViaContentGraph ContentID Bool
-    | ColorizeContentOnGraph ContentID
-    | UncolorizeContentOnGraph
-    | GotContentsOfTag Tag (Result Http.Error ContentsResponse)
+    | GotDataOfTag Tag (Result Http.Error TagDataResponse)
     | GotContent (Result Http.Error GotContent)
     | GotContentToPreviewForCreatePage CreateContentPageModel (Result Http.Error GotContent)
     | GotContentToPreviewForUpdatePage ContentID UpdateContentPageData (Result Http.Error GotContent)
@@ -36,12 +30,7 @@ type Msg
     | CreateTag CreateTagPageModel
     | UpdateTag String UpdateTagPageModel
     | GotTagUpdateOrCreationDoneResponse (Result Http.Error String)
-    | DragStart NodeId ( Float, Float )
-    | DragAt ( Float, Float )
-    | DragEnd ( Float, Float )
-    | Tick Time.Posix
     | GotTimeZone Time.Zone
-    | DoNothing
 
 
 type PreviewContentModel
@@ -54,7 +43,6 @@ type ContentInputType
     | Title
     | Text
     | Tags
-    | Refs
     | ContentToCopy
 
 

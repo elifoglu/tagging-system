@@ -15,9 +15,6 @@ elm.ports.title.subscribe(title => {
     document.title = title;
 });
 
-elm.ports.openNewTab.subscribe( url => {
-    window.open(url, '_blank');
-});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

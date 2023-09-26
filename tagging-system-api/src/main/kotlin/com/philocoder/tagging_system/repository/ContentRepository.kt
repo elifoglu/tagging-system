@@ -2,7 +2,6 @@ package com.philocoder.tagging_system.repository
 
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
-import com.philocoder.tagging_system.repository.PageUtil.getPage
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -24,17 +23,11 @@ open class ContentRepository(
     private val contentComparator = ContentComparator()
 
     fun getContentsForTag(
-        page: Int,
-        size: Int,
         tag: Tag
     ): List<Content> {
         var entities = dataHolder.data!!.contents
-
         entities = entities.filter { it.tags.contains(tag.name) }
-
-        entities = entities.sortedWith(contentComparator).reversed()
-
-        return getPage(entities, page, size)
+        return entities.sortedWith(contentComparator).reversed()
     }
 
     fun getContentCount(
@@ -51,11 +44,6 @@ open class ContentRepository(
 
     fun getEntities(): List<Content> {
         return dataHolder.data!!.contents
-    }
-
-    fun getEntities(page: Int, size: Int): List<Content> {
-        val contents = dataHolder.data!!.contents
-        return getPage(contents, page, size)
     }
 
     fun addEntity(id: String, it: Content) {

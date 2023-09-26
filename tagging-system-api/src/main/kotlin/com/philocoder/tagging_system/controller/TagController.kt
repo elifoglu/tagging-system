@@ -26,8 +26,7 @@ class TagController(
                     it,
                     contentRepository
                 )
-            }
-                .filter { it.contentCount != 0 },
+            },
             homeTagId = tagRepository.getHomeTag()
         )
     }

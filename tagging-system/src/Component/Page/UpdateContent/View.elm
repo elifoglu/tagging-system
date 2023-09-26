@@ -17,7 +17,6 @@ viewUpdateContentDiv updateContentPageData maybeContentToPreview contentId =
             [ viewDisabledInput "text" (String.fromInt contentId)
             , viewInput "text" "title (empty if does not exist)" updateContentPageData.title (ContentInputChanged Title)
             , viewInput "text" "tagNames (use comma to separate)" updateContentPageData.tags (ContentInputChanged Tags)
-            , viewInput "text" "refIDs (use comma to separate)" updateContentPageData.refs (ContentInputChanged Refs)
             , viewContentTextArea "content" updateContentPageData.text (ContentInputChanged Text)
             , div []
                 [ viewPreviewContentButton (PreviewContent <| PreviewForContentUpdate contentId updateContentPageData)

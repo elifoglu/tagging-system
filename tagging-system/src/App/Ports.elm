@@ -1,4 +1,4 @@
-port module App.Ports exposing (consoleLog, openNewTab, sendTitle, title)
+port module App.Ports exposing (consoleLog, sendTitle, title)
 
 import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..), UpdateContentPageModel(..))
 
@@ -28,11 +28,7 @@ sendTitle model =
                     Cmd.none
 
                 Initialized initialized ->
-                    if initialized.pagination.currentPage == 1 then
-                        title (initialized.tag.name ++ " - tagging system")
-
-                    else
-                        title (initialized.tag.name ++ " " ++ " (" ++ String.fromInt initialized.pagination.currentPage ++ ") - tagging system")
+                    title (initialized.tag.name ++ " - tagging system")
 
         CreateContentPage _ ->
             title "create new content - tagging system"
@@ -66,9 +62,6 @@ sendTitle model =
         ContentSearchPage _ _ ->
             title "içerik ara - tagging system"
 
-        GraphPage _ ->
-            title "graf - tagging system"
-
         NotFoundPage ->
             title "oops - tagging system"
 
@@ -77,6 +70,3 @@ sendTitle model =
 
 
 port consoleLog : String -> Cmd msg
-
-
-port openNewTab : String -> Cmd msg

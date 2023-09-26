@@ -1,12 +1,9 @@
-module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, Drag, Entity, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TotalPageCountRequestModel, UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, TagIdInputType(..))
+module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
 
 import Browser.Navigation as Nav
-import Content.Model exposing (Content, GotGraphData, GraphData)
+import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, GotContent)
-import Force
-import Graph exposing (Graph, NodeId)
 import Json.Encode as Encode
-import Pagination.Model exposing (Pagination)
 import Tag.Model exposing (Tag)
 import Time
 
@@ -27,10 +24,6 @@ type alias LocalStorage =
     {}
 
 
-type alias OpacityLevel =
-    Float
-
-
 type alias ContentToAddToBottom =
     Maybe GotContent
 
@@ -43,17 +36,6 @@ type alias IconInfo =
     { urlToNavigate : String
     , iconImageUrl : String
     , marginLeft : String
-    }
-
-
-type alias Entity =
-    Force.Entity NodeId { value : String }
-
-
-type alias Drag =
-    { start : ( Float, Float )
-    , current : ( Float, Float )
-    , index : NodeId
     }
 
 
@@ -75,7 +57,6 @@ type UpdateContentPageModel
 
 type alias NonInitializedYetTagPageModel =
     { tagId : TagIdInputType
-    , maybePage : Maybe Int
     }
 
 
@@ -87,8 +68,7 @@ type TagIdInputType
 type alias InitializedTagPageModel =
     { tag : Tag
     , contents : List Content
-    , pagination : Pagination
-    , maybeGraphData : Maybe GraphData
+    , condensedContentText: String
     }
 
 
@@ -106,18 +86,17 @@ type alias ContentIDToColorize =
 
 homepage : Page
 homepage =
-    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput Nothing))
+    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput))
 
 
 type Page
-    = ContentPage (Initializable ( Int, Bool ) Content)
+    = ContentPage (Initializable Int Content)
     | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
     | CreateContentPage (MaySendRequest CreateContentPageModel CreateContentPageModel)
     | UpdateContentPage UpdateContentPageModel
     | CreateTagPage (MaySendRequest CreateTagPageModel CreateTagPageModel)
     | UpdateTagPage (MaySendRequest ( UpdateTagPageModel, String ) UpdateTagPageModel)
     | ContentSearchPage String (List Content)
-    | GraphPage (Maybe GraphData)
     | NotFoundPage
     | MaintenancePage
 
@@ -129,12 +108,6 @@ type alias GetContentRequestModel =
 
 type alias GetTagContentsRequestModel =
     { tagId : String
-    , page : Maybe Int
-    }
-
-
-type alias TotalPageCountRequestModel =
-    { tagId : String
     }
 
 
@@ -144,7 +117,6 @@ type alias CreateContentPageModel =
     , title : String
     , text : String
     , tags : String
-    , refs : String
     , contentIdToCopy : String
     }
 
@@ -155,7 +127,6 @@ type alias UpdateContentPageData =
     , title : String
     , text : String
     , tags : String
-    , refs : String
     }
 
 
@@ -177,7 +148,6 @@ setCreateContentPageModel content =
     , title = Maybe.withDefault "" content.title
     , text = content.text
     , tags = String.join "," (List.map (\tag -> tag.name) content.tags)
-    , refs = String.join "," (List.map (\ref -> ref.id) content.refs)
     , contentIdToCopy = ""
     }
 
@@ -189,7 +159,6 @@ setUpdateContentPageModel content =
     , title = Maybe.withDefault "" content.title
     , text = content.text
     , tags = String.join "," (List.map (\tag -> tag.name) content.tags)
-    , refs = String.join "," (List.map (\ref -> ref.id) content.refs)
     }
 
 
@@ -204,14 +173,6 @@ getTagContentsRequestModelEncoder : GetTagContentsRequestModel -> Encode.Value
 getTagContentsRequestModelEncoder model =
     Encode.object
         [ ( "tagId", Encode.string model.tagId )
-        , ( "page"
-          , case model.page of
-                Just page ->
-                    Encode.int page
-
-                Nothing ->
-                    Encode.int 1
-          )
         ]
 
 
@@ -222,7 +183,6 @@ createContentPageModelEncoder model =
         , ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
         , ( "tags", Encode.string model.tags )
-        , ( "refs", Encode.string model.refs )
         ]
 
 
@@ -233,7 +193,6 @@ updateContentPageDataEncoder contentId model =
         , ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
         , ( "tags", Encode.string model.tags )
-        , ( "refs", Encode.string model.refs )
         ]
 
 

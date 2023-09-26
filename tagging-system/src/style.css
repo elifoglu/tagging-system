@@ -11,15 +11,14 @@ html, body {
 }
 
 .header {
-    margin-top: 10px;
-    margin-left: 10px;
+    margin-top: 3px;
+    margin-left: 3px;
 }
 
 .body {
-    margin-top: 10px;
     margin-left: 20px;
     margin-right: 20px;
-    max-width: 600px;
+    max-width: 1000px;
     width: auto;
 }
 
@@ -28,12 +27,6 @@ html, body {
     letter-spacing: 0.3px;
     word-spacing: 0.1px;
     font-weight: bold;
-}
-
-.refsDiv {
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.1px;
 }
 
 .contentFont {
@@ -60,23 +53,14 @@ hr {
     background: rgba(0, 0, 0, 0.15);
 }
 
-.headerItem {
-    padding: 10px;
-    border: 0;
-    border-radius: 2px;
-    outline: none;
-    appearance: none;
-    text-align: center;
+.searchBoxInHeader {
+    padding: 5px;
     display: inline-block;
-    vertical-align: baseline;
-    font-size: 12px;
-    letter-spacing: 0.4px;
-    word-spacing: 0.1px;
-    font-weight: normal;
-    cursor: default;
 }
 
 .homeNavigator {
+    padding: 10px;
+    display: inline-block;
     font-size: 15px;
     letter-spacing: 0.5px;
     word-spacing: 0.1px;
@@ -89,8 +73,31 @@ hr {
     background: #c9c9c9;
 }
 
+.leftFrameOnTagPage {
+    width: 15%;
+    float: left;
+    margin-left: 10px;
+}
 
-.tagPageTagsFont {
+.rightFrameOnTagPage {
+    width: 60%;
+    float: left;
+}
+
+.tagsDiv {
+    display: flex;
+    margin-top: 10px;
+}
+
+.tagsDivChild {
+    flex: 1;
+}
+
+.tagsDivFirstChild {
+    flex: 0.2;
+}
+
+.leftFrameTagsFont {
     font-size: 13px;
     letter-spacing: 0.5px;
     word-spacing: 0.2px;
@@ -116,34 +123,6 @@ a {
 
 .tagLink:hover {
     color: #505050;
-}
-
-.paginationButton {
-    min-width: 27px;
-    margin: 2px;
-    padding: 4px;
-    border: none;
-    border-radius: 2px;
-    color: #ffffff;
-    cursor: pointer;
-    background-color: #202020;
-}
-
-.paginationButton:hover {
-    color: #c2c2c2;
-}
-
-.currentPaginationButton {
-    background: transparent;
-    color: #202020;
-    min-width: 0;
-    cursor: default;
-    font-size: 20px;
-    padding: 2px;
-}
-
-.currentPaginationButton:hover {
-    color: #202020;
 }
 
 .navToContent {
@@ -183,6 +162,15 @@ input:focus {
     margin-block-start: 25px;
 }
 
+.markdownDiv a {
+    text-decoration: none;
+}
+
+.markdownDiv a:hover {
+    color: red;
+    font-size: 15px;
+}
+
 .textToHighlight {
     background-color: yellow;
 }
@@ -195,6 +183,12 @@ input:focus {
 
 .navToTagDesc:hover {
     width: 15px;
+}
+
+.upAndDownIcons {
+    width: 13px;
+    vertical-align: middle;
+    margin-bottom: 2px;
 }
 
 .searchContentInfoText {
@@ -244,43 +238,6 @@ input:focus {
 
 input[type='checkbox'] {
     accent-color: #202020;
-}
-
-.graphForTagPage {
-    box-shadow: 0px 0px 5px 1px #202020;
-    width: 275px;
-    height: 275px;
-    display: block;
-    align-items: center;
-    margin-top: 25px;
-    margin-bottom: 40px;
-}
-
-.graphForContentPage {
-    box-shadow: 0px 0px 5px 1px #202020;
-    width: 275px;
-    height: 275px;
-    display: block;
-    align-items: center;
-    margin-top: 25px;
-    margin-bottom: 40px;
-}
-
-.graphForGraphPage {
-    position: fixed;
-    box-shadow: 0px 0px 5px 1px #202020;
-    z-index: -1;
-    width: 800px;
-    height: 800px;
-    display: block;
-    align-items: center;
-}
-
-.graphPageInformationText {
-    position: fixed;
-    margin-top: 805px;
-    color: #202020;
-    font-size: 11px;
 }
 
 .updateContentLink {

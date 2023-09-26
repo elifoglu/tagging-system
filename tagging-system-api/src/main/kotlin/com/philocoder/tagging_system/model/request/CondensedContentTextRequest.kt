@@ -1,5 +1,5 @@
 package com.philocoder.tagging_system.model.request
 
-data class GraphDataOfTagRequest(
+data class CondensedContentTextRequest(
     val tagId: String
 )
