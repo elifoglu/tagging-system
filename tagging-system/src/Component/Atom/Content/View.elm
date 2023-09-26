@@ -4,9 +4,11 @@ import App.Model exposing (MaybeTextToHighlight)
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
 import Content.Util exposing (maybeDateText, maybeTagsOfContent)
-import Html exposing (Html, a, div, img, p, text)
-import Html.Attributes exposing (class, href, src, title)
-import Markdown exposing (defaultOptions)
+import Html exposing (Html, a, div, img, p, span, text)
+import Html.Attributes exposing (class, dir, href, property, src, title)
+import Html.Parser
+import Html.Parser.Util
+import Json.Encode exposing (string)
 import Tag.Model exposing (Tag)
 
 
@@ -15,7 +17,7 @@ viewContentDiv textToHighlight content =
     p []
         [ div []
             [ div [ class "title" ] [ viewContentTitle content.title ]
-            , viewMarkdownTextOfContent content textToHighlight
+            , viewTextOfContent content textToHighlight
             ]
         , viewContentInfoDiv content
         ]
@@ -70,15 +72,25 @@ viewContentLinkWithLinkIcon content =
     viewContentLink (img [ class "navToContent", src "/link.svg" ] []) (String.fromInt content.contentId)
 
 
-viewMarkdownTextOfContent : Content -> MaybeTextToHighlight -> Html msg
-viewMarkdownTextOfContent content maybeTextToHighlight =
-    Markdown.toHtmlWith { defaultOptions | sanitize = False }
-        [ class "markdownDiv contentFont" ]
-        (case maybeTextToHighlight of
-            Just textToHighlight ->
-                -- Note: This highlighting feature is unfortunately case sensitive for now
-                String.replace textToHighlight ("<span class=textToHighlight>" ++ textToHighlight ++ "</span>") content.text
+viewTextOfContent : Content -> MaybeTextToHighlight -> Html msg
+viewTextOfContent content maybeTextToHighlight =
+    let
+        htmlText : String
+        htmlText =
+            case maybeTextToHighlight of
+                Just textToHighlight ->
+                    -- Note: This highlighting feature is unfortunately case sensitive for now
+                    String.replace textToHighlight ("<span class=textToHighlight>" ++ textToHighlight ++ "</span>") content.text
 
-            Nothing ->
-                content.text
-        )
+                Nothing ->
+                    content.text
+
+        nodes =
+            case Html.Parser.run htmlText of
+                Ok parsedNodes ->
+                    Html.Parser.Util.toVirtualDom parsedNodes
+
+                Err _ ->
+                    []
+    in
+    div [ class "contentTextDiv contentFont" ] nodes

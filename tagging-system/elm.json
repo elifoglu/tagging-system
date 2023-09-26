@@ -24,18 +24,16 @@
             "elm-community/list-extra": "8.2.4",
             "elm-community/maybe-extra": "5.2.0",
             "elm-community/typed-svg": "7.0.0",
-            "elm-explorations/markdown": "1.0.0",
             "gampleman/elm-visualization": "2.2.0",
+            "hecrj/html-parser": "2.4.0",
             "justinmimbs/date": "3.2.1",
             "mpizenberg/elm-pointer-events": "4.0.2"
         },
         "indirect": {
-            "avh4/elm-fifo": "1.0.4",
             "elm/file": "1.0.5",
             "elm/parser": "1.1.0",
             "elm/svg": "1.0.1",
             "elm/virtual-dom": "1.0.2",
-            "elm-community/intdict": "3.0.0",
             "folkertdev/elm-deque": "3.0.1",
             "folkertdev/one-true-path-experiment": "6.0.0",
             "folkertdev/svg-path-lowlevel": "4.0.1",
@@ -54,6 +52,9 @@
     },
     "test-dependencies": {
         "direct": {},
-        "indirect": {}
+        "indirect": {
+            "avh4/elm-fifo": "1.0.4",
+            "elm-community/intdict": "3.0.0"
+        }
     }
 }

@@ -158,7 +158,7 @@ input:focus {
     outline: none;
 }
 
-.markdownDiv p {
+.contentTextDiv p {
     margin-block-start: 25px;
 }
 
