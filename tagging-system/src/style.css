@@ -19,7 +19,7 @@ html, body {
     margin-top: 10px;
     margin-left: 20px;
     margin-right: 20px;
-    max-width: 600px;
+    max-width: 1000px;
     width: auto;
 }
 
@@ -246,4 +246,19 @@ input[type='checkbox'] {
     letter-spacing: 0.5px;
     word-spacing: 0.2px;
     margin: 2px;
+}
+
+.parentFrameOnTagPage {
+    border: 3px solid #fff;
+}
+
+.leftFrameOnTagPage {
+    width: 12%;
+    float: left;
+    margin-left: 10px;
+}
+
+.rightFrameOnTagPage {
+    width: 70%;
+    float: left;
 }

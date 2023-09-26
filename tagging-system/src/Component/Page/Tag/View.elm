@@ -14,8 +14,16 @@ import TagInfoIcon.View exposing (viewTagInfoIcon)
 
 viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
 viewTagPageDiv initialized allTags =
-    div []
-        ([ div
+    div [ class "parentFrameOnTagPage" ]
+        [ viewLeftFrame initialized allTags
+        , viewRightFrame initialized allTags
+        ]
+
+
+viewLeftFrame : InitializedTagPageModel -> List Tag -> Html Msg
+viewLeftFrame initialized allTags =
+    div [ class "leftFrameOnTagPage"]
+        [ div
             [ class "tagPageTagsFont"
             , style "width" "auto"
             ]
@@ -23,11 +31,15 @@ viewTagPageDiv initialized allTags =
             , viewChildTagsDiv initialized.tag allTags
             , viewSearchBoxDiv
             ]
-         ]
-            ++ (viewContentDivs initialized.contents
-                    ++ [ viewPagination initialized.tag initialized.pagination
-                       ]
-               )
+        ]
+
+
+viewRightFrame : InitializedTagPageModel -> List Tag -> Html Msg
+viewRightFrame initialized allTags =
+    div [ class "rightFrameOnTagPage" ]
+        (viewContentDivs initialized.contents
+            ++ [ viewPagination initialized.tag initialized.pagination
+               ]
         )
 
 
