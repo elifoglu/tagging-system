@@ -162,6 +162,15 @@ input:focus {
     margin-block-start: 25px;
 }
 
+.markdownDiv a {
+    text-decoration: none;
+}
+
+.markdownDiv a:hover {
+    color: red;
+    font-size: 15px;
+}
+
 .textToHighlight {
     background-color: yellow;
 }

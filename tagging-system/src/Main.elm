@@ -193,23 +193,20 @@ update msg model =
                     createNewModelAndCmdMsg model NotFoundPage
 
         -- TAG PAGE --
-        GotContentsOfTag tag result ->
+        GotDataOfTag tag result ->
             case result of
-                Ok contentsResponse ->
+                Ok tagDataResponse ->
                     case model.activePage of
                         TagPage status ->
                             case status of
-                                NonInitialized nonInitialized ->
+                                NonInitialized _ ->
                                     let
-                                        currentPage =
-                                            Maybe.withDefault 1 nonInitialized.maybePage
-
                                         contents =
-                                            List.map (gotContentToContent model) contentsResponse.contents
+                                            List.map (gotContentToContent model) tagDataResponse.contents
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag contents)
+                                                Initialized (InitializedTagPageModel tag contents tagDataResponse.condensedContentText)
 
                                         newModel =
                                             { model | activePage = newPage }

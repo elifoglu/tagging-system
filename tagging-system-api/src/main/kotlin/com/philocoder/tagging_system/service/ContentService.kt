@@ -1,6 +1,5 @@
 package com.philocoder.tagging_system.service
 
-import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.entity.*
 import com.philocoder.tagging_system.model.request.ContentsOfTagRequest
 import com.philocoder.tagging_system.model.request.SearchContentRequest
@@ -15,7 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class ContentService(
     private val repository: ContentRepository,
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val condensedViewOfTagService: CondensedViewOfTagService
 ) {
 
     fun getContentsResponse(req: ContentsOfTagRequest): ContentsResponse {
@@ -25,9 +25,8 @@ class ContentService(
         val contentResponses = repository
             .getContentsForTag(tag)
             .map { ContentResponse.createWith(it) }
-        val contentCount =
-            repository.getContentCount(tag.name)
-        return ContentsResponse(contentResponses)
+        val condensedContentText = condensedViewOfTagService.getCondensedTextOfTag(tag)
+        return ContentsResponse(contentResponses, condensedContentText)
     }
 
     fun getContentsResponseByKeywordSearch(

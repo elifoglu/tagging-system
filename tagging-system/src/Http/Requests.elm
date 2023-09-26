@@ -2,7 +2,7 @@ module Requests exposing (createNewTag, getInitialData, getContent, getSearchRes
 
 import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..), PreviewContentModel(..))
-import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, contentsResponseDecoder)
+import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
@@ -37,7 +37,7 @@ getTagContents tag =
     Http.post
         { url = apiURL ++ "contents-of-tag"
         , body = Http.jsonBody (getTagContentsRequestModelEncoder getTagContentsRequestModel)
-        , expect = Http.expectJson (GotContentsOfTag tag) contentsResponseDecoder
+        , expect = Http.expectJson (GotDataOfTag tag) tagDataResponseDecoder
         }
 
 

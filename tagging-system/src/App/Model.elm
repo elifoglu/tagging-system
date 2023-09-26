@@ -57,7 +57,6 @@ type UpdateContentPageModel
 
 type alias NonInitializedYetTagPageModel =
     { tagId : TagIdInputType
-    , maybePage : Maybe Int
     }
 
 
@@ -69,6 +68,7 @@ type TagIdInputType
 type alias InitializedTagPageModel =
     { tag : Tag
     , contents : List Content
+    , condensedContentText: String
     }
 
 
@@ -86,7 +86,7 @@ type alias ContentIDToColorize =
 
 homepage : Page
 homepage =
-    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput Nothing))
+    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput))
 
 
 type Page

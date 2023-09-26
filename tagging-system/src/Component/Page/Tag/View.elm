@@ -49,25 +49,17 @@ viewTagsDiv tagIds allTags iconSrc =
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
     div [ class "rightFrameOnTagPage" ]
-        [ viewContentsDiv initialized.contents
+        [ viewContentsDiv initialized.contents initialized.condensedContentText
         ]
 
 
-viewContentsDiv : List Content -> Html Msg
-viewContentsDiv contents =
+viewContentsDiv : List Content -> String -> Html Msg
+viewContentsDiv contents condensedContentText =
     if "condensedView" == "condensedView" then
         div []
             [ Markdown.toHtmlWith { defaultOptions | sanitize = False }
                 [ class "markdownDiv contentFont" ]
-                (let
-                    contentTexts : List String
-                    contentTexts =
-                        contents
-                            |> List.map (\c -> " [•](/contents/" ++ String.fromInt c.contentId ++ ") " ++ c.text)
-                            |> List.intersperse "  \n"
-                 in
-                 String.concat contentTexts
-                )
+                condensedContentText
             ]
 
     else

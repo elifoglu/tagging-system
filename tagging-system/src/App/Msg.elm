@@ -3,7 +3,7 @@ module App.Msg exposing (..)
 import App.Model exposing (CreateContentPageModel, CreateTagPageModel, Page, UpdateContentPageData, UpdateTagPageModel)
 import Browser
 import Browser.Dom as Dom
-import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, ContentsResponse, GotContent)
+import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
 import Http
 import Tag.Model exposing (Tag)
 import Time
@@ -17,7 +17,7 @@ type Msg
     | GotSearchInput String
     | GotContentSearchResponse (Result Http.Error ContentSearchResponse)
     | FocusResult (Result Dom.Error ())
-    | GotContentsOfTag Tag (Result Http.Error ContentsResponse)
+    | GotDataOfTag Tag (Result Http.Error TagDataResponse)
     | GotContent (Result Http.Error GotContent)
     | GotContentToPreviewForCreatePage CreateContentPageModel (Result Http.Error GotContent)
     | GotContentToPreviewForUpdatePage ContentID UpdateContentPageData (Result Http.Error GotContent)
