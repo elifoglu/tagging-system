@@ -286,11 +286,6 @@ update msg model =
             , previewContent previewContentModel
             )
 
-        GetContentToCopyForContentCreation contentId ->
-            ( model
-            , getContent contentId
-            )
-
         GotContentToPreviewForCreatePage createContentPageModel result ->
             case result of
                 Ok gotContentToPreview ->

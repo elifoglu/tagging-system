@@ -11,9 +11,7 @@ import Html.Events exposing (onClick, onInput)
 viewCreateContentDiv : CreateContentPageModel -> Html Msg
 viewCreateContentDiv createContentPageModel =
     div [] <|
-        [ text "Create a new content using this content's data:"
-        , viewInput "text" "id of content to copy" createContentPageModel.contentIdToCopy (ContentInputChanged ContentToCopy)
-        , viewGetContentToCopyButton (GetContentToCopyForContentCreation (Maybe.withDefault 0 (String.toInt createContentPageModel.contentIdToCopy)))
+        [ text ""
         ]
             ++ List.intersperse (br [] [])
                 [ viewInput "text" "id" createContentPageModel.id (ContentInputChanged Id)
@@ -53,8 +51,3 @@ viewCreateContentButton msg =
 viewPreviewContentButton : msg -> Html msg
 viewPreviewContentButton msg =
     button [ onClick msg ] [ text "preview content" ]
-
-
-viewGetContentToCopyButton : msg -> Html msg
-viewGetContentToCopyButton msg =
-    button [ onClick msg ] [ text "get content to copy" ]

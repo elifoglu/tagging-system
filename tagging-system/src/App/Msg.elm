@@ -23,7 +23,6 @@ type Msg
     | GotContentToPreviewForUpdatePage ContentID UpdateContentPageData (Result Http.Error GotContent)
     | ContentInputChanged ContentInputType String
     | TagInputChanged TagInputType
-    | GetContentToCopyForContentCreation Int
     | PreviewContent PreviewContentModel
     | CreateContent CreateContentPageModel
     | UpdateContent ContentID UpdateContentPageData
