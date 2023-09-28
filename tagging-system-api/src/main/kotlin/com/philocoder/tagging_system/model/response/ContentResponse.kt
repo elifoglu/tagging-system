@@ -8,7 +8,7 @@ data class ContentResponse(
     val dateAsTimestamp: String,
     val contentId: ContentID,
     val content: String?,
-    val tags: List<String>
+    val tagIds: List<String>
 ) {
 
     companion object {
@@ -18,7 +18,7 @@ data class ContentResponse(
                 dateAsTimestamp = content.dateAsTimestamp.toString(),
                 contentId = content.contentId,
                 content = content.content,
-                tags = content.tags
+                tagIds = content.tags
             )
         }
 

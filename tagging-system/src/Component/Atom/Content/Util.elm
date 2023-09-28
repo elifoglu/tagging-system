@@ -6,7 +6,7 @@ import DataResponse exposing (GotContent, GotContentDate, GotTag)
 import Date exposing (format)
 import Maybe.Extra exposing (values)
 import Tag.Model exposing (Tag)
-import Tag.Util exposing (tagNameToTag)
+import Tag.Util exposing (tagById)
 import Time
 
 
@@ -17,8 +17,8 @@ gotContentToContent model gotContent =
     , contentId = gotContent.contentId
     , text = gotContent.content
     , tags =
-        gotContent.tags
-            |> List.map (tagNameToTag model.allTags)
+        gotContent.tagIds
+            |> List.map (tagById model.allTags)
             |> values
     }
 

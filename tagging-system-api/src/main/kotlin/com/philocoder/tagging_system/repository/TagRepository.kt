@@ -37,4 +37,8 @@ open class TagRepository(
     fun getHomeTag(): String {
         return dataHolder.getAllData()!!.homeTagId
     }
+
+    fun getTagName(tagId: String): String {
+        return findEntity(tagId)?.name ?: ""
+    }
 }

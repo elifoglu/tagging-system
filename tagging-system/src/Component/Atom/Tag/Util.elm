@@ -1,4 +1,4 @@
-module Tag.Util exposing (tagById, tagNameToTag, tagByIdForced)
+module Tag.Util exposing (tagById, tagByIdForced)
 
 import List
 import Tag.Model exposing (Tag)
@@ -13,10 +13,3 @@ tagById allTags tagId =
 tagByIdForced : List Tag -> String -> Tag
 tagByIdForced allTags tagId =
     Maybe.withDefault (Tag "" "" [] [] 0 Nothing) (tagById allTags tagId)
-
-
-tagNameToTag : List Tag -> String -> Maybe Tag
-tagNameToTag allTags tagName =
-    allTags
-        |> List.filter (\tag -> tag.name == tagName)
-        |> List.head

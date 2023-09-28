@@ -27,7 +27,7 @@ type alias GotTag =
 
 
 type alias GotContent =
-    { title : Maybe String, dateAsTimestamp : GotContentDate, contentId : Int, content : String, tags : List String }
+    { title : Maybe String, dateAsTimestamp : GotContentDate, contentId : Int, content : String, tagIds: List String }
 
 
 type alias ContentID =
@@ -80,7 +80,7 @@ contentDecoder =
         (field "dateAsTimestamp" contentDateDecoder)
         (field "contentId" int)
         (field "content" string)
-        (field "tags" (D.list string))
+        (field "tagIds" (D.list string))
 
 
 tagTextPartDecoder : Decoder GotTagTextPart

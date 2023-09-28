@@ -26,7 +26,7 @@ open class ContentRepository(
         tag: Tag
     ): List<Content> {
         var entities = dataHolder.data!!.contents
-        entities = entities.filter { it.tags.contains(tag.name) }
+        entities = entities.filter { it.tags.contains(tag.tagId) }
         return entities.sortedWith(contentComparator).reversed()
     }
 
