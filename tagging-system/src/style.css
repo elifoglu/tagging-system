@@ -84,19 +84,6 @@ hr {
     float: left;
 }
 
-.tagsDiv {
-    display: flex;
-    margin-top: 10px;
-}
-
-.tagsDivChild {
-    flex: 1;
-}
-
-.tagsDivFirstChild {
-    flex: 0.2;
-}
-
 .leftFrameTagsFont {
     font-size: 13px;
     letter-spacing: 0.5px;
