@@ -6,7 +6,9 @@ import Browser exposing (Document)
 import Content.View exposing (viewContentDiv)
 import ContentSearch.View exposing (viewSearchContentDiv)
 import CreateContent.View exposing (viewCreateContentDiv)
+import CreateContentButton.View exposing (viewCreateContentButton)
 import CreateTag.View exposing (viewCreateTagDiv)
+import CreateTagButton.View exposing (viewCreateTagButton)
 import HomeNavigator.View exposing (viewHomeNavigator)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -22,7 +24,7 @@ view model =
     { title = "tagging system"
     , body =
         [ div []
-            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage ]
+            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewCreateContentButton, viewCreateTagButton ]
             , div [ class "body" ]
                 (case model.activePage of
                     TagPage status ->
