@@ -16,7 +16,7 @@ viewUpdateContentDiv updateContentPageData contentId =
             , viewInput "text" "title (empty if does not exist)" updateContentPageData.title (UpdateContentModuleInputChanged TitleU)
             , viewInput "text" "tagNames (use comma to separate)" updateContentPageData.tags (UpdateContentModuleInputChanged TagsU)
             , viewContentTextArea "content" updateContentPageData.text (UpdateContentModuleInputChanged TextU)
-            , viewUpdateContentButton <| UpdateContent contentId updateContentPageData
+            , viewUpdateContentButton <| UpdateContent
             ]
 
 

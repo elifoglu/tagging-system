@@ -2,7 +2,7 @@ module CreateContent.View exposing (viewCreateContentDiv)
 
 import App.Model exposing (CreateContentModuleModel, Model)
 import App.Msg exposing (ContentInputTypeForContentCreation(..), Msg(..))
-import Html exposing (Html, br, button, div, input, span, text, textarea)
+import Html exposing (Html, br, button, div, input, text, textarea)
 import Html.Attributes exposing (placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 
@@ -16,7 +16,7 @@ viewCreateContentDiv createContentPageModel =
                 [ viewInput "text" "title (empty if does not exist)" createContentPageModel.title (CreateContentModuleInputChanged Title)
                 , viewInput "text" "tagNames (use comma to separate)" createContentPageModel.tags (CreateContentModuleInputChanged Tags)
                 , viewContentTextArea "content" createContentPageModel.text (CreateContentModuleInputChanged Text)
-                , viewCreateContentButton (CreateContent createContentPageModel)
+                , viewCreateContentButton CreateContent
                 ]
 
 

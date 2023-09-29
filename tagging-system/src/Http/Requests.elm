@@ -1,6 +1,6 @@
-module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, postNewContent, updateContent, updateExistingTag)
+module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createNewContent, updateContent, updateTag)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleData, UpdateTagModuleModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
@@ -50,8 +50,8 @@ getContent contentId =
         }
 
 
-postNewContent : CreateContentModuleModel -> Cmd Msg
-postNewContent model =
+createNewContent : CreateContentModuleModel -> Cmd Msg
+createNewContent model =
     Http.post
         { url = apiURL ++ "contents"
         , body = Http.jsonBody (createContentPageModelEncoder model)
@@ -68,7 +68,7 @@ updateContent contentId model =
         }
 
 
-createNewTag : CreateTagPageModel -> Cmd Msg
+createNewTag : CreateTagModuleModel -> Cmd Msg
 createNewTag model =
     Http.post
         { url = apiURL ++ "tags"
@@ -77,10 +77,10 @@ createNewTag model =
         }
 
 
-updateExistingTag : String -> UpdateTagPageModel -> Cmd Msg
-updateExistingTag tagId model =
+updateTag : UpdateTagModuleModel -> Cmd Msg
+updateTag model =
     Http.post
-        { url = apiURL ++ "tags/" ++ tagId
+        { url = apiURL ++ "tags/" ++ model.tagId
         , body = Http.jsonBody (updateTagPageModelEncoder model)
         , expect = Http.expectString GotTagUpdateOrCreationDoneResponse
         }

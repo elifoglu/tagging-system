@@ -12,7 +12,7 @@ viewCreateContentButton model =
     case model.activePage of
         TagPage (Initialized a) ->
             button [ class "createContentButtonInHeader", onClick (ToggleCreateContentModule (not a.createContentModule.isVisible)) ]
-                [ text "+C"
+                [ text "C"
                 ]
 
         _ ->

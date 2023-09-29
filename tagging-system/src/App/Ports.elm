@@ -30,18 +30,6 @@ sendTitle model =
                 Initialized initialized ->
                     title (initialized.tag.name ++ " - tagging system")
 
-
-        CreateTagPage _ ->
-            title "create new tag - tagging system"
-
-        UpdateTagPage status ->
-            case status of
-                NoRequestSentYet ( _, tagId ) ->
-                    title <| "update tag - " ++ tagId ++ " - tagging system"
-
-                _ ->
-                    Cmd.none
-
         ContentSearchPage _ _ ->
             title "içerik ara - tagging system"
 

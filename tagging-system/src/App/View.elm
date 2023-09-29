@@ -41,11 +41,21 @@ view model =
                                         GotContentToUpdate updateContentPageData ->
                                             viewUpdateContentDiv updateContentPageData updateContentPageData.contentId
 
+                                        UpdateRequestIsSent updateContentPageData ->
+                                            viewUpdateContentDiv updateContentPageData updateContentPageData.contentId
+
                                         NotInitializedYet _ ->
                                             text ""
 
-                                        UpdateRequestIsSent _ ->
-                                            text "..."
+                                  else
+                                    text ""
+                                , if initialized.createTagModule.isVisible then
+                                    viewCreateTagDiv initialized.createTagModule.model
+
+                                  else
+                                    text ""
+                                , if initialized.updateTagModule.isVisible then
+                                    viewUpdateTagDiv initialized.updateTagModule.model initialized.updateTagModule.model.tagId
 
                                   else
                                     text ""
@@ -63,22 +73,6 @@ view model =
                                 [ viewContentDiv Nothing content
                                 , a [ href ("/update/content/" ++ String.fromInt content.contentId), class "updateContentLink" ] [ text "(update this content)" ]
                                 ]
-
-                    CreateTagPage status ->
-                        case status of
-                            NoRequestSentYet createTagPageModel ->
-                                [ viewCreateTagDiv createTagPageModel ]
-
-                            RequestSent _ ->
-                                [ text "..." ]
-
-                    UpdateTagPage status ->
-                        case status of
-                            NoRequestSentYet ( updateTagPageModel, tagId ) ->
-                                [ viewUpdateTagDiv updateTagPageModel tagId ]
-
-                            RequestSent _ ->
-                                [ text "..." ]
 
                     ContentSearchPage searchKeyword contents ->
                         [ viewSearchContentDiv searchKeyword contents ]

@@ -1,6 +1,6 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagPageModel, Page, UpdateContentModuleData, UpdateTagPageModel)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Page, UpdateContentModuleData, UpdateTagModuleModel)
 import Browser
 import Browser.Dom as Dom
 import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
@@ -23,13 +23,14 @@ type Msg
     | GotContentCreationResponse (Result Http.Error GotContent)
     | CreateContentModuleInputChanged ContentInputTypeForContentCreation String
     | UpdateContentModuleInputChanged ContentInputTypeForContentUpdate String
-    | TagInputChanged TagInputType
-    | CreateContent CreateContentModuleModel
+    | CreateTagModuleInputChanged TagInputType
+    | UpdateTagModuleInputChanged TagInputType
+    | CreateContent
     | ToggleCreateContentModule Bool
     | ToggleCreateTagModule Bool
-    | UpdateContent ContentID UpdateContentModuleData
-    | CreateTag CreateTagPageModel
-    | UpdateTag String UpdateTagPageModel
+    | UpdateContent
+    | CreateTag
+    | UpdateTag
     | GotTagUpdateOrCreationDoneResponse (Result Http.Error String)
     | GotTimeZone Time.Zone
 
@@ -46,6 +47,5 @@ type ContentInputTypeForContentUpdate
     | TagsU
 
 type TagInputType
-    = TagId String
-    | Name String
+    = Name String
     | InfoContentId String

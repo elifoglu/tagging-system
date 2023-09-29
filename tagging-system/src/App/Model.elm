@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel(..), UpdateContentModuleData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, defaultCreateContentModuleModelData, defaultUpdateContentModuleModelData, UpdateContentModuleModelData, CreateContentModuleModelData)
+module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel(..), UpdateContentModuleData, UpdateTagModuleModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, defaultCreateContentModuleModelData, defaultUpdateContentModuleModelData, UpdateContentModuleModelData, CreateContentModuleModelData, defaultCreateTagModuleModelData, defaultUpdateTagModuleModelData, CreateTagModuleModelData, UpdateTagModuleModelData)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -71,6 +71,8 @@ type alias InitializedTagPageModel =
     , textParts : List TagTextPart
     , createContentModule : CreateContentModuleModelData
     , updateContentModule : UpdateContentModuleModelData
+    , createTagModule : CreateTagModuleModelData
+    , updateTagModule : UpdateTagModuleModelData
     }
 
 
@@ -84,6 +86,16 @@ defaultUpdateContentModuleModelData =
     , model = NotInitializedYet 0
     }
 
+defaultCreateTagModuleModelData =
+    { isVisible = True
+    , model = CreateTagModuleModel ""
+    }
+
+defaultUpdateTagModuleModelData =
+    { isVisible = False
+    , model = UpdateTagModuleModel "" "" ""
+    }
+
 
 type alias CreateContentModuleModelData =
     { isVisible : Bool
@@ -94,6 +106,16 @@ type alias CreateContentModuleModelData =
 type alias UpdateContentModuleModelData =
     { isVisible : Bool
     , model : UpdateContentModuleModel
+    }
+
+type alias CreateTagModuleModelData =
+    { isVisible : Bool
+    , model : CreateTagModuleModel
+    }
+
+type alias UpdateTagModuleModelData =
+    { isVisible : Bool
+    , model : UpdateTagModuleModel
     }
 
 
@@ -117,8 +139,6 @@ homepage =
 type Page
     = ContentPage (Initializable Int Content)
     | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
-    | CreateTagPage (MaySendRequest CreateTagPageModel CreateTagPageModel)
-    | UpdateTagPage (MaySendRequest ( UpdateTagPageModel, String ) UpdateTagPageModel)
     | ContentSearchPage String (List Content)
     | NotFoundPage
     | MaintenancePage
@@ -144,27 +164,26 @@ type alias CreateContentModuleModel =
 
 type alias UpdateContentModuleData =
     { contentId : ContentID
-    , maybeContentToPreview : Maybe Content
     , title : String
     , text : String
     , tags : String
     }
 
 
-type alias CreateTagPageModel =
-    { tagId : String
-    , name : String
+type alias CreateTagModuleModel =
+    { name : String
     }
 
 
-type alias UpdateTagPageModel =
-    { infoContentId : String
+type alias UpdateTagModuleModel =
+    { tagId: String
+    , name: String
+    , infoContentId : String
     }
 
 setUpdateContentPageModel : Content -> UpdateContentModuleData
 setUpdateContentPageModel content =
     { contentId = content.contentId
-    , maybeContentToPreview = Just content
     , title = Maybe.withDefault "" content.title
     , text = content.text
     , tags = String.join "," (List.map (\tag -> tag.name) content.tags)
@@ -204,15 +223,14 @@ updateContentPageDataEncoder contentId model =
         ]
 
 
-createTagPageModelEncoder : CreateTagPageModel -> Encode.Value
+createTagPageModelEncoder : CreateTagModuleModel -> Encode.Value
 createTagPageModelEncoder model =
     Encode.object
-        [ ( "tagId", Encode.string model.tagId )
-        , ( "name", Encode.string model.name )
+        [ ( "name", Encode.string model.name )
         ]
 
 
-updateTagPageModelEncoder : UpdateTagPageModel -> Encode.Value
+updateTagPageModelEncoder : UpdateTagModuleModel -> Encode.Value
 updateTagPageModelEncoder model =
     Encode.object
         [ ( "infoContentId", Encode.string model.infoContentId )
