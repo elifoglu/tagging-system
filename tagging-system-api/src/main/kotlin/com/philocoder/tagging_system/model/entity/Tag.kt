@@ -1,10 +1,10 @@
 package com.philocoder.tagging_system.model.entity
 
-import arrow.core.extensions.list.foldable.exists
-import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.CreateTagRequest
+import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.repository.TagRepository
+import org.apache.commons.lang3.RandomStringUtils
 import java.util.*
 
 data class Tag(
@@ -15,27 +15,19 @@ data class Tag(
     val infoContentId: Int?
 ) {
 
+    @kotlin.ExperimentalStdlibApi
     companion object {
         fun createIfValidForCreation(
             req: CreateTagRequest,
             repository: TagRepository
         ): Tag? {
-            if (req.tagId.isEmpty()
-                || req.name.isEmpty()
-            ) {
-                return null
-            }
-
-            //check if tag with specified id already exists
-            val allTags: List<Tag> = repository.getEntities()
-            if (
-                allTags.exists { it.tagId == req.tagId }
-            ) {
-                return null
-            }
+            var uniqueTagId: String
+            do {
+                uniqueTagId = RandomStringUtils.randomAlphanumeric(4).lowercase()
+            } while ( repository.findEntity(uniqueTagId) != null )
 
             return Tag(
-                tagId = req.tagId,
+                tagId = uniqueTagId,
                 name = req.name,
                 parentTags = Collections.emptyList(),
                 childTags = Collections.emptyList(),

@@ -36,7 +36,7 @@ class TagController(
     fun createTag(@RequestBody req: CreateTagRequest): String =
         Tag.createIfValidForCreation(req, tagRepository)!!
             .run {
-                tagRepository.addEntity(tagId, this)
+                tagRepository.addEntity( this)
                 "done"
             }
 
@@ -50,7 +50,7 @@ class TagController(
             .run {
                 tagRepository.deleteEntity(tagId)
                 Thread.sleep(1000)
-                tagRepository.addEntity(tagId, this)
+                tagRepository.addEntity(this)
                 "done"
             }
 

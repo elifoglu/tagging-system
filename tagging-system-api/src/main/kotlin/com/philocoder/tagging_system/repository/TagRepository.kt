@@ -18,11 +18,10 @@ open class TagRepository(
     }
 
     fun findEntity(id: String): Tag? {
-        val tags = dataHolder.data!!.tags
-        return tags.find { it.tagId == id }
+        return getEntities().find { it.tagId == id }
     }
 
-    fun addEntity(id: String, it: Tag) {
+    fun addEntity(it: Tag) {
         dataHolder.addTag(it)
     }
 
@@ -36,9 +35,5 @@ open class TagRepository(
 
     fun getHomeTag(): String {
         return dataHolder.getAllData()!!.homeTagId
-    }
-
-    fun getTagName(tagId: String): String {
-        return findEntity(tagId)?.name ?: ""
     }
 }
