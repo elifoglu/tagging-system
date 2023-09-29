@@ -1,6 +1,6 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (CreateContentPageModel, CreateTagPageModel, Page, UpdateContentPageData, UpdateTagPageModel)
+import App.Model exposing (CreateContentModuleModel, CreateTagPageModel, Page, UpdateContentModuleData, UpdateTagPageModel)
 import Browser
 import Browser.Dom as Dom
 import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
@@ -19,31 +19,31 @@ type Msg
     | FocusResult (Result Dom.Error ())
     | GotDataOfTag Tag (Result Http.Error TagDataResponse)
     | GotContent (Result Http.Error GotContent)
-    | GotContentToPreviewForCreatePage CreateContentPageModel (Result Http.Error GotContent)
-    | GotContentToPreviewForUpdatePage ContentID UpdateContentPageData (Result Http.Error GotContent)
-    | ContentInputChanged ContentInputType String
+    | GotContentUpdateResponse (Result Http.Error GotContent)
+    | GotContentCreationResponse (Result Http.Error GotContent)
+    | CreateContentModuleInputChanged ContentInputTypeForContentCreation String
+    | UpdateContentModuleInputChanged ContentInputTypeForContentUpdate String
     | TagInputChanged TagInputType
-    | PreviewContent PreviewContentModel
-    | CreateContent CreateContentPageModel
-    | UpdateContent ContentID UpdateContentPageData
+    | CreateContent CreateContentModuleModel
+    | ToggleCreateContentModule Bool
+    | ToggleCreateTagModule Bool
+    | UpdateContent ContentID UpdateContentModuleData
     | CreateTag CreateTagPageModel
     | UpdateTag String UpdateTagPageModel
     | GotTagUpdateOrCreationDoneResponse (Result Http.Error String)
     | GotTimeZone Time.Zone
 
 
-type PreviewContentModel
-    = PreviewForContentCreate CreateContentPageModel
-    | PreviewForContentUpdate ContentID UpdateContentPageData
-
-
-type ContentInputType
-    = Id
-    | Title
+type ContentInputTypeForContentCreation
+    = Title
     | Text
     | Tags
-    | ContentToCopy
 
+
+type ContentInputTypeForContentUpdate
+    = TitleU
+    | TextU
+    | TagsU
 
 type TagInputType
     = TagId String

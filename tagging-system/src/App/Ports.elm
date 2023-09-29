@@ -1,6 +1,6 @@
 port module App.Ports exposing (consoleLog, sendTitle, title)
 
-import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..), UpdateContentPageModel(..))
+import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..), UpdateContentModuleModel(..))
 
 
 port title : String -> Cmd a
@@ -30,23 +30,6 @@ sendTitle model =
                 Initialized initialized ->
                     title (initialized.tag.name ++ " - tagging system")
 
-        CreateContentPage _ ->
-            title "create new content - tagging system"
-
-        UpdateContentPage status ->
-            case status of
-                NotInitializedYet _ ->
-                    title <| "update content - tagging system"
-
-                GotContentToUpdate updateContentPageData ->
-                    if String.isEmpty updateContentPageData.title then
-                        title <| "update content - " ++ String.fromInt updateContentPageData.contentId ++ " - tagging system"
-
-                    else
-                        title <| "update content - " ++ updateContentPageData.title ++ " - tagging system"
-
-                UpdateRequestIsSent _ ->
-                    Cmd.none
 
         CreateTagPage _ ->
             title "create new tag - tagging system"

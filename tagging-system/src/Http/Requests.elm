@@ -1,7 +1,7 @@
-module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, postNewContent, updateContent, updateExistingTag)
 
-import App.Model exposing (CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentPageData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
-import App.Msg exposing (Msg(..), PreviewContentModel(..))
+import App.Model exposing (CreateContentModuleModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+import App.Msg exposing (Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
 import Json.Encode as Encode
@@ -50,7 +50,7 @@ getContent contentId =
         }
 
 
-postNewContent : CreateContentPageModel -> Cmd Msg
+postNewContent : CreateContentModuleModel -> Cmd Msg
 postNewContent model =
     Http.post
         { url = apiURL ++ "contents"
@@ -59,31 +59,13 @@ postNewContent model =
         }
 
 
-updateExistingContent : ContentID -> UpdateContentPageData -> Cmd Msg
-updateExistingContent contentId model =
+updateContent : ContentID -> UpdateContentModuleData -> Cmd Msg
+updateContent contentId model =
     Http.post
         { url = apiURL ++ "contents/" ++ String.fromInt contentId
         , body = Http.jsonBody (updateContentPageDataEncoder contentId model)
         , expect = Http.expectJson GotContent contentDecoder
         }
-
-
-previewContent : PreviewContentModel -> Cmd Msg
-previewContent model =
-    case model of
-        PreviewForContentCreate createContentPageModel ->
-            Http.post
-                { url = apiURL ++ "preview-content"
-                , body = Http.jsonBody (createContentPageModelEncoder createContentPageModel)
-                , expect = Http.expectJson (GotContentToPreviewForCreatePage createContentPageModel) contentDecoder
-                }
-
-        PreviewForContentUpdate contentID updateContentPageData ->
-            Http.post
-                { url = apiURL ++ "preview-content"
-                , body = Http.jsonBody (updateContentPageDataEncoder contentID updateContentPageData)
-                , expect = Http.expectJson (GotContentToPreviewForUpdatePage contentID updateContentPageData) contentDecoder
-                }
 
 
 createNewTag : CreateTagPageModel -> Cmd Msg

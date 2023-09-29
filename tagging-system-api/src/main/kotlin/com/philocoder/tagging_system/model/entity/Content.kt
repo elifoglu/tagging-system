@@ -3,7 +3,6 @@ package com.philocoder.tagging_system.model.entity
 import arrow.core.extensions.list.foldable.exists
 import arrow.core.extensions.list.foldable.forAll
 import com.philocoder.tagging_system.model.ContentID
-import com.philocoder.tagging_system.model.request.ContentRequest
 import com.philocoder.tagging_system.model.request.CreateContentRequest
 import com.philocoder.tagging_system.model.request.UpdateContentRequest
 import com.philocoder.tagging_system.repository.ContentRepository
@@ -60,39 +59,6 @@ data class Content(
                 textToSearchOn = null
             )
         }
-
-        fun createIfValidForPreview(
-            contentId: ContentID,
-            req: ContentRequest,
-            contentRepository: ContentRepository,
-            tagRepository: TagRepository
-        ): Content? {
-            if (req.text.isEmpty()
-                || req.tags.isEmpty()
-            ) {
-                return null
-            }
-
-            //check if every entered tag name exists
-            val tagNames = req.tags.split(",")
-            val allTags = tagRepository.getEntities()
-            val allTagNamesExists = tagNames.forAll { tagName ->
-                allTags.exists { it.name == tagName }
-            }
-            if (!allTagNamesExists) {
-                return null
-            }
-
-            return Content(
-                title = if (req.title.isNullOrEmpty()) null else req.title,
-                contentId = contentId,
-                content = req.text,
-                tags = tagNames,
-                dateAsTimestamp = Calendar.getInstance().timeInMillis,
-                textToSearchOn = null
-            )
-        }
-
 
         fun createIfValidForUpdate(
             contentId: ContentID,

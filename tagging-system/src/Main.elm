@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import App.Model exposing (..)
-import App.Msg exposing (ContentInputType(..), Msg(..), TagInputType(..))
+import App.Msg exposing (ContentInputTypeForContentCreation(..), ContentInputTypeForContentUpdate(..), Msg(..), TagInputType(..))
 import App.Ports exposing (sendTitle)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
@@ -12,7 +12,7 @@ import Component.Page.Util exposing (tagsNotLoaded)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import List
-import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, postNewContent, previewContent, updateExistingContent, updateExistingTag)
+import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, postNewContent, updateContent, updateExistingTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
@@ -84,14 +84,6 @@ getCmdToSendByPage model =
                         Initialized _ ->
                             Cmd.none
 
-                UpdateContentPage status ->
-                    case status of
-                        NotInitializedYet contentID ->
-                            getContent contentID
-
-                        _ ->
-                            Cmd.none
-
                 _ ->
                     Cmd.none
         ]
@@ -152,35 +144,62 @@ update msg model =
                         content =
                             gotContentToContent model gotContent
 
-                        contentPage =
-                            ContentPage <| Initialized content
-
                         newActivePage =
                             case model.activePage of
                                 ContentPage (NonInitialized _) ->
                                     ContentPage <| Initialized content
 
-                                CreateContentPage status ->
-                                    case status of
-                                        NoRequestSentYet _ ->
-                                            CreateContentPage <|
-                                                NoRequestSentYet (setCreateContentPageModel content)
+                                _ ->
+                                    MaintenancePage
 
-                                        RequestSent _ ->
-                                            contentPage
+                        newModel =
+                            { model | activePage = newActivePage }
+                    in
+                    ( newModel, getCmdToSendByPage newModel )
 
-                                UpdateContentPage status ->
-                                    case status of
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
+        GotContentCreationResponse result ->
+            case result of
+                Ok _ ->
+                    let
+                        newActivePage =
+                            case model.activePage of
+                                TagPage (Initialized a) ->
+                                    TagPage (Initialized { a | createContentModule = emptyCreateContentModuleModelData })
+
+                                _ ->
+                                    MaintenancePage
+
+                        newModel =
+                            { model | activePage = newActivePage }
+                    in
+                    ( newModel, getCmdToSendByPage newModel )
+
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
+        GotContentUpdateResponse result ->
+            case result of
+                Ok gotContent ->
+                    let
+                        content =
+                            gotContentToContent model gotContent
+
+                        newActivePage : Page
+                        newActivePage =
+                            case model.activePage of
+                                TagPage (Initialized a) ->
+                                    case a.updateContentModule.model of
                                         NotInitializedYet _ ->
-                                            UpdateContentPage <|
-                                                GotContentToUpdate (setUpdateContentPageModel content)
+                                            TagPage (Initialized { a | updateContentModule = { isVisible = True, model = GotContentToUpdate (setUpdateContentPageModel content) } })
 
                                         GotContentToUpdate _ ->
-                                            UpdateContentPage <|
-                                                GotContentToUpdate (setUpdateContentPageModel content)
+                                            TagPage (Initialized { a | updateContentModule = { isVisible = True, model = GotContentToUpdate (setUpdateContentPageModel content) } })
 
                                         UpdateRequestIsSent _ ->
-                                            contentPage
+                                            TagPage (Initialized { a | updateContentModule = emptyUpdateContentModuleModelData })
 
                                 _ ->
                                     MaintenancePage
@@ -202,12 +221,12 @@ update msg model =
                             case status of
                                 NonInitialized _ ->
                                     let
-                                        tagTextParts = List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textParts
-
+                                        tagTextParts =
+                                            List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textParts
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts)
+                                                Initialized (InitializedTagPageModel tag tagTextParts emptyCreateContentModuleModelData emptyUpdateContentModuleModelData)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -224,123 +243,125 @@ update msg model =
                     createNewModelAndCmdMsg model MaintenancePage
 
         -- CREATE/UPDATE CONTENT PAGES --
-        ContentInputChanged inputType input ->
+        CreateContentModuleInputChanged inputType input ->
             case model.activePage of
-                CreateContentPage status ->
-                    case status of
-                        NoRequestSentYet createContentPageModel ->
-                            let
-                                newCurrentPageModel =
-                                    case inputType of
-                                        Id ->
-                                            { createContentPageModel | id = input }
+                TagPage (Initialized tagPage) ->
+                    let
+                        currentCreateContentModuleModel =
+                            tagPage.createContentModule.model
 
-                                        Title ->
-                                            { createContentPageModel | title = input }
+                        newCreateContentModuleModel : CreateContentModuleModel
+                        newCreateContentModuleModel =
+                            case inputType of
+                                Title ->
+                                    { currentCreateContentModuleModel | title = input }
 
-                                        Text ->
-                                            { createContentPageModel | text = input }
+                                Text ->
+                                    { currentCreateContentModuleModel | text = input }
 
-                                        Tags ->
-                                            { createContentPageModel | tags = input }
+                                Tags ->
+                                    { currentCreateContentModuleModel | tags = input }
 
-                                        ContentToCopy ->
-                                            { createContentPageModel | contentIdToCopy = input }
-                            in
-                            ( { model | activePage = CreateContentPage <| NoRequestSentYet newCurrentPageModel }, Cmd.none )
+                        currentModule =
+                            tagPage.createContentModule
 
-                        _ ->
-                            ( model, Cmd.none )
+                        newModule : CreateContentModuleModelData
+                        newModule =
+                            { currentModule | model = newCreateContentModuleModel }
 
-                UpdateContentPage status ->
-                    case status of
-                        GotContentToUpdate updateContentPageData ->
-                            let
-                                newCurrentPageModel =
-                                    case inputType of
-                                        Id ->
-                                            updateContentPageData
+                        newTagPage =
+                            TagPage (Initialized { tagPage | createContentModule = newModule })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
 
-                                        Title ->
-                                            { updateContentPageData | title = input }
+                _ ->
+                    createNewModelAndCmdMsg model MaintenancePage
 
-                                        Text ->
-                                            { updateContentPageData | text = input }
+        UpdateContentModuleInputChanged inputType input ->
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    let
+                        currentUpdateContentModuleModel =
+                            tagPage.updateContentModule.model
 
-                                        Tags ->
-                                            { updateContentPageData | tags = input }
+                        newUpdateContentModuleModel : UpdateContentModuleModel
+                        newUpdateContentModuleModel =
+                            case currentUpdateContentModuleModel of
+                                GotContentToUpdate updateContentPageData ->
+                                    GotContentToUpdate <|
+                                        case inputType of
+                                            TitleU ->
+                                                { updateContentPageData | title = input }
 
-                                        ContentToCopy ->
-                                            updateContentPageData
-                            in
-                            ( { model | activePage = UpdateContentPage <| GotContentToUpdate newCurrentPageModel }, Cmd.none )
+                                            TextU ->
+                                                { updateContentPageData | text = input }
 
-                        _ ->
-                            ( model, Cmd.none )
+                                            TagsU ->
+                                                { updateContentPageData | tags = input }
+
+                                other ->
+                                    other
+
+                        currentModule =
+                            tagPage.updateContentModule
+
+                        newModule : UpdateContentModuleModelData
+                        newModule =
+                            { currentModule | model = newUpdateContentModuleModel }
+
+                        newTagPage =
+                            TagPage (Initialized { tagPage | updateContentModule = newModule })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
+
+                _ ->
+                    createNewModelAndCmdMsg model MaintenancePage
+
+        CreateContent _ ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    ( model, postNewContent a.createContentModule.model )
 
                 _ ->
                     ( model, Cmd.none )
 
-        PreviewContent previewContentModel ->
-            ( model
-            , previewContent previewContentModel
-            )
-
-        GotContentToPreviewForCreatePage createContentPageModel result ->
-            case result of
-                Ok gotContentToPreview ->
+        ToggleCreateContentModule bool ->
+            case model.activePage of
+                TagPage (Initialized a) ->
                     let
-                        content =
-                            gotContentToContent model gotContentToPreview
+                        currentCreateContentModule : CreateContentModuleModelData
+                        currentCreateContentModule =
+                            a.createContentModule
 
-                        newCreateContentPageModel =
-                            { createContentPageModel | maybeContentToPreview = Just content }
+                        newCreateContentModule : CreateContentModuleModelData
+                        newCreateContentModule =
+                            { currentCreateContentModule | isVisible = bool }
+
+                        newA =
+                            { a | createContentModule = newCreateContentModule }
+
+                        newModel =
+                            { model | activePage = TagPage (Initialized newA) }
                     in
-                    ( { model | activePage = CreateContentPage <| NoRequestSentYet newCreateContentPageModel }
-                    , Cmd.none
-                    )
+                    ( newModel, Cmd.none )
 
-                Err _ ->
-                    let
-                        newCreateContentPageModel =
-                            { createContentPageModel | maybeContentToPreview = Nothing }
-                    in
-                    ( { model | activePage = CreateContentPage <| NoRequestSentYet newCreateContentPageModel }
-                    , Cmd.none
-                    )
-
-        CreateContent createContentPageModel ->
-            ( { model | activePage = CreateContentPage <| RequestSent createContentPageModel }
-            , postNewContent createContentPageModel
-            )
-
-        GotContentToPreviewForUpdatePage contentID updateContentPageData result ->
-            case result of
-                Ok gotContentToPreview ->
-                    let
-                        content =
-                            gotContentToContent model gotContentToPreview
-
-                        newUpdateContentPageModel =
-                            { updateContentPageData | maybeContentToPreview = Just content }
-                    in
-                    ( { model | activePage = UpdateContentPage <| GotContentToUpdate newUpdateContentPageModel }
-                    , Cmd.none
-                    )
-
-                Err _ ->
-                    let
-                        newUpdateContentPageModel =
-                            { updateContentPageData | maybeContentToPreview = Nothing }
-                    in
-                    ( { model | activePage = UpdateContentPage <| GotContentToUpdate newUpdateContentPageModel }
-                    , Cmd.none
-                    )
+                _ ->
+                    ( model, Cmd.none )
 
         UpdateContent contentID updateContentPageData ->
-            ( { model | activePage = UpdateContentPage <| UpdateRequestIsSent updateContentPageData }
-            , updateExistingContent contentID updateContentPageData
-            )
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    let
+                        currentUpdateContentModule =
+                            a.updateContentModule
+
+                        newUpdateContentModule =
+                            { currentUpdateContentModule | model = UpdateRequestIsSent updateContentPageData }
+                    in
+                    ( { model | activePage = TagPage (Initialized { a | updateContentModule = newUpdateContentModule }) }, updateContent contentID updateContentPageData )
+
+                _ ->
+                    ( model, Cmd.none )
 
         -- CREATE/UPDATE TAG PAGES --
         TagInputChanged inputType ->
@@ -464,4 +485,4 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-            Sub.none
+    Sub.none

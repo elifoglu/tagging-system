@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentPageModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentPageData, UpdateContentPageModel(..), UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setCreateContentPageModel, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
+module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel(..), UpdateContentModuleData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, emptyCreateContentModuleModelData, emptyUpdateContentModuleModelData, UpdateContentModuleModelData, CreateContentModuleModelData)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -50,10 +50,10 @@ type MaySendRequest pageData requestSentData
     | RequestSent requestSentData
 
 
-type UpdateContentPageModel
+type UpdateContentModuleModel
     = NotInitializedYet ContentID
-    | GotContentToUpdate UpdateContentPageData
-    | UpdateRequestIsSent UpdateContentPageData
+    | GotContentToUpdate UpdateContentModuleData
+    | UpdateRequestIsSent UpdateContentModuleData
 
 
 type alias NonInitializedYetTagPageModel =
@@ -69,6 +69,31 @@ type TagIdInputType
 type alias InitializedTagPageModel =
     { tag : Tag
     , textParts : List TagTextPart
+    , createContentModule : CreateContentModuleModelData
+    , updateContentModule : UpdateContentModuleModelData
+    }
+
+
+emptyCreateContentModuleModelData =
+    { isVisible = False
+    , model = CreateContentModuleModel "" "" "" ""
+    }
+
+emptyUpdateContentModuleModelData =
+    { isVisible = False
+    , model = NotInitializedYet 0
+    }
+
+
+type alias CreateContentModuleModelData =
+    { isVisible : Bool
+    , model : CreateContentModuleModel
+    }
+
+
+type alias UpdateContentModuleModelData =
+    { isVisible : Bool
+    , model : UpdateContentModuleModel
     }
 
 
@@ -92,8 +117,6 @@ homepage =
 type Page
     = ContentPage (Initializable Int Content)
     | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
-    | CreateContentPage (MaySendRequest CreateContentPageModel CreateContentPageModel)
-    | UpdateContentPage UpdateContentPageModel
     | CreateTagPage (MaySendRequest CreateTagPageModel CreateTagPageModel)
     | UpdateTagPage (MaySendRequest ( UpdateTagPageModel, String ) UpdateTagPageModel)
     | ContentSearchPage String (List Content)
@@ -111,17 +134,15 @@ type alias GetTagContentsRequestModel =
     }
 
 
-type alias CreateContentPageModel =
-    { maybeContentToPreview : Maybe Content
-    , id : String
-    , title : String
+type alias CreateContentModuleModel =
+    { title : String
     , text : String
     , tags : String
     , contentIdToCopy : String
     }
 
 
-type alias UpdateContentPageData =
+type alias UpdateContentModuleData =
     { contentId : ContentID
     , maybeContentToPreview : Maybe Content
     , title : String
@@ -140,19 +161,7 @@ type alias UpdateTagPageModel =
     { infoContentId : String
     }
 
-
-setCreateContentPageModel : Content -> CreateContentPageModel
-setCreateContentPageModel content =
-    { maybeContentToPreview = Just content
-    , id = ""
-    , title = Maybe.withDefault "" content.title
-    , text = content.text
-    , tags = String.join "," (List.map (\tag -> tag.name) content.tags)
-    , contentIdToCopy = ""
-    }
-
-
-setUpdateContentPageModel : Content -> UpdateContentPageData
+setUpdateContentPageModel : Content -> UpdateContentModuleData
 setUpdateContentPageModel content =
     { contentId = content.contentId
     , maybeContentToPreview = Just content
@@ -176,17 +185,16 @@ getTagContentsRequestModelEncoder model =
         ]
 
 
-createContentPageModelEncoder : CreateContentPageModel -> Encode.Value
+createContentPageModelEncoder : CreateContentModuleModel -> Encode.Value
 createContentPageModelEncoder model =
     Encode.object
-        [ ( "id", Encode.string model.id )
-        , ( "title", Encode.string model.title )
+        [ ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
         , ( "tags", Encode.string model.tags )
         ]
 
 
-updateContentPageDataEncoder : ContentID -> UpdateContentPageData -> Encode.Value
+updateContentPageDataEncoder : ContentID -> UpdateContentModuleData -> Encode.Value
 updateContentPageDataEncoder contentId model =
     Encode.object
         [ ( "id", Encode.string (String.fromInt contentId) )

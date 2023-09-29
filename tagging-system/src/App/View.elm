@@ -24,13 +24,32 @@ view model =
     { title = "tagging system"
     , body =
         [ div []
-            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewCreateContentButton, viewCreateTagButton ]
+            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewCreateContentButton model, viewCreateTagButton model ]
             , div [ class "body" ]
                 (case model.activePage of
                     TagPage status ->
                         case status of
                             Initialized initialized ->
-                                [ viewTagPageDiv initialized model.allTags ]
+                                [ viewTagPageDiv initialized model.allTags
+                                , if initialized.createContentModule.isVisible then
+                                    viewCreateContentDiv initialized.createContentModule.model
+
+                                  else
+                                    text ""
+                                , if initialized.updateContentModule.isVisible then
+                                    case initialized.updateContentModule.model of
+                                        GotContentToUpdate updateContentPageData ->
+                                            viewUpdateContentDiv updateContentPageData updateContentPageData.contentId
+
+                                        NotInitializedYet _ ->
+                                            text ""
+
+                                        UpdateRequestIsSent _ ->
+                                            text "..."
+
+                                  else
+                                    text ""
+                                ]
 
                             _ ->
                                 []
@@ -44,22 +63,6 @@ view model =
                                 [ viewContentDiv Nothing content
                                 , a [ href ("/update/content/" ++ String.fromInt content.contentId), class "updateContentLink" ] [ text "(update this content)" ]
                                 ]
-
-                    CreateContentPage status ->
-                        case status of
-                            NoRequestSentYet createContentPageModel ->
-                                [ viewCreateContentDiv createContentPageModel ]
-
-                            RequestSent _ ->
-                                [ text "..." ]
-
-                    UpdateContentPage updateContentPageModel ->
-                        case updateContentPageModel of
-                            GotContentToUpdate updateContentPageData ->
-                                [ viewUpdateContentDiv updateContentPageData updateContentPageData.maybeContentToPreview updateContentPageData.contentId ]
-
-                            _ ->
-                                [ text "..." ]
 
                     CreateTagPage status ->
                         case status of

@@ -58,12 +58,6 @@ class ContentController(
             .let { ContentResponse.createWith(it) }
 
     @CrossOrigin
-    @PostMapping("/preview-content")
-    fun previewContent(@RequestBody req: CreateContentRequest): ContentResponse =
-        Content.createIfValidForPreview(req.id.toInt(), req, contentRepository, tagRepository)!!
-            .let { ContentResponse.createWith(it) }
-
-    @CrossOrigin
     @PostMapping("/search")
     fun searchContent(@RequestBody req: SearchContentRequest): SearchContentResponse {
         return service.getContentsResponseByKeywordSearch(req)
