@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel(..), UpdateContentModuleData, UpdateTagModuleModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, defaultCreateContentModuleModelData, defaultUpdateContentModuleModelData, UpdateContentModuleModelData, CreateContentModuleModelData, defaultCreateTagModuleModelData, defaultUpdateTagModuleModelData, CreateTagModuleModelData, UpdateTagModuleModelData)
+module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateContentModule, CreateTagModuleModel, CreateTagModule, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleData, UpdateContentModuleModel(..), UpdateContentModule, UpdateTagModuleModel, UpdateTagModule, createContentPageModelEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -23,6 +23,19 @@ type alias Model =
 
 type alias LocalStorage =
     {}
+
+
+homepage : Page
+homepage =
+    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput))
+
+
+type Page
+    = ContentPage (Initializable Int Content)
+    | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
+    | ContentSearchPage String (List Content)
+    | NotFoundPage
+    | MaintenancePage
 
 
 type alias ContentToAddToBottom =
@@ -69,51 +82,56 @@ type TagIdInputType
 type alias InitializedTagPageModel =
     { tag : Tag
     , textParts : List TagTextPart
-    , createContentModule : CreateContentModuleModelData
-    , updateContentModule : UpdateContentModuleModelData
-    , createTagModule : CreateTagModuleModelData
-    , updateTagModule : UpdateTagModuleModelData
+    , createContentModule : CreateContentModule
+    , updateContentModule : UpdateContentModule
+    , createTagModule : CreateTagModule
+    , updateTagModule : UpdateTagModule
     }
 
 
-defaultCreateContentModuleModelData =
+defaultCreateContentModule =
     { isVisible = True
     , model = CreateContentModuleModel "" "" "" ""
     }
 
-defaultUpdateContentModuleModelData =
+
+defaultUpdateContentModule =
     { isVisible = False
     , model = NotInitializedYet 0
     }
 
-defaultCreateTagModuleModelData =
+
+defaultCreateTagModule =
     { isVisible = True
     , model = CreateTagModuleModel ""
     }
 
-defaultUpdateTagModuleModelData =
+
+defaultUpdateTagModule =
     { isVisible = False
     , model = UpdateTagModuleModel "" "" ""
     }
 
 
-type alias CreateContentModuleModelData =
+type alias CreateContentModule =
     { isVisible : Bool
     , model : CreateContentModuleModel
     }
 
 
-type alias UpdateContentModuleModelData =
+type alias UpdateContentModule =
     { isVisible : Bool
     , model : UpdateContentModuleModel
     }
 
-type alias CreateTagModuleModelData =
+
+type alias CreateTagModule =
     { isVisible : Bool
     , model : CreateTagModuleModel
     }
 
-type alias UpdateTagModuleModelData =
+
+type alias UpdateTagModule =
     { isVisible : Bool
     , model : UpdateTagModuleModel
     }
@@ -129,19 +147,6 @@ type alias AllTagsToShow =
 
 type alias ContentIDToColorize =
     Maybe ContentID
-
-
-homepage : Page
-homepage =
-    TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput))
-
-
-type Page
-    = ContentPage (Initializable Int Content)
-    | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
-    | ContentSearchPage String (List Content)
-    | NotFoundPage
-    | MaintenancePage
 
 
 type alias GetContentRequestModel =
@@ -176,10 +181,11 @@ type alias CreateTagModuleModel =
 
 
 type alias UpdateTagModuleModel =
-    { tagId: String
-    , name: String
+    { tagId : String
+    , name : String
     , infoContentId : String
     }
+
 
 setUpdateContentPageModel : Content -> UpdateContentModuleData
 setUpdateContentPageModel content =
@@ -223,8 +229,8 @@ updateContentPageDataEncoder contentId model =
         ]
 
 
-createTagPageModelEncoder : CreateTagModuleModel -> Encode.Value
-createTagPageModelEncoder model =
+createTagRequestEncoder : CreateTagModuleModel -> Encode.Value
+createTagRequestEncoder model =
     Encode.object
         [ ( "name", Encode.string model.name )
         ]

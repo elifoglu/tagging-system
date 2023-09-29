@@ -1,6 +1,6 @@
-module Requests exposing (createNewTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createNewContent, updateContent, updateTag)
+module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleData, UpdateTagModuleModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleData, UpdateTagModuleModel, createContentPageModelEncoder, createTagRequestEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
@@ -50,8 +50,8 @@ getContent contentId =
         }
 
 
-createNewContent : CreateContentModuleModel -> Cmd Msg
-createNewContent model =
+createContent : CreateContentModuleModel -> Cmd Msg
+createContent model =
     Http.post
         { url = apiURL ++ "contents"
         , body = Http.jsonBody (createContentPageModelEncoder model)
@@ -68,11 +68,11 @@ updateContent contentId model =
         }
 
 
-createNewTag : CreateTagModuleModel -> Cmd Msg
-createNewTag model =
+createTag : CreateTagModuleModel -> Cmd Msg
+createTag model =
     Http.post
         { url = apiURL ++ "tags"
-        , body = Http.jsonBody (createTagPageModelEncoder model)
+        , body = Http.jsonBody (createTagRequestEncoder model)
         , expect = Http.expectString GotTagUpdateOrCreationDoneResponse
         }
 

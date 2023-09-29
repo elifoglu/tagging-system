@@ -33,7 +33,7 @@ class TagController(
 
     @CrossOrigin
     @PostMapping("/tags")
-    fun addTag(@RequestBody req: CreateTagRequest): String =
+    fun createTag(@RequestBody req: CreateTagRequest): String =
         Tag.createIfValidForCreation(req, tagRepository)!!
             .run {
                 tagRepository.addEntity(tagId, this)

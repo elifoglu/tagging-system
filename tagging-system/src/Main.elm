@@ -12,7 +12,7 @@ import Component.Page.Util exposing (tagsNotLoaded)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import List
-import Requests exposing (createNewTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, createNewContent, updateContent, updateTag)
+import Requests exposing (createTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
@@ -167,7 +167,7 @@ update msg model =
                         newActivePage =
                             case model.activePage of
                                 TagPage (Initialized a) ->
-                                    TagPage (Initialized { a | createContentModule = defaultCreateContentModuleModelData })
+                                    TagPage (Initialized { a | createContentModule = defaultCreateContentModule })
 
                                 _ ->
                                     MaintenancePage
@@ -199,7 +199,7 @@ update msg model =
                                             TagPage (Initialized { a | updateContentModule = { isVisible = True, model = GotContentToUpdate (setUpdateContentPageModel content) } })
 
                                         UpdateRequestIsSent _ ->
-                                            TagPage (Initialized { a | updateContentModule = defaultUpdateContentModuleModelData })
+                                            TagPage (Initialized { a | updateContentModule = defaultUpdateContentModule })
 
                                 _ ->
                                     MaintenancePage
@@ -226,7 +226,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts defaultCreateContentModuleModelData defaultUpdateContentModuleModelData defaultCreateTagModuleModelData defaultUpdateTagModuleModelData)
+                                                Initialized (InitializedTagPageModel tag tagTextParts defaultCreateContentModule defaultUpdateContentModule defaultCreateTagModule defaultUpdateTagModule)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -265,7 +265,7 @@ update msg model =
                         currentModule =
                             tagPage.createContentModule
 
-                        newModule : CreateContentModuleModelData
+                        newModule : CreateContentModule
                         newModule =
                             { currentModule | model = newCreateContentModuleModel }
 
@@ -305,7 +305,7 @@ update msg model =
                         currentModule =
                             tagPage.updateContentModule
 
-                        newModule : UpdateContentModuleModelData
+                        newModule : UpdateContentModule
                         newModule =
                             { currentModule | model = newUpdateContentModuleModel }
 
@@ -320,7 +320,7 @@ update msg model =
         CreateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, createNewContent a.createContentModule.model )
+                    ( model, createContent a.createContentModule.model )
 
                 _ ->
                     ( model, Cmd.none )
@@ -329,11 +329,11 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
-                        currentCreateContentModule : CreateContentModuleModelData
+                        currentCreateContentModule : CreateContentModule
                         currentCreateContentModule =
                             a.createContentModule
 
-                        newCreateContentModule : CreateContentModuleModelData
+                        newCreateContentModule : CreateContentModule
                         newCreateContentModule =
                             { currentCreateContentModule | isVisible = bool }
 
@@ -430,7 +430,7 @@ update msg model =
         CreateTag ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, createNewTag a.createTagModule.model )
+                    ( model, createTag a.createTagModule.model )
 
                 _ ->
                     ( model, Cmd.none )
@@ -439,11 +439,11 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
-                        currentCreateTagModule : CreateTagModuleModelData
+                        currentCreateTagModule : CreateTagModule
                         currentCreateTagModule =
                             a.createTagModule
 
-                        newCreateTagModule : CreateTagModuleModelData
+                        newCreateTagModule : CreateTagModule
                         newCreateTagModule =
                             { currentCreateTagModule | isVisible = bool }
 
