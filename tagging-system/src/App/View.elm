@@ -67,7 +67,7 @@ view model =
                     CreateTagPage status ->
                         case status of
                             NoRequestSentYet createTagPageModel ->
-                                [ viewCreateTagDiv model createTagPageModel ]
+                                [ viewCreateTagDiv createTagPageModel ]
 
                             RequestSent _ ->
                                 [ text "..." ]

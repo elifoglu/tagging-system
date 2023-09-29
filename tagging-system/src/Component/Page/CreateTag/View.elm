@@ -7,21 +7,18 @@ import Html.Attributes exposing (checked, placeholder, selected, style, type_, v
 import Html.Events exposing (onCheck, onClick, onInput)
 
 
-viewCreateTagDiv : Model -> CreateTagPageModel -> Html Msg
-viewCreateTagDiv model createTagPageModel =
+viewCreateTagDiv : CreateTagPageModel -> Html Msg
+viewCreateTagDiv createTagPageModel =
     div [] <|
         List.intersperse (br [] [])
-            [ viewInput "text" "tagId" createTagPageModel.tagId (createTagInputMessage TagId)
-            , viewInput "text" "name" createTagPageModel.name (createTagInputMessage Name)
-            , div []
-                [ viewCreateTagButton (CreateTag createTagPageModel)
-                ]
+            [ viewInput "text" "name" createTagPageModel.name (createTagInputMessage Name)
+            , viewCreateTagButton (CreateTag createTagPageModel)
             ]
 
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, selected True, onInput toMsg, style "width" "1000px" ] []
+    input [ type_ t, placeholder p, value v, selected True, onInput toMsg, style "width" "100px" ] []
 
 
 createTagInputMessage : (eitherStringOrBool -> TagInputType) -> eitherStringOrBool -> Msg
