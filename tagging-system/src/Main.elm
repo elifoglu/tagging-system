@@ -167,7 +167,7 @@ update msg model =
                         newActivePage =
                             case model.activePage of
                                 TagPage (Initialized a) ->
-                                    TagPage (Initialized { a | createContentModule = emptyCreateContentModuleModelData })
+                                    TagPage (Initialized { a | createContentModule = defaultCreateContentModuleModelData })
 
                                 _ ->
                                     MaintenancePage
@@ -199,7 +199,7 @@ update msg model =
                                             TagPage (Initialized { a | updateContentModule = { isVisible = True, model = GotContentToUpdate (setUpdateContentPageModel content) } })
 
                                         UpdateRequestIsSent _ ->
-                                            TagPage (Initialized { a | updateContentModule = emptyUpdateContentModuleModelData })
+                                            TagPage (Initialized { a | updateContentModule = defaultUpdateContentModuleModelData })
 
                                 _ ->
                                     MaintenancePage
@@ -226,7 +226,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts emptyCreateContentModuleModelData emptyUpdateContentModuleModelData)
+                                                Initialized (InitializedTagPageModel tag tagTextParts defaultCreateContentModuleModelData defaultUpdateContentModuleModelData)
 
                                         newModel =
                                             { model | activePage = newPage }

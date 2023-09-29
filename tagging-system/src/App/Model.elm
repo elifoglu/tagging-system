@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel(..), UpdateContentModuleData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, emptyCreateContentModuleModelData, emptyUpdateContentModuleModelData, UpdateContentModuleModelData, CreateContentModuleModelData)
+module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateTagPageModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel(..), UpdateContentModuleData, UpdateTagPageModel, createContentPageModelEncoder, createTagPageModelEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder, defaultCreateContentModuleModelData, defaultUpdateContentModuleModelData, UpdateContentModuleModelData, CreateContentModuleModelData)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -74,12 +74,12 @@ type alias InitializedTagPageModel =
     }
 
 
-emptyCreateContentModuleModelData =
-    { isVisible = False
+defaultCreateContentModuleModelData =
+    { isVisible = True
     , model = CreateContentModuleModel "" "" "" ""
     }
 
-emptyUpdateContentModuleModelData =
+defaultUpdateContentModuleModelData =
     { isVisible = False
     , model = NotInitializedYet 0
     }
