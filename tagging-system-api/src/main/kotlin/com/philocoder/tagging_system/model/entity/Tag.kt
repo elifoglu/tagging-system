@@ -24,6 +24,9 @@ data class Tag(
             req: CreateTagRequest,
             repository: TagRepository
         ): Tag? {
+            if (req.name.isEmpty())
+                return null
+
             var uniqueTagId: String
             do {
                 uniqueTagId = RandomStringUtils.randomAlphanumeric(4).lowercase()
@@ -61,8 +64,8 @@ data class Tag(
                 parentTags = t.parentTags,
                 childTags = parentToChildTagMap[t.tagId]!!,
                 infoContentId = t.infoContentId,
-                createdAt = Calendar.getInstance().timeInMillis,
-                lastModifiedAt = Calendar.getInstance().timeInMillis,
+                createdAt = t.createdAt,
+                lastModifiedAt = t.lastModifiedAt,
                 isDeleted = false
             )
         }

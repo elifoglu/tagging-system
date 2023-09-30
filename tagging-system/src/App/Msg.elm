@@ -1,6 +1,5 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Page, UpdateContentModuleData, UpdateTagModuleModel)
 import Browser
 import Browser.Dom as Dom
 import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
