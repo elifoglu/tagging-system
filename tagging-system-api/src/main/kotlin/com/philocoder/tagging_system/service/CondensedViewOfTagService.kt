@@ -23,6 +23,7 @@ class CondensedViewOfTagService(
             val tag: Tag = tagRepository.findEntity(tagId)!!
             val contentResponses: List<ContentResponse> = repository
                 .getContentsForTag(tag)
+                .filter { !it.isDeleted }
                 .map { ContentResponse.createWith(it) }
             tagTextParts.add(TagTextResponse.TagTextPart(TagResponse.create(tag, repository), contentResponses))
         }

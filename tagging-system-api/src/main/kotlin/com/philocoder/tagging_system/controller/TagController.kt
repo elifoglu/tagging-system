@@ -39,7 +39,7 @@ class TagController(
     fun createTag(@RequestBody req: CreateTagRequest): String =
         Tag.createIfValidForCreation(req, tagRepository)!!
             .run {
-                tagRepository.addEntity( this)
+                tagRepository.addEntity(this)
                 dataService.regenerateWholeData()
                 "done"
             }
@@ -57,6 +57,20 @@ class TagController(
                 dataService.regenerateWholeData()
                 "done"
             }
+
+    @ExperimentalStdlibApi
+    @CrossOrigin
+    @PostMapping("/delete-tag/{tagId}")
+    fun deleteTag(
+        @PathVariable("tagId") tagId: String,
+    ): String =
+        Tag.returnItsIdIfValidForDelete(tagId, tagRepository)
+            .fold({ err -> err }, { id ->
+                tagRepository.deleteEntity(id)
+                dataService.regenerateWholeData()
+                "done"
+            })
+
 
     @GetMapping("/delete-all-tags")
     fun deleteAllTags(): Unit =

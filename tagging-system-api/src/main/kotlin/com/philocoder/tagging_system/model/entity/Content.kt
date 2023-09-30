@@ -1,5 +1,6 @@
 package com.philocoder.tagging_system.model.entity
 
+import arrow.core.Either
 import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.request.CreateContentRequest
 import com.philocoder.tagging_system.model.request.UpdateContentRequest
@@ -64,6 +65,17 @@ data class Content(
                 lastModifiedAt = Calendar.getInstance().timeInMillis,
                 isDeleted = existingContent.isDeleted
             )
+        }
+
+        fun returnItsIdIfValidForDelete(
+            contentId: ContentID,
+            repository: ContentRepository,
+        ): Either<String, ContentID> {
+            //check if content with specified id exists
+            val existingContent: Content = repository.findEntity(contentId)
+                ?: return Either.left("non-existing-content")
+
+            return Either.right(existingContent.contentId)
         }
     }
 }

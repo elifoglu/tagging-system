@@ -45,7 +45,10 @@ viewContentLine content =
             ]
         , div [ class "contentLineSecondChild" ]
             [ img
-                [ class "contentEditIcon", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
+                [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
+                []
+            , img
+                [ class "contentEditAndDeleteIcons", onClick (DeleteContent content), style "margin-left" "5px", src "/delete.png" ]
                 []
             ]
         ]

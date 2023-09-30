@@ -1,5 +1,7 @@
 package com.philocoder.tagging_system.model.entity
 
+import arrow.core.Either
+import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
@@ -30,7 +32,7 @@ data class Tag(
             var uniqueTagId: String
             do {
                 uniqueTagId = RandomStringUtils.randomAlphanumeric(4).lowercase()
-            } while ( repository.findEntity(uniqueTagId) != null )
+            } while (repository.findEntity(uniqueTagId) != null)
 
             return Tag(
                 tagId = uniqueTagId,
@@ -62,6 +64,14 @@ data class Tag(
             )
         }
 
+        fun returnItsIdIfValidForDelete(tagId: String, repository: TagRepository): Either<String, TagID> {
+            //check if tag with specified id exists
+            val existingTag: Tag = repository.findEntity(tagId)
+                ?: return Either.left("non-existing-content")
+
+            return Either.right(existingTag.tagId)
+        }
+
         fun createWith(t: TagWithoutChildTags, parentToChildTagMap: HashMap<String, ArrayList<String>>): Tag {
             return Tag(
                 tagId = t.tagId,
@@ -71,7 +81,7 @@ data class Tag(
                 description = t.description,
                 createdAt = t.createdAt,
                 lastModifiedAt = t.lastModifiedAt,
-                isDeleted = false
+                isDeleted = t.isDeleted
             )
         }
 

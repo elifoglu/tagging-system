@@ -13,7 +13,7 @@ import Content.Model exposing (Content)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import List
-import Requests exposing (createContent, createTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, updateContent, updateTag)
+import Requests exposing (createContent, createTag, deleteContent, deleteTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, updateContent, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
@@ -277,29 +277,32 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        DeleteContent content ->
+            ( model, deleteContent content.contentId )
+
         ToggleUpdateContentModuleFor content ->
-                case model.activePage of
-                    TagPage (Initialized a) ->
-                        let
-                            setUpdateContentPageModel : Content -> UpdateContentModuleModel
-                            setUpdateContentPageModel c =
-                                { contentId = c.contentId
-                                , title = Maybe.withDefault "" c.title
-                                , text = c.text
-                                , tagPickerModelForTags = (TagPickerModuleModel "" (allTagOptions model.allTags) (selectedTagOptionsForContent c model.allTags) Nothing)
-                                }
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    let
+                        setUpdateContentPageModel : Content -> UpdateContentModuleModel
+                        setUpdateContentPageModel c =
+                            { contentId = c.contentId
+                            , title = Maybe.withDefault "" c.title
+                            , text = c.text
+                            , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) (selectedTagOptionsForContent c model.allTags) Nothing
+                            }
 
-                            newUpdateContentModuleModel : UpdateContentModuleModel
-                            newUpdateContentModuleModel = setUpdateContentPageModel content
+                        newUpdateContentModuleModel : UpdateContentModuleModel
+                        newUpdateContentModuleModel =
+                            setUpdateContentPageModel content
 
-                            newTagPage =
-                                TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel, oneOfContentModuleIsVisible = UpdateContentModuleIsVisible })
+                        newTagPage =
+                            TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel, oneOfContentModuleIsVisible = UpdateContentModuleIsVisible })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
 
-                        in
-                        ( { model | activePage = newTagPage }, Cmd.none )
-
-                    _ ->
-                        ( model, Cmd.none )
+                _ ->
+                    ( model, Cmd.none )
 
         -- CREATE TAG MODULE --
         CreateTagModuleInputChanged inputType ->
@@ -478,6 +481,16 @@ update msg model =
 
                       else
                         updateTag a.updateTagModuleModel
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        DeleteTag ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    ( model
+                    , deleteTag a.updateTagModuleModel.tagId
                     )
 
                 _ ->

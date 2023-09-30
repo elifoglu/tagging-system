@@ -30,8 +30,10 @@ type Msg
     | TagPickerModuleInputChanged WorkingOnWhichModule TagPickerInputType
     | CreateContent
     | UpdateContent
+    | DeleteContent Content
     | CreateTag
     | UpdateTag
+    | DeleteTag
     | GotTagOrContentCreateUpdateDeleteDoneResponse (Result Http.Error String)
     | GotTimeZone Time.Zone
 

@@ -48,13 +48,13 @@ open class DataHolder {
     }
 
     fun deleteContent(id: String) {
-        val deleted = data!!.contents.filter { it.contentId != id }
-        data = data!!.copy(contents = deleted)
+        val updatedContents = data!!.contents.map { if (it.contentId != id ) it else it.copy(isDeleted = true, lastModifiedAt = Calendar.getInstance().timeInMillis,) }
+        data = data!!.copy(contents = updatedContents)
     }
 
     fun deleteTag(id: String) {
-        val deleted = data!!.tags.filter { it.tagId != id }
-        data = data!!.copy(tags = deleted)
+        val updatedTags = data!!.tags.map { if (it.tagId != id ) it else it.copy(isDeleted = true, lastModifiedAt = Calendar.getInstance().timeInMillis,) }
+        data = data!!.copy(tags = updatedTags)
     }
 
     fun clearTags() {

@@ -37,7 +37,7 @@ class ContentController(
     fun createContent(@RequestBody req: CreateContentRequest): String =
         Content.createIfValidForCreation(req, contentRepository)!!
             .run {
-                contentRepository.addEntity( this)
+                contentRepository.addEntity(this)
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }
@@ -55,6 +55,14 @@ class ContentController(
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }
+
+    @CrossOrigin
+    @PostMapping("/delete-content/{contentId}")
+    fun deleteContent(
+        @PathVariable("contentId") contentId: String,
+    ): String =
+        Content.returnItsIdIfValidForDelete(contentId, contentRepository)
+            .fold({ err -> err }, { id -> contentRepository.deleteEntity(id).run { "done" } })
 
     @CrossOrigin
     @PostMapping("/search")

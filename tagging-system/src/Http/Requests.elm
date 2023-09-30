@@ -1,4 +1,4 @@
-module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag)
+module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..))
@@ -68,6 +68,15 @@ updateContent model =
         }
 
 
+deleteContent : String -> Cmd Msg
+deleteContent contentId =
+    Http.post
+        { url = apiURL ++ "delete-content/" ++ contentId
+        , body = Http.emptyBody
+        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        }
+
+
 createTag : CreateTagModuleModel -> Cmd Msg
 createTag model =
     Http.post
@@ -82,6 +91,15 @@ updateTag model =
     Http.post
         { url = apiURL ++ "tags/" ++ model.tagId
         , body = Http.jsonBody (updateTagPageModelEncoder model)
+        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        }
+
+
+deleteTag : String -> Cmd Msg
+deleteTag tagId =
+    Http.post
+        { url = apiURL ++ "delete-tag/" ++ tagId
+        , body = Http.emptyBody
         , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
         }
 
