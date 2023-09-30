@@ -45,7 +45,7 @@ viewContentLine content =
             ]
         , div [ class "contentLineSecondChild" ]
             [ img
-                [ class "contentEditIcon", onClick ToggleUpdateTagModuleVisibility, style "margin-left" "5px", src "/edit.png" ]
+                [ class "contentEditIcon", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
                 []
             ]
         ]

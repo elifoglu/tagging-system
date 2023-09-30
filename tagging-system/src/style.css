@@ -95,11 +95,16 @@ hr {
 
 .contentLineSecondChild {
     float: left;
-    display: none;
+    opacity: 0.01;
 }
 
 .contentLineFirstChild:hover + .contentLineSecondChild {
     display: inline-block;
+    opacity: 1;
+}
+
+.contentLineSecondChild:hover {
+    opacity: 1;
 }
 
 .contentEditIcon {

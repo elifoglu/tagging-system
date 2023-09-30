@@ -3,6 +3,7 @@ module App.Msg exposing (..)
 import App.Model exposing (TagOption)
 import Browser
 import Browser.Dom as Dom
+import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagDataResponse)
 import Http
 import Tag.Model exposing (Tag)
@@ -24,6 +25,7 @@ type Msg
     | UpdateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | CreateTagModuleInputChanged TagInputType
     | ToggleUpdateTagModuleVisibility
+    | ToggleUpdateContentModuleFor Content
     | UpdateTagModuleInputChanged TagInputType
     | TagPickerModuleInputChanged WorkingOnWhichModule TagPickerInputType
     | CreateContent

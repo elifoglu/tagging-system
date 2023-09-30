@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModuleModel, defaultUpdateContentModule, defaultUpdateTagModuleModel, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagPageModelEncoder)
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModuleModel, defaultUpdateContentModule, defaultUpdateTagModuleModel, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagPageModelEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -149,11 +149,11 @@ tagToTagOption tag =
 
 defaultUpdateTagModuleModel : Tag -> List Tag -> UpdateTagModuleModel
 defaultUpdateTagModuleModel tagToUpdate allTags =
-    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptions tagToUpdate allTags) (Just tagToUpdate.tagId))
+    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId))
 
 
-selectedTagOptions : Tag -> List Tag -> List TagOption
-selectedTagOptions tag allTags =
+selectedTagOptionsForTag : Tag -> List Tag -> List TagOption
+selectedTagOptionsForTag tag allTags =
     let
         parentTagsOfTagToUpdate : List Tag
         parentTagsOfTagToUpdate =
@@ -162,6 +162,12 @@ selectedTagOptions tag allTags =
     in
     allTags
         |> List.filter (\t -> List.member t parentTagsOfTagToUpdate)
+        |> List.map tagToTagOption
+
+selectedTagOptionsForContent : Content -> List Tag -> List TagOption
+selectedTagOptionsForContent content allTags =
+    allTags
+        |> List.filter (\t -> List.member t content.tags)
         |> List.map tagToTagOption
 
 

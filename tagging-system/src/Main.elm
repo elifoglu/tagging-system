@@ -9,6 +9,7 @@ import Browser exposing (UrlRequest)
 import Browser.Dom as Dom
 import Browser.Navigation as Nav
 import Component.Page.Util exposing (tagsNotLoaded)
+import Content.Model exposing (Content)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import List
@@ -275,6 +276,30 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+        ToggleUpdateContentModuleFor content ->
+                case model.activePage of
+                    TagPage (Initialized a) ->
+                        let
+                            setUpdateContentPageModel : Content -> UpdateContentModuleModel
+                            setUpdateContentPageModel c =
+                                { contentId = c.contentId
+                                , title = Maybe.withDefault "" c.title
+                                , text = c.text
+                                , tagPickerModelForTags = (TagPickerModuleModel "" (allTagOptions model.allTags) (selectedTagOptionsForContent c model.allTags) Nothing)
+                                }
+
+                            newUpdateContentModuleModel : UpdateContentModuleModel
+                            newUpdateContentModuleModel = setUpdateContentPageModel content
+
+                            newTagPage =
+                                TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel, oneOfContentModuleIsVisible = UpdateContentModuleIsVisible })
+
+                        in
+                        ( { model | activePage = newTagPage }, Cmd.none )
+
+                    _ ->
+                        ( model, Cmd.none )
 
         -- CREATE TAG MODULE --
         CreateTagModuleInputChanged inputType ->

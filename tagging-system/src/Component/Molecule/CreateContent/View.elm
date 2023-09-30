@@ -13,7 +13,8 @@ viewCreateContentDiv createContentModuleModel =
     div [] <|
         [ text ""
         ]
-            ++ [ viewInput "text" "title" createContentModuleModel.title (CreateContentModuleInputChanged Title)
+            ++ [ b [] [ text "create new content" ]
+                , viewInput "text" "title" createContentModuleModel.title (CreateContentModuleInputChanged Title)
                 , viewContentTextArea "content*" createContentModuleModel.text (CreateContentModuleInputChanged Text)
                 , viewTagPickerDiv createContentModuleModel.tagPickerModelForTags WorkingOnCreateContentModule
                 , viewCreateContentButton CreateContent

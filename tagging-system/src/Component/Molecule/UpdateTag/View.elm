@@ -12,7 +12,7 @@ viewUpdateTagDiv : UpdateTagModuleModel -> Html Msg
 viewUpdateTagDiv updateTagModuleModel =
     div [ class "createOrUpdateTagDiv" ] <|
         List.intersperse (br [] [])
-            [ b [] [ text "update tag: ", i [] [ text updateTagModuleModel.name ] ]
+            [ b [] [ text "update tag: ", i [] [ text updateTagModuleModel.tagId ] ]
             , viewInput "text" "name" updateTagModuleModel.name (\contentId -> UpdateTagModuleInputChanged <| Name contentId)
             , viewInput "text" "description" updateTagModuleModel.description (\contentId -> UpdateTagModuleInputChanged <| Description contentId)
             , viewTagPickerDiv updateTagModuleModel.tagPickerModelForParentTags WorkingOnUpdateTagModule
