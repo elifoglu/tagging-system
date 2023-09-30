@@ -3,6 +3,7 @@ package com.philocoder.tagging_system.service
 import com.philocoder.tagging_system.model.AllData
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.AddAllDataRequest
+import com.philocoder.tagging_system.model.request.GenerateDataRequest
 import com.philocoder.tagging_system.model.request.GetAllDataResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Service
@@ -18,7 +19,23 @@ class DataService(
 ) {
 
     @ExperimentalStdlibApi
-    fun addAllData(@RequestBody req: AddAllDataRequest): String {
+    fun addAllData(req: AddAllDataRequest): String {
+        return setWholeData(GenerateDataRequest(req.contents, req.tags, req.homeTagId))
+    }
+
+    @ExperimentalStdlibApi
+    fun regenerateWholeData() { //this have to be called after every CRUD operation to do parentTags/childTags calculations from scratch
+        val currentData = dataHolder.data!!
+        val req = GenerateDataRequest(
+            contents = currentData.contents,
+            tags = currentData.tags.map { Tag.toWithoutChild(it) },
+            homeTagId = currentData.homeTagId
+        )
+        setWholeData(req)
+    }
+
+    @ExperimentalStdlibApi
+    private fun setWholeData(req: GenerateDataRequest): String {
         val parentToChildTagMap = HashMap<String, ArrayList<String>>()
         req.tags.forEach { tag ->
             val emptyList = ArrayList<String>()
@@ -54,6 +71,7 @@ class DataService(
             allData.homeTagId
         )
     }
+
 
     @CrossOrigin
     @PostMapping("/clear-all-data")

@@ -35,6 +35,12 @@ open class DataHolder {
         data = data!!.copy(tags = newList)
     }
 
+    fun updateTag(tag: Tag) {
+        val updatedTagList = data!!.tags
+            .map { if (it.tagId == tag.tagId) tag else it }
+        data = data!!.copy(tags = updatedTagList)
+    }
+
     fun deleteContent(id: String) {
         val deleted = data!!.contents.filter { it.contentId != id }
         data = data!!.copy(contents = deleted)

@@ -1,12 +1,15 @@
 module Tag.View exposing (..)
 
-import App.Model exposing (InitializedTagPageModel)
+import App.Model exposing (InitializedTagPageModel, TagModuleVisibility(..))
 import App.Msg exposing (Msg(..))
-import Html exposing (Html, a, b, br, div, span, text)
-import Html.Attributes exposing (class, href, style)
+import CreateTag.View exposing (viewCreateTagDiv)
+import Html exposing (Html, a, b, br, div, img, span, text)
+import Html.Attributes exposing (class, href, src, style)
+import Html.Events exposing (onClick)
 import Tag.Model exposing (Tag)
 import Tag.TagTextUtil exposing (viewTagText)
 import Tag.Util exposing (tagByIdForced)
+import UpdateTag.View exposing (viewUpdateTagDiv)
 
 
 viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
@@ -31,8 +34,16 @@ viewLeftFrame initialized allTags =
                     "0px"
                 )
             ]
-            [ b [] [ text ("#" ++ initialized.tag.name) ] ]
+            [ b [] [ text ("#" ++ initialized.tag.name) ]
+            , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, style "margin-left" "5px", src "/edit.png" ] []
+
+            ]
         , viewTagsDiv initialized.tag.childTags allTags Child
+        , case initialized.oneOfIsVisible of
+                CreateTagModuleIsVisible ->
+                    viewCreateTagDiv initialized.createTagModuleModel
+                UpdateTagModuleIsVisible ->
+                    viewUpdateTagDiv initialized.updateTagModuleModel
         ]
 
 

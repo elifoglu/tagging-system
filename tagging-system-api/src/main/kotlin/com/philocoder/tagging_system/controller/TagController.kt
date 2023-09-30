@@ -7,13 +7,15 @@ import com.philocoder.tagging_system.model.response.InitialDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
 import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.TagRepository
+import com.philocoder.tagging_system.service.DataService
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 class TagController(
     private val tagRepository: TagRepository,
-    private val contentRepository: ContentRepository
+    private val contentRepository: ContentRepository,
+    private val dataService: DataService
 ) {
 
     @CrossOrigin
@@ -38,6 +40,7 @@ class TagController(
         Tag.createIfValidForCreation(req, tagRepository)!!
             .run {
                 tagRepository.addEntity( this)
+                dataService.regenerateWholeData()
                 "done"
             }
 
@@ -50,9 +53,8 @@ class TagController(
     ): String =
         Tag.createIfValidForUpdate(tagId, req, tagRepository)!!
             .run {
-                tagRepository.deleteEntity(tagId)
-                Thread.sleep(1000)
-                tagRepository.addEntity(this)
+                tagRepository.updateEntity(this)
+                dataService.regenerateWholeData()
                 "done"
             }
 

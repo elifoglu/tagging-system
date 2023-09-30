@@ -1,72 +1,97 @@
-module TagPicker.View exposing (TagOption, TagPickerModuleModel, viewTagPickerDiv)
+module TagPicker.View exposing (viewTagPickerDiv)
 
+import App.Model exposing (TagModuleVisibility(..), TagOption, TagPickerModuleModel)
 import App.Msg exposing (Msg(..), TagInputType(..), TagPickerInputType(..))
-import Html exposing (Html, br, div, input, option, select, text)
-import Html.Attributes exposing (placeholder, selected, style, type_, value)
+import Html exposing (Html, div, input, span, text)
+import Html.Attributes exposing (class, placeholder, selected, style, type_, value)
 import Html.Events exposing (onClick, onInput)
-
-
-type alias TagOption =
-    { tagId : String
-    , tagName : String
-    }
-
-
-type alias TagPickerModuleModel =
-    { input : String
-    , allAvailableTagOptions : List TagOption
-    , selectedTagOptions : List TagOption
-    }
 
 
 getTagOptionsToShow : TagPickerModuleModel -> List TagOption
 getTagOptionsToShow model =
-    model.allAvailableTagOptions
-        |> List.filter (\a -> String.contains model.input a.tagName)
-        |> List.filter (\a -> not (List.member a model.selectedTagOptions))
+    if model.input == "?" then
+        --this branch is just for me to see all existing tags by entering "?" as search input
+        model.allAvailableTagOptions
+            |> List.filter (removeFilteredThingFirst model.tagIdToFilterOut)
+            |> List.filter (\a -> not (List.member a model.selectedTagOptions))
+
+    else
+        model.allAvailableTagOptions
+            |> List.filter (removeFilteredThingFirst model.tagIdToFilterOut)
+            |> List.filter (\a -> String.contains model.input a.tagName)
+            |> List.filter (\a -> not (List.member a model.selectedTagOptions))
+
+
+removeFilteredThingFirst : Maybe String -> TagOption -> Bool
+removeFilteredThingFirst tagIdToFilterOut tagOption =
+    case tagIdToFilterOut of
+        Just tagId ->
+            tagOption.tagId /= tagId
+
+        Nothing ->
+            True
 
 
 viewTagPickerDiv : TagPickerModuleModel -> Html Msg
 viewTagPickerDiv tagPickerModel =
     div [] <|
-        List.intersperse (br [] [])
-            [ viewInput "text" "search tags..." tagPickerModel.input TagPickerModuleSearchInputChanged
-            , viewSelectInput tagPickerModel TagPickerModuleOptionClicked
-            ]
+        [ viewInput "text" "search tags..." tagPickerModel.input (tagCreateOrUpdateInputMessage SearchInput)
+        , viewSelecteds tagPickerModel (tagCreateOrUpdateInputMessage OptionRemoved)
+        , viewSelectInput tagPickerModel (tagCreateOrUpdateInputMessage OptionClicked)
+        ]
+
+
+tagCreateOrUpdateInputMessage : (something -> TagPickerInputType) -> something -> Msg
+tagCreateOrUpdateInputMessage a b =
+    TagPickerModuleInputChanged (a b)
+
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
     input [ type_ t, placeholder p, value v, selected True, onInput toMsg, style "width" "100px" ] []
 
 
-viewSelectInput : TagPickerModuleModel -> (String -> msg) -> Html msg
-viewSelectInput model toMsg =
-    if String.length model.input < 2 then
+viewSelecteds : TagPickerModuleModel -> (TagOption -> msg) -> Html msg
+viewSelecteds model toMsg =
+    if List.isEmpty model.selectedTagOptions then
         text ""
 
     else
-        select [ value model.input ]
-            (getTagOptionsToShow model
-                |> List.map (viewOption model.input toMsg)
+        div []
+            (model.selectedTagOptions
+                |> List.map (selectedTagOptionDiv toMsg)
             )
 
 
-
-viewOption : String -> (String -> msg) -> TagOption -> Html msg
-viewOption searchText toMsg tagOption =
-    option
-        [ value tagOption.tagName
-        , onClick (toMsg tagOption.tagId)
-        , selected
-            (if searchText == tagOption.tagName then
-                True
-
-             else
-                False
-            )
+selectedTagOptionDiv : (TagOption -> msg) -> TagOption -> Html msg
+selectedTagOptionDiv toMsg tagOption =
+    div [ class "dropdown-content1", onClick (toMsg tagOption) ]
+        [ div [ class "selectedTagOptionWithX" ]
+            [ span [ class "selectedTagOption" ]
+                [ text tagOption.tagName ]
+            , span [ class "hide" ]
+                [ text "X" ]
+            ]
         ]
-        [ text tagOption.tagName ]
 
 
+viewSelectInput : TagPickerModuleModel -> (TagOption -> msg) -> Html msg
+viewSelectInput model toMsg =
+    if String.length model.input < 1 then
+        text ""
 
---(createTagInputMessage Input)
+    else if List.isEmpty (getTagOptionsToShow model) then
+        text ""
+
+    else
+        div [ class "dropdown-content2" ]
+            (getTagOptionsToShow model
+                |> List.map (viewOption toMsg)
+            )
+
+
+viewOption : (TagOption -> msg) -> TagOption -> Html msg
+viewOption toMsg tagOption =
+    div [ class "tagOptionToSelect", onClick (toMsg tagOption) ]
+        [ text tagOption.tagName
+        ]

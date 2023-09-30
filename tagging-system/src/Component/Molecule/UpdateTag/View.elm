@@ -1,32 +1,28 @@
 module UpdateTag.View exposing (viewUpdateTagDiv)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Model, UpdateTagModuleModel)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Model, TagModuleVisibility(..), UpdateTagModuleModel)
 import App.Msg exposing (ContentInputTypeForContentCreation(..), Msg(..), TagInputType(..))
-import Html exposing (Html, br, button, div, input, text)
-import Html.Attributes exposing (placeholder, selected, style, type_, value)
+import Html exposing (Html, b, br, button, div, i, input, span, text)
+import Html.Attributes exposing (class, placeholder, selected, style, type_, value)
 import Html.Events exposing (onClick, onInput)
+import TagPicker.View exposing (viewTagPickerDiv)
 
 
-viewUpdateTagDiv : UpdateTagModuleModel -> String -> Html Msg
-viewUpdateTagDiv updateTagModuleModel tagId =
-    div [] <|
+viewUpdateTagDiv : UpdateTagModuleModel -> Html Msg
+viewUpdateTagDiv updateTagModuleModel =
+    div [ class "createOrUpdateTagDiv" ] <|
         List.intersperse (br [] [])
-            [ viewDisabledInput "text" tagId
-            , viewInput "text" "description" updateTagModuleModel.description (\contentId -> CreateTagModuleInputChanged <| Description contentId)
-            , div []
-                [ viewUpdateTagButton UpdateTag
-                ]
+            [ b [] [ text "update tag: ", i [] [ text updateTagModuleModel.name ] ]
+            , viewInput "text" "name" updateTagModuleModel.name (\contentId -> UpdateTagModuleInputChanged <| Name contentId)
+            , viewInput "text" "description" updateTagModuleModel.description (\contentId -> UpdateTagModuleInputChanged <| Description contentId)
+            , viewTagPickerDiv updateTagModuleModel.tagPickerModelForParentTags
+            , viewUpdateTagButton UpdateTag
             ]
 
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, selected True, onInput toMsg, style "width" "1000px" ] []
-
-
-viewDisabledInput : String -> String -> Html msg
-viewDisabledInput t v =
-    input [ type_ t, value v, style "width" "1000px", style "enabled" "false" ] []
+    input [ type_ t, placeholder p, value v, selected True, onInput toMsg, style "width" "100px" ] []
 
 
 viewUpdateTagButton : msg -> Html msg

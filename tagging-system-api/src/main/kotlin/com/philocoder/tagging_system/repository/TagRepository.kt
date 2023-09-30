@@ -25,6 +25,10 @@ open class TagRepository(
         dataHolder.addTag(it)
     }
 
+    fun updateEntity(tag: Tag) {
+        dataHolder.updateTag(tag)
+    }
+
     fun deleteEntity(id: String) {
         dataHolder.deleteTag(id)
     }

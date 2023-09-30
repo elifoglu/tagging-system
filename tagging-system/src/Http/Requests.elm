@@ -73,7 +73,7 @@ createTag model =
     Http.post
         { url = apiURL ++ "tags"
         , body = Http.jsonBody (createTagRequestEncoder model)
-        , expect = Http.expectString GotTagUpdateOrCreationDoneResponse
+        , expect = Http.expectString GotTagCreateUpdateDeleteDoneResponse
         }
 
 
@@ -82,7 +82,7 @@ updateTag model =
     Http.post
         { url = apiURL ++ "tags/" ++ model.tagId
         , body = Http.jsonBody (updateTagPageModelEncoder model)
-        , expect = Http.expectString GotTagUpdateOrCreationDoneResponse
+        , expect = Http.expectString GotTagCreateUpdateDeleteDoneResponse
         }
 
 

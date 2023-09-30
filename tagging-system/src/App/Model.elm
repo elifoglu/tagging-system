@@ -1,11 +1,11 @@
-module App.Model exposing (ContentIDToColorize, CreateContentModuleModel, CreateContentModule, CreateTagModuleModel, CreateTagModule, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleData, UpdateContentModuleModel(..), UpdateContentModule, UpdateTagModuleModel, UpdateTagModule, createContentPageModelEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
+module App.Model exposing (ContentIDToColorize, CreateContentModule, CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModule, UpdateContentModuleData, UpdateContentModuleModel(..), UpdateTagModuleModel, createContentPageModelEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModuleModel, defaultUpdateContentModule, defaultUpdateTagModuleModel, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, GotContent, GotTagTextPart)
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
-import TagPicker.View exposing (TagOption, TagPickerModuleModel)
+import Tag.Util exposing (tagByIdForced)
 import TagTextPart.Model exposing (TagTextPart)
 import Time
 
@@ -85,9 +85,15 @@ type alias InitializedTagPageModel =
     , textParts : List TagTextPart
     , createContentModule : CreateContentModule
     , updateContentModule : UpdateContentModule
-    , createTagModule : CreateTagModule
-    , updateTagModule : UpdateTagModule
+    , createTagModuleModel : CreateTagModuleModel
+    , updateTagModuleModel : UpdateTagModuleModel
+    , oneOfIsVisible : TagModuleVisibility
     }
+
+
+type TagModuleVisibility
+    = CreateTagModuleIsVisible
+    | UpdateTagModuleIsVisible
 
 
 defaultCreateContentModule =
@@ -102,26 +108,52 @@ defaultUpdateContentModule =
     }
 
 
-defaultCreateTagModule : List Tag -> { isVisible : Bool, model : CreateTagModuleModel }
-defaultCreateTagModule allTags =
-    { isVisible = True
-    , model = CreateTagModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [])
+defaultCreateTagModuleModel : List Tag -> CreateTagModuleModel
+defaultCreateTagModuleModel allTags =
+    CreateTagModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [] Nothing)
+
+
+type alias TagPickerModuleModel =
+    { input : String
+    , allAvailableTagOptions : List TagOption
+    , selectedTagOptions : List TagOption
+    , tagIdToFilterOut : Maybe String
     }
+
+
+type alias TagOption =
+    { tagId : String
+    , tagName : String
+    }
+
 
 allTagOptions : List Tag -> List TagOption
 allTagOptions allTags =
-        allTags
+    allTags
         |> List.map tagToTagOption
+
 
 tagToTagOption : Tag -> TagOption
 tagToTagOption tag =
     TagOption tag.tagId tag.name
 
 
-defaultUpdateTagModule =
-    { isVisible = False
-    , model = UpdateTagModuleModel "" "" ""
-    }
+defaultUpdateTagModuleModel : Tag -> List Tag -> UpdateTagModuleModel
+defaultUpdateTagModuleModel tagToUpdate allTags =
+    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptions tagToUpdate allTags) (Just tagToUpdate.tagId))
+
+
+selectedTagOptions : Tag -> List Tag -> List TagOption
+selectedTagOptions tag allTags =
+    let
+        parentTagsOfTagToUpdate : List Tag
+        parentTagsOfTagToUpdate =
+            tag.parentTags
+                |> List.map (tagByIdForced allTags)
+    in
+    allTags
+        |> List.filter (\t -> List.member t parentTagsOfTagToUpdate)
+        |> List.map tagToTagOption
 
 
 type alias CreateContentModule =
@@ -133,18 +165,6 @@ type alias CreateContentModule =
 type alias UpdateContentModule =
     { isVisible : Bool
     , model : UpdateContentModuleModel
-    }
-
-
-type alias CreateTagModule =
-    { isVisible : Bool
-    , model : CreateTagModuleModel
-    }
-
-
-type alias UpdateTagModule =
-    { isVisible : Bool
-    , model : UpdateTagModuleModel
     }
 
 
@@ -188,7 +208,7 @@ type alias UpdateContentModuleData =
 type alias CreateTagModuleModel =
     { name : String
     , description : String
-    , tagPickerModelForParentTags: TagPickerModuleModel
+    , tagPickerModelForParentTags : TagPickerModuleModel
     }
 
 
@@ -196,6 +216,7 @@ type alias UpdateTagModuleModel =
     { tagId : String
     , name : String
     , description : String
+    , tagPickerModelForParentTags : TagPickerModuleModel
     }
 
 
@@ -246,6 +267,7 @@ createTagRequestEncoder model =
     Encode.object
         [ ( "name", Encode.string model.name )
         , ( "description", Encode.string model.description )
+        , ( "parentTags", Encode.list Encode.string (model.tagPickerModelForParentTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
 
 
@@ -254,4 +276,5 @@ updateTagPageModelEncoder model =
     Encode.object
         [ ( "name", Encode.string model.name )
         , ( "description", Encode.string model.description )
+        , ( "parentTags", Encode.list Encode.string (model.tagPickerModelForParentTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]

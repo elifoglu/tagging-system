@@ -35,7 +35,7 @@ data class Tag(
             return Tag(
                 tagId = uniqueTagId,
                 name = req.name,
-                parentTags = Collections.emptyList(),
+                parentTags = req.parentTags,
                 childTags = Collections.emptyList(),
                 description = req.description,
                 createdAt = Calendar.getInstance().timeInMillis,
@@ -54,6 +54,7 @@ data class Tag(
             return tag.copy(
                 name = req.name,
                 description = req.description,
+                parentTags = req.parentTags,
                 lastModifiedAt = Calendar.getInstance().timeInMillis
             )
         }

@@ -1,5 +1,6 @@
 module App.Msg exposing (..)
 
+import App.Model exposing (TagOption)
 import Browser
 import Browser.Dom as Dom
 import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
@@ -23,16 +24,14 @@ type Msg
     | CreateContentModuleInputChanged ContentInputTypeForContentCreation String
     | UpdateContentModuleInputChanged ContentInputTypeForContentUpdate String
     | CreateTagModuleInputChanged TagInputType
+    | ToggleUpdateTagModuleVisibility
     | UpdateTagModuleInputChanged TagInputType
-    | TagPickerModuleSearchInputChanged String
-    | TagPickerModuleOptionClicked String
+    | TagPickerModuleInputChanged TagPickerInputType
     | CreateContent
-    | ToggleCreateContentModule Bool
-    | ToggleCreateTagModule Bool
     | UpdateContent
     | CreateTag
     | UpdateTag
-    | GotTagUpdateOrCreationDoneResponse (Result Http.Error String)
+    | GotTagCreateUpdateDeleteDoneResponse (Result Http.Error String)
     | GotTimeZone Time.Zone
 
 
@@ -53,3 +52,5 @@ type TagInputType
 
 type TagPickerInputType
     = SearchInput String
+    | OptionClicked TagOption
+    | OptionRemoved TagOption

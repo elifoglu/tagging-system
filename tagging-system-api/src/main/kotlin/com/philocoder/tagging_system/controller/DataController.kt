@@ -1,6 +1,7 @@
 package com.philocoder.tagging_system.controller
 
 import com.philocoder.tagging_system.model.request.AddAllDataRequest
+import com.philocoder.tagging_system.model.request.GenerateDataRequest
 import com.philocoder.tagging_system.model.request.GetAllDataResponse
 import com.philocoder.tagging_system.service.DataService
 import org.springframework.web.bind.annotation.CrossOrigin
