@@ -9,7 +9,7 @@ data class TagResponse(
     val parentTags: List<String>,
     val childTags: List<String>,
     val contentCount: Int,
-    val infoContentId: Int?,
+    val description: String,
     val createdAt: String,
     val lastModifiedAt: String,
     val isDeleted: Boolean
@@ -26,7 +26,7 @@ data class TagResponse(
                 parentTags = tag.parentTags,
                 childTags = tag.childTags,
                 contentCount = repo.getContentCount(tag.name),
-                infoContentId = tag.infoContentId,
+                description = tag.description,
                 createdAt = tag.createdAt.toString(),
                 lastModifiedAt = tag.lastModifiedAt.toString(),
                 isDeleted = tag.isDeleted

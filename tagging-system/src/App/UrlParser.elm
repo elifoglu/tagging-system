@@ -10,7 +10,7 @@ routeParser =
     oneOf
         [ map homepage top
         , map nonInitializedTagPageMapper (s "tags" </> string)
-        , map nonInitializedContentPageMapper (s "contents" </> int)
+        , map nonInitializedContentPageMapper (s "contents" </> string)
         ]
 
 
@@ -19,7 +19,7 @@ nonInitializedTagPageMapper tagId =
     TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagId) ))
 
 
-nonInitializedContentPageMapper : Int -> Page
+nonInitializedContentPageMapper : String -> Page
 nonInitializedContentPageMapper contentId =
     ContentPage
         (NonInitialized  contentId)

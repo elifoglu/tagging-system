@@ -12,4 +12,4 @@ tagById allTags tagId =
 
 tagByIdForced : List Tag -> String -> Tag
 tagByIdForced allTags tagId =
-    Maybe.withDefault (Tag "" "" [] [] 0 Nothing) (tagById allTags tagId)
+    Maybe.withDefault (Tag "" "" [] [] 0 "") (tagById allTags tagId)

@@ -8,14 +8,14 @@ import Html.Events exposing (onClick, onInput)
 
 
 viewCreateContentDiv : CreateContentModuleModel -> Html Msg
-viewCreateContentDiv createContentPageModel =
+viewCreateContentDiv createContentModuleModel =
     div [] <|
         [ text ""
         ]
             ++ List.intersperse (br [] [])
-                [ viewInput "text" "title (empty if does not exist)" createContentPageModel.title (CreateContentModuleInputChanged Title)
-                , viewInput "text" "tagNames (use comma to separate)" createContentPageModel.tags (CreateContentModuleInputChanged Tags)
-                , viewContentTextArea "content" createContentPageModel.text (CreateContentModuleInputChanged Text)
+                [ viewInput "text" "title (empty if does not exist)" createContentModuleModel.title (CreateContentModuleInputChanged Title)
+                , viewInput "text" "tagNames (use comma to separate)" createContentModuleModel.tags (CreateContentModuleInputChanged Tags)
+                , viewContentTextArea "content" createContentModuleModel.text (CreateContentModuleInputChanged Text)
                 , viewCreateContentButton CreateContent
                 ]
 

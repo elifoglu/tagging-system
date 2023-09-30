@@ -9,13 +9,13 @@ import Html.Events exposing (onClick, onInput)
 
 
 viewUpdateContentDiv : UpdateContentModuleData -> ContentID -> Html Msg
-viewUpdateContentDiv updateContentPageData contentId =
+viewUpdateContentDiv updateContentModuleData contentId =
     div [] <|
         List.intersperse (br [] [])
             [ viewDisabledInput "text" contentId
-            , viewInput "text" "title (empty if does not exist)" updateContentPageData.title (UpdateContentModuleInputChanged TitleU)
-            , viewInput "text" "tagNames (use comma to separate)" updateContentPageData.tags (UpdateContentModuleInputChanged TagsU)
-            , viewContentTextArea "content" updateContentPageData.text (UpdateContentModuleInputChanged TextU)
+            , viewInput "text" "title (empty if does not exist)" updateContentModuleData.title (UpdateContentModuleInputChanged TitleU)
+            , viewInput "text" "tagNames (use comma to separate)" updateContentModuleData.tags (UpdateContentModuleInputChanged TagsU)
+            , viewContentTextArea "content" updateContentModuleData.text (UpdateContentModuleInputChanged TextU)
             , viewUpdateContentButton <| UpdateContent
             ]
 

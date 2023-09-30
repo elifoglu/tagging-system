@@ -254,4 +254,18 @@ input[type='checkbox'] {
     color: #189cb3;
 }
 
-/* TAG PAGE */
+/* END - TAG PAGE */
+
+
+
+/* TAG PICKER */
+
+.tagOptionView {
+    font-size: 13px;
+    letter-spacing: 0.7px;
+    word-spacing: 0.2px;
+}
+
+/* END - TAG PICKER */
+
+

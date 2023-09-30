@@ -24,6 +24,8 @@ type Msg
     | UpdateContentModuleInputChanged ContentInputTypeForContentUpdate String
     | CreateTagModuleInputChanged TagInputType
     | UpdateTagModuleInputChanged TagInputType
+    | TagPickerModuleSearchInputChanged String
+    | TagPickerModuleOptionClicked String
     | CreateContent
     | ToggleCreateContentModule Bool
     | ToggleCreateTagModule Bool
@@ -47,4 +49,7 @@ type ContentInputTypeForContentUpdate
 
 type TagInputType
     = Name String
-    | InfoContentId String
+    | Description String
+
+type TagPickerInputType
+    = SearchInput String

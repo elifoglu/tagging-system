@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import App.Model exposing (..)
-import App.Msg exposing (ContentInputTypeForContentCreation(..), ContentInputTypeForContentUpdate(..), Msg(..), TagInputType(..))
+import App.Msg exposing (ContentInputTypeForContentCreation(..), ContentInputTypeForContentUpdate(..), Msg(..), TagInputType(..), TagPickerInputType(..))
 import App.Ports exposing (sendTitle)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
@@ -14,6 +14,7 @@ import DataResponse exposing (ContentID)
 import List
 import Requests exposing (createTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag)
 import Tag.Util exposing (tagById)
+import TagPicker.View exposing (TagPickerModuleModel)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
 import Time
@@ -226,7 +227,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts defaultCreateContentModule defaultUpdateContentModule defaultCreateTagModule defaultUpdateTagModule)
+                                                Initialized (InitializedTagPageModel tag tagTextParts defaultCreateContentModule defaultUpdateContentModule (defaultCreateTagModule model.allTags) defaultUpdateTagModule)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -388,8 +389,8 @@ update msg model =
                                 Name input ->
                                     { currentCreateTagModuleModel | name = input }
 
-                                InfoContentId _ ->
-                                    a.createTagModule.model
+                                Description input ->
+                                    { currentCreateTagModuleModel | description = input }
 
                         currentCreateTagModule = a.createTagModule
                         newCreateTagModule = { currentCreateTagModule | model = newCreateTagModuleModel }
@@ -414,7 +415,7 @@ update msg model =
                                 Name input ->
                                     { currentUpdateTagModuleModel | name = input }
 
-                                InfoContentId _ ->
+                                Description _ ->
                                     a.updateTagModule.model
 
                         currentUpdateTagModule = a.updateTagModule
@@ -427,10 +428,34 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        TagPickerModuleSearchInputChanged searchText ->
+                        case model.activePage of
+                            TagPage (Initialized a) ->
+                                let
+                                    currentCreateTagModuleModel : CreateTagModuleModel
+                                    currentCreateTagModuleModel = a.createTagModule.model
+
+                                    currentTagPickerModuleModel : TagPickerModuleModel
+                                    currentTagPickerModuleModel = currentCreateTagModuleModel.tagPickerModelForParentTags
+
+                                    newTagPickerModuleModel = { currentTagPickerModuleModel | input = searchText }
+
+                                    newCreateTagModuleModel = { currentCreateTagModuleModel | tagPickerModelForParentTags = newTagPickerModuleModel }
+
+                                    currentCreateTagModule = a.createTagModule
+                                    newCreateTagModule = { currentCreateTagModule | model = newCreateTagModuleModel }
+
+                                    newTagPage = TagPage (Initialized { a | createTagModule = newCreateTagModule })
+                                in
+                                ( { model | activePage = newTagPage }, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
+
         CreateTag ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, createTag a.createTagModule.model )
+                    ( model, if a.createTagModule.model.name == "" then Cmd.none else createTag a.createTagModule.model )
 
                 _ ->
                     ( model, Cmd.none )

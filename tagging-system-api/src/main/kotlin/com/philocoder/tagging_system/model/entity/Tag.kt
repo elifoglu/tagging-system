@@ -12,7 +12,7 @@ data class Tag(
     val name: String,
     val parentTags: List<String>,
     val childTags: List<String>,
-    val infoContentId: Int?,
+    val description: String,
     val createdAt: Long,
     val lastModifiedAt: Long,
     val isDeleted: Boolean
@@ -37,7 +37,7 @@ data class Tag(
                 name = req.name,
                 parentTags = Collections.emptyList(),
                 childTags = Collections.emptyList(),
-                infoContentId = null,
+                description = req.description,
                 createdAt = Calendar.getInstance().timeInMillis,
                 lastModifiedAt = Calendar.getInstance().timeInMillis,
                 isDeleted = false
@@ -52,7 +52,8 @@ data class Tag(
             val tag: Tag = repository.findEntity(tagId)!!
 
             return tag.copy(
-                infoContentId = if(req.infoContentId.isEmpty()) null else req.infoContentId.toInt(),
+                name = req.name,
+                description = req.description,
                 lastModifiedAt = Calendar.getInstance().timeInMillis
             )
         }
@@ -63,7 +64,7 @@ data class Tag(
                 name = t.name,
                 parentTags = t.parentTags,
                 childTags = parentToChildTagMap[t.tagId]!!,
-                infoContentId = t.infoContentId,
+                description = t.description,
                 createdAt = t.createdAt,
                 lastModifiedAt = t.lastModifiedAt,
                 isDeleted = false
@@ -75,7 +76,7 @@ data class Tag(
                 tagId = t.tagId,
                 name = t.name,
                 parentTags = t.parentTags,
-                infoContentId = t.infoContentId,
+                description = t.description,
                 createdAt = t.createdAt,
                 lastModifiedAt = t.lastModifiedAt,
                 isDeleted = t.isDeleted

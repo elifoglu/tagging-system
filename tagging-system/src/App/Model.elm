@@ -5,6 +5,7 @@ import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, GotContent, GotTagTextPart)
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
+import TagPicker.View exposing (TagOption, TagPickerModuleModel)
 import TagTextPart.Model exposing (TagTextPart)
 import Time
 
@@ -31,7 +32,7 @@ homepage =
 
 
 type Page
-    = ContentPage (Initializable Int Content)
+    = ContentPage (Initializable String Content)
     | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
     | ContentSearchPage String (List Content)
     | NotFoundPage
@@ -101,10 +102,20 @@ defaultUpdateContentModule =
     }
 
 
-defaultCreateTagModule =
+defaultCreateTagModule : List Tag -> { isVisible : Bool, model : CreateTagModuleModel }
+defaultCreateTagModule allTags =
     { isVisible = True
-    , model = CreateTagModuleModel ""
+    , model = CreateTagModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [])
     }
+
+allTagOptions : List Tag -> List TagOption
+allTagOptions allTags =
+        allTags
+        |> List.map tagToTagOption
+
+tagToTagOption : Tag -> TagOption
+tagToTagOption tag =
+    TagOption tag.tagId tag.name
 
 
 defaultUpdateTagModule =
@@ -150,7 +161,7 @@ type alias ContentIDToColorize =
 
 
 type alias GetContentRequestModel =
-    { contentID : Int
+    { contentID : String
     }
 
 
@@ -176,13 +187,15 @@ type alias UpdateContentModuleData =
 
 type alias CreateTagModuleModel =
     { name : String
+    , description : String
+    , tagPickerModelForParentTags: TagPickerModuleModel
     }
 
 
 type alias UpdateTagModuleModel =
     { tagId : String
     , name : String
-    , infoContentId : String
+    , description : String
     }
 
 
@@ -198,7 +211,7 @@ setUpdateContentPageModel content =
 getContentRequestModelEncoder : GetContentRequestModel -> Encode.Value
 getContentRequestModelEncoder model =
     Encode.object
-        [ ( "contentID", Encode.string (String.fromInt model.contentID) )
+        [ ( "contentID", Encode.string model.contentID )
         ]
 
 
@@ -232,11 +245,13 @@ createTagRequestEncoder : CreateTagModuleModel -> Encode.Value
 createTagRequestEncoder model =
     Encode.object
         [ ( "name", Encode.string model.name )
+        , ( "description", Encode.string model.description )
         ]
 
 
 updateTagPageModelEncoder : UpdateTagModuleModel -> Encode.Value
 updateTagPageModelEncoder model =
     Encode.object
-        [ ( "infoContentId", Encode.string model.infoContentId )
+        [ ( "name", Encode.string model.name )
+        , ( "description", Encode.string model.description )
         ]

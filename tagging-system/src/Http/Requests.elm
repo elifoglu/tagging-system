@@ -41,7 +41,7 @@ getTagContents tag =
         }
 
 
-getContent : Int -> Cmd Msg
+getContent : String -> Cmd Msg
 getContent contentId =
     Http.post
         { url = apiURL ++ "get-content"

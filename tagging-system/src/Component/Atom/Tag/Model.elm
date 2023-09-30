@@ -7,5 +7,5 @@ type alias Tag =
     , parentTags : List String
     , childTags : List String
     , contentCount : Int
-    , infoContentId : Maybe Int
+    , description : String
     }

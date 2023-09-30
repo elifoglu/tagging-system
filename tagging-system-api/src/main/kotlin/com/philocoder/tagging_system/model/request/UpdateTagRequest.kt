@@ -1,5 +1,6 @@
 package com.philocoder.tagging_system.model.request
 
 data class UpdateTagRequest(
-    val infoContentId: String
+    val name: String,
+    val description: String
 )

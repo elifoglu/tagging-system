@@ -4,6 +4,7 @@
         "src",
         "src/Component",
         "src/Component/Atom",
+        "src/Component/Molecule",
         "src/Component/Page",
         "src/Http",
         "src/Http/Response"
@@ -27,11 +28,13 @@
             "gampleman/elm-visualization": "2.2.0",
             "hecrj/html-parser": "2.4.0",
             "justinmimbs/date": "3.2.1",
-            "mpizenberg/elm-pointer-events": "4.0.2"
+            "mpizenberg/elm-pointer-events": "4.0.2",
+            "sporto/elm-select": "6.2.1"
         },
         "indirect": {
             "elm/file": "1.0.5",
             "elm/parser": "1.1.0",
+            "elm/regex": "1.0.0",
             "elm/svg": "1.0.1",
             "elm/virtual-dom": "1.0.2",
             "folkertdev/elm-deque": "3.0.1",

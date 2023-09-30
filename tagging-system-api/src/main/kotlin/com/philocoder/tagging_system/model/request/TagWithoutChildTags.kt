@@ -4,7 +4,7 @@ data class TagWithoutChildTags(
     val tagId: String,
     val name: String,
     val parentTags: List<String>,
-    val infoContentId: Int?,
+    val description: String,
     val createdAt: Long,
     val lastModifiedAt: Long,
     val isDeleted: Boolean

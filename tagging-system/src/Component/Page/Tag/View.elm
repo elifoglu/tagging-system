@@ -2,12 +2,11 @@ module Tag.View exposing (..)
 
 import App.Model exposing (InitializedTagPageModel)
 import App.Msg exposing (Msg(..))
-import Html exposing (Html, a, b, br, div, img, span, text)
-import Html.Attributes exposing (class, href, src, style)
+import Html exposing (Html, a, b, br, div, span, text)
+import Html.Attributes exposing (class, href, style)
 import Tag.Model exposing (Tag)
 import Tag.TagTextUtil exposing (viewTagText)
 import Tag.Util exposing (tagByIdForced)
-import TagInfoIcon.View exposing (viewTagInfoIcon)
 
 
 viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
@@ -79,5 +78,4 @@ viewTag tagType tag =
             ]
             [ text tag.name ]
         , text " "
-        , viewTagInfoIcon tag
         ]

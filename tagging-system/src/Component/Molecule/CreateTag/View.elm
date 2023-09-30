@@ -2,16 +2,19 @@ module CreateTag.View exposing (viewCreateTagDiv)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Model)
 import App.Msg exposing (Msg(..), TagInputType(..))
-import Html exposing (Html, br, button, div, input, label, span, text)
-import Html.Attributes exposing (checked, placeholder, selected, style, type_, value)
-import Html.Events exposing (onCheck, onClick, onInput)
+import Html exposing (Html, br, button, div, input, text)
+import Html.Attributes exposing (placeholder, selected, style, type_, value)
+import Html.Events exposing (onClick, onInput)
+import TagPicker.View exposing (viewTagPickerDiv)
 
 
 viewCreateTagDiv : CreateTagModuleModel -> Html Msg
-viewCreateTagDiv createTagPageModel =
+viewCreateTagDiv createTagModuleModel =
     div [] <|
         List.intersperse (br [] [])
-            [ viewInput "text" "name" createTagPageModel.name (createTagInputMessage Name)
+            [ viewInput "text" "name" createTagModuleModel.name (createTagInputMessage Name)
+            , viewInput "text" "description" createTagModuleModel.description (createTagInputMessage Description)
+            , viewTagPickerDiv createTagModuleModel.tagPickerModelForParentTags
             , viewCreateTagButton CreateTag
             ]
 
@@ -24,14 +27,6 @@ viewInput t p v toMsg =
 createTagInputMessage : (eitherStringOrBool -> TagInputType) -> eitherStringOrBool -> Msg
 createTagInputMessage a b =
     CreateTagModuleInputChanged (a b)
-
-
-viewCheckBox : String -> Bool -> (Bool -> msg) -> Html msg
-viewCheckBox i s toMsg =
-    span []
-        [ label [] [ text i ]
-        , input [ type_ "checkbox", checked s, onCheck toMsg ] []
-        ]
 
 
 viewCreateTagButton : msg -> Html msg

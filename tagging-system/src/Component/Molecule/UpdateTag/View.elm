@@ -8,11 +8,11 @@ import Html.Events exposing (onClick, onInput)
 
 
 viewUpdateTagDiv : UpdateTagModuleModel -> String -> Html Msg
-viewUpdateTagDiv updateTagPageModel tagId =
+viewUpdateTagDiv updateTagModuleModel tagId =
     div [] <|
         List.intersperse (br [] [])
             [ viewDisabledInput "text" tagId
-            , viewInput "text" "infoContentId" updateTagPageModel.infoContentId (\contentId -> CreateTagModuleInputChanged <| InfoContentId contentId)
+            , viewInput "text" "description" updateTagModuleModel.description (\contentId -> CreateTagModuleInputChanged <| Description contentId)
             , div []
                 [ viewUpdateTagButton UpdateTag
                 ]

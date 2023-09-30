@@ -23,7 +23,7 @@ type alias GotTag =
     , parentTags : List String
     , childTags : List String
     , contentCount : Int
-    , infoContentId : Maybe Int
+    , description : String
     }
 
 
@@ -71,7 +71,7 @@ tagDecoder =
         (field "parentTags" (D.list string))
         (field "childTags" (D.list string))
         (field "contentCount" int)
-        (field "infoContentId" (maybe int))
+        (field "description" string)
 
 
 contentDecoder : Decoder GotContent
