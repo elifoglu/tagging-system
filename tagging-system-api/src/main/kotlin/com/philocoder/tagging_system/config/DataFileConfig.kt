@@ -10,5 +10,5 @@ open class DataFileConfig {
     @Bean
     open fun dataFilePath(): UserConfig =
         //you should use your own json data file here -->
-        UserConfig("/home/mert/data.json")
+        UserConfig("/home/mert/Desktop/stack/ts_data/data.json")
 }
