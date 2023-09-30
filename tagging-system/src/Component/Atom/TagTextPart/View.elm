@@ -36,5 +36,5 @@ viewContentsLineByLine contents =
 viewContentLine : Content -> Html Msg
 viewContentLine content =
     div []
-        [ span [] [ a [ href ("/contents/" ++ String.fromInt content.contentId) ] [ text (" • " ++ content.text) ] ]
+        [ span [] [ a [ href ("/contents/" ++ content.contentId) ] [ text (" • " ++ content.text) ] ]
         ]

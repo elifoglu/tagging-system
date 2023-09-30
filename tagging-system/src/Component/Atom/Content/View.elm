@@ -69,7 +69,7 @@ viewContentLink htmlToClick contentId =
 
 viewContentLinkWithLinkIcon : Content -> Html msg
 viewContentLinkWithLinkIcon content =
-    viewContentLink (img [ class "navToContent", src "/link.svg" ] []) (String.fromInt content.contentId)
+    viewContentLink (img [ class "navToContent", src "/link.svg" ] []) content.contentId
 
 
 viewTextOfContent : Content -> MaybeTextToHighlight -> Html msg

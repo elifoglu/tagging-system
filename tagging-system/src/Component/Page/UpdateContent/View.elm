@@ -12,7 +12,7 @@ viewUpdateContentDiv : UpdateContentModuleData -> ContentID -> Html Msg
 viewUpdateContentDiv updateContentPageData contentId =
     div [] <|
         List.intersperse (br [] [])
-            [ viewDisabledInput "text" (String.fromInt contentId)
+            [ viewDisabledInput "text" contentId
             , viewInput "text" "title (empty if does not exist)" updateContentPageData.title (UpdateContentModuleInputChanged TitleU)
             , viewInput "text" "tagNames (use comma to separate)" updateContentPageData.tags (UpdateContentModuleInputChanged TagsU)
             , viewContentTextArea "content" updateContentPageData.text (UpdateContentModuleInputChanged TextU)

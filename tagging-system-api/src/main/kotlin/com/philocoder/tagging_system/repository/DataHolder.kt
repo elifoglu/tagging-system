@@ -36,7 +36,7 @@ open class DataHolder {
     }
 
     fun deleteContent(id: String) {
-        val deleted = data!!.contents.filter { it.contentId != id.toInt() }
+        val deleted = data!!.contents.filter { it.contentId != id }
         data = data!!.copy(contents = deleted)
     }
 

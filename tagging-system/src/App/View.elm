@@ -71,7 +71,7 @@ view model =
 
                             Initialized content ->
                                 [ viewContentDiv Nothing content
-                                , a [ href ("/update/content/" ++ String.fromInt content.contentId), class "updateContentLink" ] [ text "(update this content)" ]
+                                , a [ href ("/update/content/" ++ content.contentId), class "updateContentLink" ] [ text "(update this content)" ]
                                 ]
 
                     ContentSearchPage searchKeyword contents ->

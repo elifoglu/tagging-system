@@ -12,7 +12,7 @@ open class ContentRepository(
 
     private class ContentComparator : Comparator<Content> {
         override fun compare(o1: Content, o2: Content): Int {
-            val result = o1.dateAsTimestamp.compareTo(o2.dateAsTimestamp)
+            val result = o1.createdAt.compareTo(o2.createdAt)
             if (result != 0) {
                 return result
             }
@@ -39,7 +39,7 @@ open class ContentRepository(
 
     fun findEntity(id: String): Content? {
         val contents = dataHolder.data!!.contents
-        return contents.find { it.contentId == id.toInt() }
+        return contents.find { it.contentId == id }
     }
 
     fun getEntities(): List<Content> {

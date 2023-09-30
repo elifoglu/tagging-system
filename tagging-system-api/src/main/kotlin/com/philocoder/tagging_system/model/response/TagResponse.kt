@@ -9,7 +9,10 @@ data class TagResponse(
     val parentTags: List<String>,
     val childTags: List<String>,
     val contentCount: Int,
-    val infoContentId: Int?
+    val infoContentId: Int?,
+    val createdAt: String,
+    val lastModifiedAt: String,
+    val isDeleted: Boolean
 ) {
 
     companion object {
@@ -23,7 +26,10 @@ data class TagResponse(
                 parentTags = tag.parentTags,
                 childTags = tag.childTags,
                 contentCount = repo.getContentCount(tag.name),
-                infoContentId = tag.infoContentId
+                infoContentId = tag.infoContentId,
+                createdAt = tag.createdAt.toString(),
+                lastModifiedAt = tag.lastModifiedAt.toString(),
+                isDeleted = tag.isDeleted
             )
     }
 }

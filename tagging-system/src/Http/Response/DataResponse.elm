@@ -1,6 +1,6 @@
 module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagDataResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagDataResponseDecoder)
 
-import Json.Decode as D exposing (Decoder, field, int, map, map2, map5, map6, maybe, string)
+import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map6, map7, maybe, string)
 
 
 type alias InitialDataResponse =
@@ -28,11 +28,11 @@ type alias GotTag =
 
 
 type alias GotContent =
-    { title : Maybe String, dateAsTimestamp : GotContentDate, contentId : Int, content : String, tagIds : List String }
+    { title : Maybe String, createdAt : GotContentDate, lastModifiedAt : GotContentDate, isDeleted: Bool, contentId : String, content : String, tagIds : List String }
 
 
 type alias ContentID =
-    Int
+    String
 
 
 type alias GotContentDate =
@@ -76,10 +76,12 @@ tagDecoder =
 
 contentDecoder : Decoder GotContent
 contentDecoder =
-    map5 GotContent
+    map7 GotContent
         (maybe (field "title" string))
-        (field "dateAsTimestamp" contentDateDecoder)
-        (field "contentId" int)
+        (field "createdAt" dateDecoder)
+        (field "lastModifiedAt" dateDecoder)
+        (field "isDeleted" bool)
+        (field "contentId" string)
         (field "content" string)
         (field "tagIds" (D.list string))
 
@@ -91,6 +93,6 @@ tagTextPartDecoder =
         (field "contents" (D.list contentDecoder))
 
 
-contentDateDecoder : Decoder GotContentDate
-contentDateDecoder =
+dateDecoder : Decoder GotContentDate
+dateDecoder =
     D.string

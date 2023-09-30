@@ -362,7 +362,7 @@ update msg model =
                                 u
 
                             _ ->
-                                UpdateContentModuleData 0 "" "" ""
+                                UpdateContentModuleData "" "" "" ""
 
                         currentUpdateContentModule = a.updateContentModule
 

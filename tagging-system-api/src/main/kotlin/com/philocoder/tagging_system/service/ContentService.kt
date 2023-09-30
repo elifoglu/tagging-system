@@ -41,7 +41,7 @@ class ContentService(
                 }
                 .filter { it.tags.count() > 0 } // hidden contents have no tags and we don't want to show them on search result
                 .map { ContentResponse.createWith(it) }
-                .sortedBy { it.dateAsTimestamp }
+                .sortedBy { it.createdAt }
                 .reversed()
         return SearchContentResponse(contents)
     }

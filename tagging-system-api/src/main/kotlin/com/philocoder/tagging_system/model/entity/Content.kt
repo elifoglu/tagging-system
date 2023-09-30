@@ -1,99 +1,68 @@
 package com.philocoder.tagging_system.model.entity
 
-import arrow.core.extensions.list.foldable.exists
-import arrow.core.extensions.list.foldable.forAll
 import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.request.CreateContentRequest
 import com.philocoder.tagging_system.model.request.UpdateContentRequest
 import com.philocoder.tagging_system.repository.ContentRepository
-import com.philocoder.tagging_system.repository.TagRepository
+import org.apache.commons.lang3.RandomStringUtils
 import java.util.*
 
 data class Content(
+    val contentId: String,
     val title: String?,
-    val contentId: ContentID,
     val content: String?,
     val tags: List<String>,
-    val dateAsTimestamp: Long,
-    val textToSearchOn: String?
+    val textToSearchOn: String?,
+    val createdAt: Long,
+    val lastModifiedAt: Long,
+    val isDeleted: Boolean
 ) {
 
     companion object {
+        @ExperimentalStdlibApi
         fun createIfValidForCreation(
             req: CreateContentRequest,
-            contentRepository: ContentRepository,
-            tagRepository: TagRepository
+            repository: ContentRepository,
         ): Content? {
-            if (req.id.isEmpty()
-                || req.text.isEmpty()
-                || req.tags.isEmpty()
-            ) {
-                return null
-            }
-
-            //check if every entered tag name exists
-            val tagNames = req.tags.split(",")
-            val allTags: List<Tag> = tagRepository.getEntities()
-            val allTagNamesExists = tagNames.forAll { tagName ->
-                allTags.exists { it.name == tagName }
-            }
-            if (!allTagNamesExists) {
-                return null
-            }
-
-            //check if content with specified id already exists
-            val allContents = contentRepository.getEntities()
-            if (
-                allContents.exists { it.contentId == req.id.toInt() }
-            ) {
-                return null
-            }
-
+            var uniqueContentId: String
+            do {
+                uniqueContentId = RandomStringUtils.randomAlphanumeric(4).lowercase()
+            } while ( repository.findEntity(uniqueContentId) != null )
 
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
-                contentId = req.id.toInt(),
+                contentId = uniqueContentId,
                 content = req.text,
-                tags = tagNames,
-                dateAsTimestamp = Calendar.getInstance().timeInMillis,
-                textToSearchOn = null
+                tags = req.tagIds,
+                textToSearchOn = null,
+                createdAt = Calendar.getInstance().timeInMillis,
+                lastModifiedAt = Calendar.getInstance().timeInMillis,
+                isDeleted = false
             )
         }
 
         fun createIfValidForUpdate(
             contentId: ContentID,
             req: UpdateContentRequest,
-            contentRepository: ContentRepository,
-            tagRepository: TagRepository
+            repository: ContentRepository,
         ): Content? {
-            if (contentId.toString().isEmpty()
-                || req.text.isEmpty()
-                || req.tags.isEmpty()
-            ) {
-                return null
-            }
-
-            //check if every entered tag name exists
-            val tagNames = req.tags.split(",")
-            val allTags = tagRepository.getEntities()
-            val allTagNamesExists = tagNames.forAll { tagName ->
-                allTags.exists { it.name == tagName }
-            }
-            if (!allTagNamesExists) {
+            if (req.text.isEmpty()) {
                 return null
             }
 
             //check if content with specified id not exists
-            val existingContent: Content = contentRepository.findEntity(contentId.toString())
+            val existingContent: Content = repository.findEntity(contentId)
                 ?: return null
 
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = contentId,
                 content = req.text,
-                tags = tagNames,
-                dateAsTimestamp = existingContent.dateAsTimestamp,
-                textToSearchOn = existingContent.textToSearchOn
+                tags = req.tagIds,
+                textToSearchOn = existingContent.textToSearchOn,
+                createdAt = existingContent.createdAt,
+                lastModifiedAt = Calendar.getInstance().timeInMillis,
+                isDeleted = existingContent.isDeleted
             )
         }
     }

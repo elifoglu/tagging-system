@@ -20,7 +20,7 @@ sendTitle model =
                             title (t ++ " - tagging system")
 
                         Nothing ->
-                            title (String.fromInt content.contentId ++ " - tagging system")
+                            title (content.contentId ++ " - tagging system")
 
         TagPage status ->
             case status of

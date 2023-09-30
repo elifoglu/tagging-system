@@ -13,7 +13,9 @@ import Time
 gotContentToContent : Model -> GotContent -> Content
 gotContentToContent model gotContent =
     { title = gotContent.title
-    , date = gotContentDateToContentDate model.timeZone gotContent.dateAsTimestamp
+    , createdAt = gotContentDateToContentDate model.timeZone gotContent.createdAt
+    , lastModifiedAt = gotContentDateToContentDate model.timeZone gotContent.lastModifiedAt
+    , isDeleted = gotContent.isDeleted
     , contentId = gotContent.contentId
     , text = gotContent.content
     , tags =
@@ -60,6 +62,6 @@ maybeDateText content =
     let
         dateText : String
         dateText =
-            format "dd.MM.yy" content.date
+            format "dd.MM.yy" content.createdAt
     in
     Just dateText

@@ -17,6 +17,7 @@ class DataController(
     private val dataHolder: DataHolder
 ) {
 
+    @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/add-all-data")
     fun addAllData(@RequestBody req: AddAllDataRequest): String {
@@ -44,6 +45,7 @@ class DataController(
         return "ok"
     }
 
+    @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/get-all-data")
     fun getAllData(): GetAllDataResponse? {

@@ -62,7 +62,7 @@ createContent model =
 updateContent : ContentID -> UpdateContentModuleData -> Cmd Msg
 updateContent contentId model =
     Http.post
-        { url = apiURL ++ "contents/" ++ String.fromInt contentId
+        { url = apiURL ++ "contents/" ++ contentId
         , body = Http.jsonBody (updateContentPageDataEncoder contentId model)
         , expect = Http.expectJson GotContent contentDecoder
         }

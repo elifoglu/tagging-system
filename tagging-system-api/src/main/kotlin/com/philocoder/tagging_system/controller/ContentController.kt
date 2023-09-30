@@ -33,10 +33,11 @@ class ContentController(
         )
     }
 
+    @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/contents")
     fun addContent(@RequestBody req: CreateContentRequest): ContentResponse =
-        Content.createIfValidForCreation(req, contentRepository, tagRepository)!!
+        Content.createIfValidForCreation(req, contentRepository)!!
             .apply {
                 contentRepository.addEntity(contentId.toString(), this)
                 Thread.sleep(1000)
@@ -49,7 +50,7 @@ class ContentController(
         @PathVariable("contentId") contentId: String,
         @RequestBody req: UpdateContentRequest
     ): ContentResponse =
-        Content.createIfValidForUpdate(contentId.toInt(), req, contentRepository, tagRepository)!!
+        Content.createIfValidForUpdate(contentId, req, contentRepository)!!
             .apply {
                 contentRepository.deleteEntity(contentId)
                 Thread.sleep(1000)

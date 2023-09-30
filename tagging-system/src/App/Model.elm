@@ -91,13 +91,13 @@ type alias InitializedTagPageModel =
 
 defaultCreateContentModule =
     { isVisible = True
-    , model = CreateContentModuleModel "" "" "" ""
+    , model = CreateContentModuleModel "" "" ""
     }
 
 
 defaultUpdateContentModule =
     { isVisible = False
-    , model = NotInitializedYet 0
+    , model = NotInitializedYet ""
     }
 
 
@@ -163,7 +163,6 @@ type alias CreateContentModuleModel =
     { title : String
     , text : String
     , tags : String
-    , contentIdToCopy : String
     }
 
 
@@ -222,7 +221,7 @@ createContentPageModelEncoder model =
 updateContentPageDataEncoder : ContentID -> UpdateContentModuleData -> Encode.Value
 updateContentPageDataEncoder contentId model =
     Encode.object
-        [ ( "id", Encode.string (String.fromInt contentId) )
+        [ ( "id", Encode.string contentId )
         , ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
         , ( "tags", Encode.string model.tags )
