@@ -27,4 +27,4 @@ viewInput t p v toMsg =
 
 viewUpdateTagButton : msg -> Html msg
 viewUpdateTagButton msg =
-    button [ onClick msg ] [ text "update tag" ]
+    button [ onClick msg ] [ text "✓" ]

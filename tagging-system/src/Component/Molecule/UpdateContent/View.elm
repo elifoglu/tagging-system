@@ -37,5 +37,5 @@ viewContentTextArea p v toMsg =
 
 viewUpdateContentButton : msg -> Html msg
 viewUpdateContentButton msg =
-    button [ onClick msg ] [ text "update content" ]
+    button [ onClick msg ] [ text "✓" ]
 

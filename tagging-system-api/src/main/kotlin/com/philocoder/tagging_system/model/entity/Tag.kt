@@ -49,6 +49,9 @@ data class Tag(
             req: UpdateTagRequest,
             repository: TagRepository
         ): Tag? {
+            if (req.name.isEmpty())
+                return null
+
             val tag: Tag = repository.findEntity(tagId)!!
 
             return tag.copy(

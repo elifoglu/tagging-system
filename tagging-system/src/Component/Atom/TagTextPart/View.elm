@@ -2,7 +2,7 @@ module TagTextPart.View exposing (viewTextPart)
 
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
-import Html exposing (Html, a, div, img, span, text)
+import Html exposing (Html, a, br, div, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Tag.Model exposing (Tag)
@@ -31,6 +31,7 @@ viewContentsLineByLine contents =
     div []
         (contents
             |> List.map viewContentLine
+            |> List.intersperse (br [] [])
         )
 
 

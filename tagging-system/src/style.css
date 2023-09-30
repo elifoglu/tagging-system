@@ -84,6 +84,24 @@ hr {
     float: left;
 }
 
+.contentLineParent {
+    width: fit-content;
+    display: inline-block;
+}
+
+.contentLineFirstChild {
+    float: left;
+}
+
+.contentLineSecondChild {
+    float: left;
+    display: none;
+}
+
+.contentLineFirstChild:hover + .contentLineSecondChild {
+    display: inline-block;
+}
+
 .contentEditIcon {
     width: 13px;
     height: auto;
@@ -97,31 +115,6 @@ hr {
     padding: 2px;
     cursor: pointer;
 }
-
-.contentLineParent {
-    width: fit-content;
-    border: 3px solid #fff;
-}
-
-.contentLineFirstChild {
-    float: left;
-    padding: 0px;
-
-}
-
-.contentLineSecondChild {
-    float: left;
-    padding: 0px;
-}
-
-/*.contentEditIconParent:hover + .hiddenContentEditIcon {
-    display: block;
-
-}
-
-.hiddenContentEditIcon {
-    float: left;
-}*/
 
 .rightFrameOnTagPage {
     width: 15%;

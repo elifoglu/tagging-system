@@ -194,7 +194,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModuleModel model.allTags) (defaultUpdateTagModuleModel tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible )
+                                                Initialized (InitializedTagPageModel tag tagTextParts (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModuleModel model.allTags) (defaultUpdateTagModuleModel tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -363,7 +363,6 @@ update msg model =
                                 WorkingOnUpdateContentModule ->
                                     a.createContentModule.tagPickerModelForTags
 
-
                         newTagPickerModuleModel =
                             case inputType of
                                 SearchInput text ->
@@ -413,7 +412,6 @@ update msg model =
 
                                         newCreateContentModuleModel =
                                             { currentCreateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
-
                                     in
                                     TagPage (Initialized { a | createContentModule = newCreateContentModuleModel })
 
@@ -424,7 +422,6 @@ update msg model =
 
                                         newUpdateContentModuleModel =
                                             { currentUpdateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
-
                                     in
                                     TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
                     in
@@ -450,7 +447,13 @@ update msg model =
         UpdateTag ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, updateTag a.updateTagModuleModel )
+                    ( model
+                    , if a.updateTagModuleModel.name == "" then
+                        Cmd.none
+
+                      else
+                        updateTag a.updateTagModuleModel
+                    )
 
                 _ ->
                     ( model, Cmd.none )

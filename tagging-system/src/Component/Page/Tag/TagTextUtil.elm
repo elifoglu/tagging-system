@@ -1,8 +1,8 @@
 module Tag.TagTextUtil exposing (viewTagText)
 
 import App.Msg exposing (Msg)
-import Html exposing (Html, br, div, text)
-import Html.Attributes exposing (class)
+import Html exposing (Html, br, div, img, text)
+import Html.Attributes exposing (class, src, style)
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.View exposing (viewTextPart)
@@ -20,4 +20,6 @@ viewTagText tag tagTextParts =
 
 separatorLine : Html Msg
 separatorLine =
-    br [] []
+    div [ ]
+        [ br [] []
+        ]
