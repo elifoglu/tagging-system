@@ -2,6 +2,7 @@ package com.philocoder.tagging_system.model.response
 
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.repository.ContentRepository
+import com.philocoder.tagging_system.repository.TagRepository
 
 data class TagResponse(
     val tagId: String,
@@ -18,14 +19,15 @@ data class TagResponse(
     companion object {
         fun create(
             tag: Tag,
-            repo: ContentRepository
+            tagRepository: TagRepository,
+            contentRepository: ContentRepository
         ): TagResponse =
             TagResponse(
                 tagId = tag.tagId,
                 name = tag.name,
-                parentTags = tag.parentTags,
-                childTags = tag.childTags,
-                contentCount = repo.getContentCount(tag.name),
+                parentTags = tagRepository.pruneDeletedOnes(tag.parentTags) ,
+                childTags = tagRepository.pruneDeletedOnes(tag.childTags),
+                contentCount = contentRepository.getContentCount(tag.name),
                 description = tag.description,
                 createdAt = tag.createdAt.toString(),
                 lastModifiedAt = tag.lastModifiedAt.toString(),

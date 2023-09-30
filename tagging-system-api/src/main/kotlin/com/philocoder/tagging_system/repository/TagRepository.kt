@@ -40,4 +40,11 @@ open class TagRepository(
     fun getHomeTag(): String {
         return dataHolder.getAllData()!!.homeTagId
     }
+
+    fun pruneDeletedOnes(tags: List<String>): List<String> {
+        return tags
+            .map { findEntity(it)!! }
+            .filter { !it.isDeleted }
+            .map { it.tagId }
+    }
 }

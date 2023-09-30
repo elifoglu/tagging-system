@@ -21,11 +21,12 @@ class TagController(
     @CrossOrigin
     @GetMapping("/get-initial-data")
     fun getInitialData(): InitialDataResponse {
-        val allTags: List<Tag> = tagRepository.getAllTags()
+        val allTags: List<Tag> = tagRepository.getAllTags().filter { !it.isDeleted }
         return InitialDataResponse(
             allTags = allTags.map {
                 TagResponse.create(
                     it,
+                    tagRepository,
                     contentRepository
                 )
             },

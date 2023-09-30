@@ -25,7 +25,7 @@ class CondensedViewOfTagService(
                 .getContentsForTag(tag)
                 .filter { !it.isDeleted }
                 .map { ContentResponse.createWith(it) }
-            tagTextParts.add(TagTextResponse.TagTextPart(TagResponse.create(tag, repository), contentResponses))
+            tagTextParts.add(TagTextResponse.TagTextPart(TagResponse.create(tag, tagRepository, repository), contentResponses))
         }
 
         return TagTextResponse(tagTextParts)
