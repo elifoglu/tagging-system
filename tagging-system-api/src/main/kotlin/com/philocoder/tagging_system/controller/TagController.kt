@@ -33,6 +33,7 @@ class TagController(
 
     @CrossOrigin
     @PostMapping("/tags")
+    @kotlin.ExperimentalStdlibApi
     fun createTag(@RequestBody req: CreateTagRequest): String =
         Tag.createIfValidForCreation(req, tagRepository)!!
             .run {
@@ -42,6 +43,7 @@ class TagController(
 
     @CrossOrigin
     @PostMapping("/tags/{tagId}")
+    @kotlin.ExperimentalStdlibApi
     fun updateTag(
         @PathVariable("tagId") tagId: String,
         @RequestBody req: UpdateTagRequest
