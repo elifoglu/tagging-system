@@ -12,7 +12,6 @@ data class Content(
     val title: String?,
     val content: String?,
     val tags: List<String>,
-    val textToSearchOn: String?,
     val createdAt: Long,
     val lastModifiedAt: Long,
     val isDeleted: Boolean
@@ -34,7 +33,6 @@ data class Content(
                 contentId = uniqueContentId,
                 content = req.text,
                 tags = req.tagIds,
-                textToSearchOn = null,
                 createdAt = Calendar.getInstance().timeInMillis,
                 lastModifiedAt = Calendar.getInstance().timeInMillis,
                 isDeleted = false
@@ -59,7 +57,6 @@ data class Content(
                 contentId = contentId,
                 content = req.text,
                 tags = req.tagIds,
-                textToSearchOn = existingContent.textToSearchOn,
                 createdAt = existingContent.createdAt,
                 lastModifiedAt = Calendar.getInstance().timeInMillis,
                 isDeleted = existingContent.isDeleted

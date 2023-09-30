@@ -34,10 +34,6 @@ class ContentService(
                 .filter {
                     StringUtils.containsIgnoreCase(it.content!!, req.keyword)
                             || StringUtils.containsIgnoreCase(it.title, req.keyword)
-                            || (it.textToSearchOn != null && StringUtils.containsIgnoreCase(
-                        it.textToSearchOn,
-                        req.keyword
-                    ))
                 }
                 .filter { it.tags.count() > 0 } // hidden contents have no tags and we don't want to show them on search result
                 .map { ContentResponse.createWith(it) }
