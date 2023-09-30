@@ -13,7 +13,6 @@ import NotFound.View exposing (view404Div)
 import SearchBox.View exposing (viewSearchBoxDiv)
 import Tag.View exposing (viewTagPageDiv)
 import UpdateContent.View exposing (viewUpdateContentDiv)
-import UpdateTag.View exposing (viewUpdateTagDiv)
 
 
 view : Model -> Document Msg
@@ -27,26 +26,7 @@ view model =
                     TagPage status ->
                         case status of
                             Initialized initialized ->
-                                [ viewTagPageDiv initialized model.allTags
-                                , if initialized.createContentModule.isVisible then
-                                    viewCreateContentDiv initialized.createContentModule.model
-
-                                  else
-                                    text ""
-                                , if initialized.updateContentModule.isVisible then
-                                    case initialized.updateContentModule.model of
-                                        GotContentToUpdate updateContentPageData ->
-                                            viewUpdateContentDiv updateContentPageData updateContentPageData.contentId
-
-                                        UpdateRequestIsSent updateContentPageData ->
-                                            viewUpdateContentDiv updateContentPageData updateContentPageData.contentId
-
-                                        NotInitializedYet _ ->
-                                            text ""
-
-                                  else
-                                    text ""
-                                ]
+                                [ viewTagPageDiv initialized model.allTags ]
 
                             _ ->
                                 []

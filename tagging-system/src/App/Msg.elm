@@ -3,7 +3,7 @@ module App.Msg exposing (..)
 import App.Model exposing (TagOption)
 import Browser
 import Browser.Dom as Dom
-import DataResponse exposing (InitialDataResponse, ContentID, ContentSearchResponse, TagDataResponse, GotContent)
+import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagDataResponse)
 import Http
 import Tag.Model exposing (Tag)
 import Time
@@ -19,36 +19,36 @@ type Msg
     | FocusResult (Result Dom.Error ())
     | GotDataOfTag Tag (Result Http.Error TagDataResponse)
     | GotContent (Result Http.Error GotContent)
-    | GotContentUpdateResponse (Result Http.Error GotContent)
     | GotContentCreationResponse (Result Http.Error GotContent)
-    | CreateContentModuleInputChanged ContentInputTypeForContentCreation String
-    | UpdateContentModuleInputChanged ContentInputTypeForContentUpdate String
+    | CreateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
+    | UpdateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | CreateTagModuleInputChanged TagInputType
     | ToggleUpdateTagModuleVisibility
     | UpdateTagModuleInputChanged TagInputType
-    | TagPickerModuleInputChanged TagPickerInputType
+    | TagPickerModuleInputChanged WorkingOnWhichModule TagPickerInputType
     | CreateContent
     | UpdateContent
     | CreateTag
     | UpdateTag
-    | GotTagCreateUpdateDeleteDoneResponse (Result Http.Error String)
+    | GotTagOrContentCreateUpdateDeleteDoneResponse (Result Http.Error String)
     | GotTimeZone Time.Zone
 
 
-type ContentInputTypeForContentCreation
+type WorkingOnWhichModule
+    = WorkingOnCreateTagModule
+    | WorkingOnUpdateTagModule
+    | WorkingOnCreateContentModule
+    | WorkingOnUpdateContentModule
+
+type ContentInputTypeForContentCreationOrUpdate
     = Title
     | Text
-    | Tags
 
-
-type ContentInputTypeForContentUpdate
-    = TitleU
-    | TextU
-    | TagsU
 
 type TagInputType
     = Name String
     | Description String
+
 
 type TagPickerInputType
     = SearchInput String

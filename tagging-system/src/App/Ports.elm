@@ -1,6 +1,6 @@
 port module App.Ports exposing (consoleLog, sendTitle, title)
 
-import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..), UpdateContentModuleModel(..))
+import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..))
 
 
 port title : String -> Cmd a

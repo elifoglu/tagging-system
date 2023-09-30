@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, CreateContentModule, CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModule, UpdateContentModuleData, UpdateContentModuleModel(..), UpdateTagModuleModel, createContentPageModelEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModuleModel, defaultUpdateContentModule, defaultUpdateTagModuleModel, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, homepage, setUpdateContentPageModel, updateContentPageDataEncoder, updateTagPageModelEncoder)
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModuleModel, defaultUpdateContentModule, defaultUpdateTagModuleModel, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagPageModelEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -64,10 +64,15 @@ type MaySendRequest pageData requestSentData
     | RequestSent requestSentData
 
 
-type UpdateContentModuleModel
-    = NotInitializedYet ContentID
-    | GotContentToUpdate UpdateContentModuleData
-    | UpdateRequestIsSent UpdateContentModuleData
+
+{-
+
+   type UpdateContentModuleBaseModel
+       = NotInitializedYet ContentID
+       | GotContentToUpdate UpdateContentModuleData
+       | UpdateRequestIsSent UpdateContentModuleData
+
+-}
 
 
 type alias NonInitializedYetTagPageModel =
@@ -83,11 +88,12 @@ type TagIdInputType
 type alias InitializedTagPageModel =
     { tag : Tag
     , textParts : List TagTextPart
-    , createContentModule : CreateContentModule
-    , updateContentModule : UpdateContentModule
+    , createContentModule : CreateContentModuleModel
+    , updateContentModule : UpdateContentModuleModel
     , createTagModuleModel : CreateTagModuleModel
     , updateTagModuleModel : UpdateTagModuleModel
-    , oneOfIsVisible : TagModuleVisibility
+    , oneOfContentModuleIsVisible : ContentModuleVisibility
+    , oneOfTagModuleIsVisible : TagModuleVisibility
     }
 
 
@@ -96,16 +102,19 @@ type TagModuleVisibility
     | UpdateTagModuleIsVisible
 
 
-defaultCreateContentModule =
-    { isVisible = True
-    , model = CreateContentModuleModel "" "" ""
-    }
+type ContentModuleVisibility
+    = CreateContentModuleIsVisible
+    | UpdateContentModuleIsVisible
 
 
+defaultCreateContentModule : List Tag -> CreateContentModuleModel
+defaultCreateContentModule allTags =
+    CreateContentModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [] Nothing)
+
+
+defaultUpdateContentModule : UpdateContentModuleModel
 defaultUpdateContentModule =
-    { isVisible = False
-    , model = NotInitializedYet ""
-    }
+    UpdateContentModuleModel "" "" "" (TagPickerModuleModel "" [] [] Nothing)
 
 
 defaultCreateTagModuleModel : List Tag -> CreateTagModuleModel
@@ -156,18 +165,6 @@ selectedTagOptions tag allTags =
         |> List.map tagToTagOption
 
 
-type alias CreateContentModule =
-    { isVisible : Bool
-    , model : CreateContentModuleModel
-    }
-
-
-type alias UpdateContentModule =
-    { isVisible : Bool
-    , model : UpdateContentModuleModel
-    }
-
-
 type alias BlogTagsToShow =
     Maybe (List Tag)
 
@@ -193,15 +190,15 @@ type alias GetTagContentsRequestModel =
 type alias CreateContentModuleModel =
     { title : String
     , text : String
-    , tags : String
+    , tagPickerModelForTags : TagPickerModuleModel
     }
 
 
-type alias UpdateContentModuleData =
+type alias UpdateContentModuleModel =
     { contentId : ContentID
     , title : String
     , text : String
-    , tags : String
+    , tagPickerModelForTags : TagPickerModuleModel
     }
 
 
@@ -220,15 +217,6 @@ type alias UpdateTagModuleModel =
     }
 
 
-setUpdateContentPageModel : Content -> UpdateContentModuleData
-setUpdateContentPageModel content =
-    { contentId = content.contentId
-    , title = Maybe.withDefault "" content.title
-    , text = content.text
-    , tags = String.join "," (List.map (\tag -> tag.name) content.tags)
-    }
-
-
 getContentRequestModelEncoder : GetContentRequestModel -> Encode.Value
 getContentRequestModelEncoder model =
     Encode.object
@@ -236,29 +224,28 @@ getContentRequestModelEncoder model =
         ]
 
 
-getTagContentsRequestModelEncoder : GetTagContentsRequestModel -> Encode.Value
-getTagContentsRequestModelEncoder model =
+getDataOfTagRequestModelEncoder : GetTagContentsRequestModel -> Encode.Value
+getDataOfTagRequestModelEncoder model =
     Encode.object
         [ ( "tagId", Encode.string model.tagId )
         ]
 
 
-createContentPageModelEncoder : CreateContentModuleModel -> Encode.Value
-createContentPageModelEncoder model =
+createContentRequestEncoder : CreateContentModuleModel -> Encode.Value
+createContentRequestEncoder model =
     Encode.object
         [ ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
-        , ( "tags", Encode.string model.tags )
+        , ( "tags", Encode.list Encode.string (model.tagPickerModelForTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
 
 
-updateContentPageDataEncoder : ContentID -> UpdateContentModuleData -> Encode.Value
-updateContentPageDataEncoder contentId model =
+updateContentRequestEncoder : UpdateContentModuleModel -> Encode.Value
+updateContentRequestEncoder model =
     Encode.object
-        [ ( "id", Encode.string contentId )
-        , ( "title", Encode.string model.title )
+        [ ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
-        , ( "tags", Encode.string model.tags )
+        , ( "tags", Encode.list Encode.string (model.tagPickerModelForTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
 
 

@@ -1,9 +1,10 @@
 module TagTextPart.View exposing (viewTextPart)
 
-import App.Msg exposing (Msg)
+import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
-import Html exposing (Html, a, div, span, text)
-import Html.Attributes exposing (class, href)
+import Html exposing (Html, a, div, img, span, text)
+import Html.Attributes exposing (class, href, src, style)
+import Html.Events exposing (onClick)
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
 
@@ -35,6 +36,15 @@ viewContentsLineByLine contents =
 
 viewContentLine : Content -> Html Msg
 viewContentLine content =
-    div []
-        [ span [] [ a [ href ("/contents/" ++ content.contentId) ] [ text (" • " ++ content.text) ] ]
+    div [ class "contentLineParent" ]
+        [ div [ class "contentLineFirstChild" ]
+            [ a [ href ("/contents/" ++ content.contentId) ]
+                [ text (" • " ++ content.text)
+                ]
+            ]
+        , div [ class "contentLineSecondChild" ]
+            [ img
+                [ class "contentEditIcon", onClick ToggleUpdateTagModuleVisibility, style "margin-left" "5px", src "/edit.png" ]
+                []
+            ]
         ]

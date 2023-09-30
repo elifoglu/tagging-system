@@ -1,10 +1,11 @@
 module CreateContent.View exposing (viewCreateContentDiv)
 
 import App.Model exposing (CreateContentModuleModel, Model)
-import App.Msg exposing (ContentInputTypeForContentCreation(..), Msg(..))
-import Html exposing (Html, br, button, div, input, text, textarea)
+import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..), WorkingOnWhichModule(..))
+import Html exposing (Html, b, button, div, input, text, textarea)
 import Html.Attributes exposing (placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
+import TagPicker.View exposing (viewTagPickerDiv)
 
 
 viewCreateContentDiv : CreateContentModuleModel -> Html Msg
@@ -12,10 +13,9 @@ viewCreateContentDiv createContentModuleModel =
     div [] <|
         [ text ""
         ]
-            ++ List.intersperse (br [] [])
-                [ viewInput "text" "title (empty if does not exist)" createContentModuleModel.title (CreateContentModuleInputChanged Title)
-                , viewInput "text" "tagNames (use comma to separate)" createContentModuleModel.tags (CreateContentModuleInputChanged Tags)
-                , viewContentTextArea "content" createContentModuleModel.text (CreateContentModuleInputChanged Text)
+            ++ [ viewInput "text" "title" createContentModuleModel.title (CreateContentModuleInputChanged Title)
+                , viewContentTextArea "content*" createContentModuleModel.text (CreateContentModuleInputChanged Text)
+                , viewTagPickerDiv createContentModuleModel.tagPickerModelForTags WorkingOnCreateContentModule
                 , viewCreateContentButton CreateContent
                 ]
 
@@ -32,4 +32,4 @@ viewContentTextArea p v toMsg =
 
 viewCreateContentButton : msg -> Html msg
 viewCreateContentButton msg =
-    button [ onClick msg ] [ text "create new content" ]
+        button [ onClick msg ] [ b [] [ text "+" ] ]

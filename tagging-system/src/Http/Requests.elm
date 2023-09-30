@@ -1,6 +1,6 @@
 module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleData, UpdateTagModuleModel, createContentPageModelEncoder, createTagRequestEncoder, getContentRequestModelEncoder, getTagContentsRequestModelEncoder, updateContentPageDataEncoder, updateTagPageModelEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagPageModelEncoder)
 import App.Msg exposing (Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
@@ -36,7 +36,7 @@ getTagContents tag =
     in
     Http.post
         { url = apiURL ++ "contents-of-tag"
-        , body = Http.jsonBody (getTagContentsRequestModelEncoder getTagContentsRequestModel)
+        , body = Http.jsonBody (getDataOfTagRequestModelEncoder getTagContentsRequestModel)
         , expect = Http.expectJson (GotDataOfTag tag) tagDataResponseDecoder
         }
 
@@ -54,17 +54,17 @@ createContent : CreateContentModuleModel -> Cmd Msg
 createContent model =
     Http.post
         { url = apiURL ++ "contents"
-        , body = Http.jsonBody (createContentPageModelEncoder model)
-        , expect = Http.expectJson GotContent contentDecoder
+        , body = Http.jsonBody (createContentRequestEncoder model)
+        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
         }
 
 
-updateContent : ContentID -> UpdateContentModuleData -> Cmd Msg
-updateContent contentId model =
+updateContent : UpdateContentModuleModel -> Cmd Msg
+updateContent model =
     Http.post
-        { url = apiURL ++ "contents/" ++ contentId
-        , body = Http.jsonBody (updateContentPageDataEncoder contentId model)
-        , expect = Http.expectJson GotContent contentDecoder
+        { url = apiURL ++ "contents/" ++ model.contentId
+        , body = Http.jsonBody (updateContentRequestEncoder model)
+        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
         }
 
 
@@ -73,7 +73,7 @@ createTag model =
     Http.post
         { url = apiURL ++ "tags"
         , body = Http.jsonBody (createTagRequestEncoder model)
-        , expect = Http.expectString GotTagCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
         }
 
 
@@ -82,7 +82,7 @@ updateTag model =
     Http.post
         { url = apiURL ++ "tags/" ++ model.tagId
         , body = Http.jsonBody (updateTagPageModelEncoder model)
-        , expect = Http.expectString GotTagCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
         }
 
 

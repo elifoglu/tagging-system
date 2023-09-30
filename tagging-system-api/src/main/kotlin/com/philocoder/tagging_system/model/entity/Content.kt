@@ -28,11 +28,14 @@ data class Content(
                 uniqueContentId = RandomStringUtils.randomAlphanumeric(4).lowercase()
             } while ( repository.findEntity(uniqueContentId) != null )
 
+            if(req.text == null)
+                return null
+
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = uniqueContentId,
                 content = req.text,
-                tags = req.tagIds,
+                tags = req.tags,
                 createdAt = Calendar.getInstance().timeInMillis,
                 lastModifiedAt = Calendar.getInstance().timeInMillis,
                 isDeleted = false
@@ -56,7 +59,7 @@ data class Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = contentId,
                 content = req.text,
-                tags = req.tagIds,
+                tags = req.tags,
                 createdAt = existingContent.createdAt,
                 lastModifiedAt = Calendar.getInstance().timeInMillis,
                 isDeleted = existingContent.isDeleted

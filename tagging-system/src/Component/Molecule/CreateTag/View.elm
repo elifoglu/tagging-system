@@ -1,7 +1,7 @@
 module CreateTag.View exposing (viewCreateTagDiv)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Model, TagModuleVisibility(..))
-import App.Msg exposing (Msg(..), TagInputType(..))
+import App.Msg exposing (Msg(..), TagInputType(..), WorkingOnWhichModule(..))
 import Html exposing (Html, b, br, button, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, selected, style, type_, value)
 import Html.Events exposing (onClick, onInput)
@@ -13,9 +13,9 @@ viewCreateTagDiv createTagModuleModel =
     div [ class "createOrUpdateTagDiv" ] <|
         List.intersperse (br [] [])
             [ b [] [ text "create a new tag" ]
-            , viewInput "text" "name" createTagModuleModel.name (createTagInputMessage Name)
+            , viewInput "text" "name*" createTagModuleModel.name (createTagInputMessage Name)
             , viewInput "text" "description" createTagModuleModel.description (createTagInputMessage Description)
-            , viewTagPickerDiv createTagModuleModel.tagPickerModelForParentTags
+            , viewTagPickerDiv createTagModuleModel.tagPickerModelForParentTags WorkingOnCreateTagModule
             , viewCreateTagButton CreateTag
             ]
 

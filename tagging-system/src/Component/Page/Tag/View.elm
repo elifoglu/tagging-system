@@ -1,7 +1,8 @@
 module Tag.View exposing (..)
 
-import App.Model exposing (InitializedTagPageModel, TagModuleVisibility(..))
+import App.Model exposing (ContentModuleVisibility(..), InitializedTagPageModel, TagModuleVisibility(..), UpdateContentModuleModel)
 import App.Msg exposing (Msg(..))
+import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
 import Html exposing (Html, a, b, br, div, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
@@ -9,6 +10,7 @@ import Html.Events exposing (onClick)
 import Tag.Model exposing (Tag)
 import Tag.TagTextUtil exposing (viewTagText)
 import Tag.Util exposing (tagByIdForced)
+import UpdateContent.View exposing (viewUpdateContentDiv)
 import UpdateTag.View exposing (viewUpdateTagDiv)
 
 
@@ -16,7 +18,20 @@ viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
 viewTagPageDiv initialized allTags =
     div [ style "margin-top" "27px" ]
         [ viewLeftFrame initialized allTags
+        , viewMidFrame initialized
         , viewRightFrame initialized
+        ]
+
+
+viewRightFrame : InitializedTagPageModel -> Html Msg
+viewRightFrame initialized =
+    div [ class "rightFrameOnTagPage" ]
+        [ case initialized.oneOfContentModuleIsVisible of
+            CreateContentModuleIsVisible ->
+                viewCreateContentDiv initialized.createContentModule
+
+            UpdateContentModuleIsVisible ->
+                viewUpdateContentDiv initialized.updateContentModule
         ]
 
 
@@ -36,14 +51,14 @@ viewLeftFrame initialized allTags =
             ]
             [ b [] [ text ("#" ++ initialized.tag.name) ]
             , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, style "margin-left" "5px", src "/edit.png" ] []
-
             ]
         , viewTagsDiv initialized.tag.childTags allTags Child
-        , case initialized.oneOfIsVisible of
-                CreateTagModuleIsVisible ->
-                    viewCreateTagDiv initialized.createTagModuleModel
-                UpdateTagModuleIsVisible ->
-                    viewUpdateTagDiv initialized.updateTagModuleModel
+        , case initialized.oneOfTagModuleIsVisible of
+            CreateTagModuleIsVisible ->
+                   viewCreateTagDiv initialized.createTagModuleModel
+
+            UpdateTagModuleIsVisible ->
+                   viewUpdateTagDiv initialized.updateTagModuleModel
         ]
 
 
@@ -62,9 +77,9 @@ viewTagsDiv tagIds allTags tagType =
         )
 
 
-viewRightFrame : InitializedTagPageModel -> Html Msg
-viewRightFrame initialized =
-    div [ class "rightFrameOnTagPage" ]
+viewMidFrame : InitializedTagPageModel -> Html Msg
+viewMidFrame initialized =
+    div [ class "midFrameOnTagPage" ]
         [ viewTagText initialized.tag initialized.textParts
         ]
 

@@ -3,10 +3,9 @@ package com.philocoder.tagging_system.controller
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.request.*
 import com.philocoder.tagging_system.model.response.ContentResponse
-import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
+import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.ContentRepository
-import com.philocoder.tagging_system.repository.TagRepository
 import com.philocoder.tagging_system.service.ContentService
 import org.springframework.web.bind.annotation.*
 
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*
 @RestController
 class ContentController(
     private val contentRepository: ContentRepository,
-    private val tagRepository: TagRepository,
     private val service: ContentService,
 ) {
 
@@ -36,27 +34,27 @@ class ContentController(
     @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/contents")
-    fun addContent(@RequestBody req: CreateContentRequest): ContentResponse =
+    fun createContent(@RequestBody req: CreateContentRequest): String =
         Content.createIfValidForCreation(req, contentRepository)!!
-            .apply {
-                contentRepository.addEntity(contentId.toString(), this)
-                Thread.sleep(1000)
+            .run {
+                contentRepository.addEntity( this)
+                //dataService.regenerateWholeData() for now, i do not know if i gonna need this
+                "done"
             }
-            .let { ContentResponse.createWith(it) }
+
 
     @CrossOrigin
     @PostMapping("/contents/{contentId}")
     fun updateContent(
         @PathVariable("contentId") contentId: String,
         @RequestBody req: UpdateContentRequest
-    ): ContentResponse =
+    ): String =
         Content.createIfValidForUpdate(contentId, req, contentRepository)!!
-            .apply {
-                contentRepository.deleteEntity(contentId)
-                Thread.sleep(1000)
-                contentRepository.addEntity(contentId, this)
+            .run {
+                contentRepository.updateEntity(this)
+                //dataService.regenerateWholeData() for now, i do not know if i gonna need this
+                "done"
             }
-            .let { ContentResponse.createWith(it) }
 
     @CrossOrigin
     @PostMapping("/search")

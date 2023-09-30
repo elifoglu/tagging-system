@@ -28,6 +28,12 @@ open class DataHolder {
         data = data!!.copy(contents = newList)
     }
 
+    fun updateContent(content: Content) {
+        val updatedContentList = data!!.contents
+            .map { if (it.contentId == content.contentId) content else it }
+        data = data!!.copy(contents = updatedContentList)
+    }
+
     fun addTag(tag: Tag) {
         val newList: ArrayList<Tag> = ArrayList()
         newList.addAll(data!!.tags)

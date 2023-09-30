@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import App.Model exposing (..)
-import App.Msg exposing (ContentInputTypeForContentCreation(..), ContentInputTypeForContentUpdate(..), Msg(..), TagInputType(..), TagPickerInputType(..))
+import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
 import App.Ports exposing (sendTitle)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
@@ -167,39 +167,7 @@ update msg model =
                         newActivePage =
                             case model.activePage of
                                 TagPage (Initialized a) ->
-                                    TagPage (Initialized { a | createContentModule = defaultCreateContentModule })
-
-                                _ ->
-                                    MaintenancePage
-
-                        newModel =
-                            { model | activePage = newActivePage }
-                    in
-                    ( newModel, getCmdToSendByPage newModel )
-
-                Err _ ->
-                    createNewModelAndCmdMsg model NotFoundPage
-
-        GotContentUpdateResponse result ->
-            case result of
-                Ok gotContent ->
-                    let
-                        content =
-                            gotContentToContent model gotContent
-
-                        newActivePage : Page
-                        newActivePage =
-                            case model.activePage of
-                                TagPage (Initialized a) ->
-                                    case a.updateContentModule.model of
-                                        NotInitializedYet _ ->
-                                            TagPage (Initialized { a | updateContentModule = { isVisible = True, model = GotContentToUpdate (setUpdateContentPageModel content) } })
-
-                                        GotContentToUpdate _ ->
-                                            TagPage (Initialized { a | updateContentModule = { isVisible = True, model = GotContentToUpdate (setUpdateContentPageModel content) } })
-
-                                        UpdateRequestIsSent _ ->
-                                            TagPage (Initialized { a | updateContentModule = defaultUpdateContentModule })
+                                    TagPage (Initialized { a | createContentModule = defaultCreateContentModule model.allTags })
 
                                 _ ->
                                     MaintenancePage
@@ -226,7 +194,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts defaultCreateContentModule defaultUpdateContentModule (defaultCreateTagModuleModel model.allTags) (defaultUpdateTagModuleModel tag model.allTags) CreateTagModuleIsVisible)
+                                                Initialized (InitializedTagPageModel tag tagTextParts (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModuleModel model.allTags) (defaultUpdateTagModuleModel tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible )
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -248,7 +216,7 @@ update msg model =
                 TagPage (Initialized tagPage) ->
                     let
                         currentCreateContentModuleModel =
-                            tagPage.createContentModule.model
+                            tagPage.createContentModule
 
                         newCreateContentModuleModel : CreateContentModuleModel
                         newCreateContentModuleModel =
@@ -259,18 +227,8 @@ update msg model =
                                 Text ->
                                     { currentCreateContentModuleModel | text = input }
 
-                                Tags ->
-                                    { currentCreateContentModuleModel | tags = input }
-
-                        currentModule =
-                            tagPage.createContentModule
-
-                        newModule : CreateContentModule
-                        newModule =
-                            { currentModule | model = newCreateContentModuleModel }
-
                         newTagPage =
-                            TagPage (Initialized { tagPage | createContentModule = newModule })
+                            TagPage (Initialized { tagPage | createContentModule = newCreateContentModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
@@ -281,36 +239,21 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized tagPage) ->
                     let
+                        currentUpdateContentModuleModel : UpdateContentModuleModel
                         currentUpdateContentModuleModel =
-                            tagPage.updateContentModule.model
+                            tagPage.updateContentModule
 
                         newUpdateContentModuleModel : UpdateContentModuleModel
                         newUpdateContentModuleModel =
-                            case currentUpdateContentModuleModel of
-                                GotContentToUpdate updateContentPageData ->
-                                    GotContentToUpdate <|
-                                        case inputType of
-                                            TitleU ->
-                                                { updateContentPageData | title = input }
+                            case inputType of
+                                Title ->
+                                    { currentUpdateContentModuleModel | title = input }
 
-                                            TextU ->
-                                                { updateContentPageData | text = input }
-
-                                            TagsU ->
-                                                { updateContentPageData | tags = input }
-
-                                other ->
-                                    other
-
-                        currentModule =
-                            tagPage.updateContentModule
-
-                        newModule : UpdateContentModule
-                        newModule =
-                            { currentModule | model = newUpdateContentModuleModel }
+                                Text ->
+                                    { currentUpdateContentModuleModel | text = input }
 
                         newTagPage =
-                            TagPage (Initialized { tagPage | updateContentModule = newModule })
+                            TagPage (Initialized { tagPage | updateContentModule = newUpdateContentModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
@@ -320,7 +263,7 @@ update msg model =
         CreateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, createContent a.createContentModule.model )
+                    ( model, createContent a.createContentModule )
 
                 _ ->
                     ( model, Cmd.none )
@@ -328,29 +271,7 @@ update msg model =
         UpdateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    let
-                        currentUpdateContentModuleModel : UpdateContentModuleModel
-                        currentUpdateContentModuleModel =
-                            a.updateContentModule.model
-
-                        updateContentModuleData =
-                            case currentUpdateContentModuleModel of
-                                GotContentToUpdate u ->
-                                    u
-
-                                _ ->
-                                    UpdateContentModuleData "" "" "" ""
-
-                        currentUpdateContentModule =
-                            a.updateContentModule
-
-                        newUpdateContentModule =
-                            { currentUpdateContentModule | model = GotContentToUpdate updateContentModuleData }
-
-                        newTagPage =
-                            TagPage (Initialized { a | updateContentModule = newUpdateContentModule })
-                    in
-                    ( { model | activePage = newTagPage }, updateContent updateContentModuleData.contentId updateContentModuleData )
+                    ( model, updateContent a.updateContentModule )
 
                 _ ->
                     ( model, Cmd.none )
@@ -385,15 +306,15 @@ update msg model =
                 TagPage (Initialized a) ->
                     let
                         otherOneIsVisible =
-                            case a.oneOfIsVisible of
-                                CreateTagModuleIsVisible ->
-                                    UpdateTagModuleIsVisible
-
+                            case a.oneOfTagModuleIsVisible of
                                 UpdateTagModuleIsVisible ->
                                     CreateTagModuleIsVisible
 
+                                CreateTagModuleIsVisible ->
+                                    UpdateTagModuleIsVisible
+
                         newTagPage =
-                            TagPage (Initialized { a | oneOfIsVisible = otherOneIsVisible })
+                            TagPage (Initialized { a | oneOfTagModuleIsVisible = otherOneIsVisible })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
@@ -424,41 +345,48 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        TagPickerModuleInputChanged inputType ->
+        TagPickerModuleInputChanged workingOnWhichModule inputType ->
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
-                        activeTagPickerModuleModel =
-                            case a.oneOfIsVisible of
-                                CreateTagModuleIsVisible ->
+                        currentTagPickerModuleModel =
+                            case workingOnWhichModule of
+                                WorkingOnCreateTagModule ->
                                     a.createTagModuleModel.tagPickerModelForParentTags
 
-                                UpdateTagModuleIsVisible ->
+                                WorkingOnUpdateTagModule ->
                                     a.updateTagModuleModel.tagPickerModelForParentTags
+
+                                WorkingOnCreateContentModule ->
+                                    a.createContentModule.tagPickerModelForTags
+
+                                WorkingOnUpdateContentModule ->
+                                    a.createContentModule.tagPickerModelForTags
+
 
                         newTagPickerModuleModel =
                             case inputType of
                                 SearchInput text ->
-                                    { activeTagPickerModuleModel | input = text }
+                                    { currentTagPickerModuleModel | input = text }
 
                                 OptionClicked tagOption ->
                                     let
                                         newSelectedTagOptions =
-                                            activeTagPickerModuleModel.selectedTagOptions ++ [ tagOption ]
+                                            currentTagPickerModuleModel.selectedTagOptions ++ [ tagOption ]
                                     in
-                                    { activeTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
+                                    { currentTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
 
                                 OptionRemoved tagOption ->
                                     let
                                         newSelectedTagOptions =
-                                            activeTagPickerModuleModel.selectedTagOptions
+                                            currentTagPickerModuleModel.selectedTagOptions
                                                 |> List.filter (\t -> t.tagId /= tagOption.tagId)
                                     in
-                                    { activeTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
+                                    { currentTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
 
                         newTagPage =
-                            case a.oneOfIsVisible of
-                                CreateTagModuleIsVisible ->
+                            case workingOnWhichModule of
+                                WorkingOnCreateTagModule ->
                                     let
                                         currentCreateTagModuleModel =
                                             a.createTagModuleModel
@@ -468,7 +396,7 @@ update msg model =
                                     in
                                     TagPage (Initialized { a | createTagModuleModel = newCreateTagModuleModel })
 
-                                UpdateTagModuleIsVisible ->
+                                WorkingOnUpdateTagModule ->
                                     let
                                         currentUpdateTagPageModel =
                                             a.updateTagModuleModel
@@ -477,6 +405,28 @@ update msg model =
                                             { currentUpdateTagPageModel | tagPickerModelForParentTags = newTagPickerModuleModel }
                                     in
                                     TagPage (Initialized { a | updateTagModuleModel = newUpdateTagModuleModel })
+
+                                WorkingOnCreateContentModule ->
+                                    let
+                                        currentCreateContentModuleModel =
+                                            a.createContentModule
+
+                                        newCreateContentModuleModel =
+                                            { currentCreateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
+
+                                    in
+                                    TagPage (Initialized { a | createContentModule = newCreateContentModuleModel })
+
+                                WorkingOnUpdateContentModule ->
+                                    let
+                                        currentUpdateContentModuleModel =
+                                            a.updateContentModule
+
+                                        newUpdateContentModuleModel =
+                                            { currentUpdateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
+
+                                    in
+                                    TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
@@ -505,7 +455,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        GotTagCreateUpdateDeleteDoneResponse res ->
+        GotTagOrContentCreateUpdateDeleteDoneResponse res ->
             case res of
                 Ok message ->
                     let

@@ -1,7 +1,7 @@
 module TagPicker.View exposing (viewTagPickerDiv)
 
 import App.Model exposing (TagModuleVisibility(..), TagOption, TagPickerModuleModel)
-import App.Msg exposing (Msg(..), TagInputType(..), TagPickerInputType(..))
+import App.Msg exposing (WorkingOnWhichModule, Msg(..), TagInputType(..), TagPickerInputType(..))
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, selected, style, type_, value)
 import Html.Events exposing (onClick, onInput)
@@ -32,18 +32,18 @@ removeFilteredThingFirst tagIdToFilterOut tagOption =
             True
 
 
-viewTagPickerDiv : TagPickerModuleModel -> Html Msg
-viewTagPickerDiv tagPickerModel =
+viewTagPickerDiv : TagPickerModuleModel -> WorkingOnWhichModule -> Html Msg
+viewTagPickerDiv tagPickerModel workingOnWhichModule =
     div [] <|
-        [ viewInput "text" "search tags..." tagPickerModel.input (tagCreateOrUpdateInputMessage SearchInput)
-        , viewSelecteds tagPickerModel (tagCreateOrUpdateInputMessage OptionRemoved)
-        , viewSelectInput tagPickerModel (tagCreateOrUpdateInputMessage OptionClicked)
+        [ viewInput "text" "search tags..." tagPickerModel.input (tagCreateOrUpdateInputMessage workingOnWhichModule SearchInput)
+        , viewSelecteds tagPickerModel (tagCreateOrUpdateInputMessage workingOnWhichModule OptionRemoved)
+        , viewSelectInput tagPickerModel (tagCreateOrUpdateInputMessage workingOnWhichModule OptionClicked)
         ]
 
 
-tagCreateOrUpdateInputMessage : (something -> TagPickerInputType) -> something -> Msg
-tagCreateOrUpdateInputMessage a b =
-    TagPickerModuleInputChanged (a b)
+tagCreateOrUpdateInputMessage : WorkingOnWhichModule -> (something -> TagPickerInputType) -> something -> Msg
+tagCreateOrUpdateInputMessage workingOnWhichModule a b =
+    TagPickerModuleInputChanged workingOnWhichModule (a b)
 
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg

@@ -46,8 +46,12 @@ open class ContentRepository(
         return dataHolder.data!!.contents
     }
 
-    fun addEntity(id: String, it: Content) {
+    fun addEntity(it: Content) {
         dataHolder.addContent(it)
+    }
+
+    fun updateEntity(it: Content) {
+        dataHolder.updateContent(it)
     }
 
     fun deleteEntity(id: String) {

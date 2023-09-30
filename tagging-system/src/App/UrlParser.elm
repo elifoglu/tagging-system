@@ -1,8 +1,8 @@
 module App.UrlParser exposing (pageBy)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Initializable(..), LocalStorage, MaySendRequest(..), NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleData, UpdateContentModuleModel(..), UpdateTagModuleModel, homepage)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Initializable(..), LocalStorage, MaySendRequest(..), NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), UpdateContentModuleModel, UpdateTagModuleModel, homepage)
 import Url
-import Url.Parser exposing ((</>), (<?>), Parser, int, map, oneOf, parse, s, string, top)
+import Url.Parser exposing ((</>), (<?>), Parser, map, oneOf, parse, s, string, top)
 
 
 routeParser : Parser (Page -> a) a
