@@ -226,8 +226,7 @@ input[type='checkbox'] {
     margin: 2px;
 }
 
-
-/* TAG PAGE */
+/* Tag Page */
 
 .tagTextView p {
     margin-block-start: 25px;
@@ -246,16 +245,11 @@ input[type='checkbox'] {
     color: #189cb3;
 }
 
-/* END - TAG PAGE */
-
-/* Create Tag module */
+/* "Create Tag" and "Update Tag" modules */
 
 .createOrUpdateTagDiv {
     margin-top : 50px;
 }
-
-
-/* TAG PICKER */
 
 .dropdown-content1 {
     padding: 10px;
@@ -316,17 +310,4 @@ input[type='checkbox'] {
 .hide {
     float: left;
     display: none;
-}
-
-.tagEditIcon {
-    width: 13px;
-    height: auto;
-    align-content: center;
-    align-self: center;
-}
-.tagEditIcon:hover {
-    background-color: #d5d5d5;
-    border-radius: 3px;
-    padding: 2px;
-    cursor: pointer;
 }
