@@ -12,7 +12,7 @@ viewUpdateContentDiv : UpdateContentModuleModel -> Html Msg
 viewUpdateContentDiv updateContentModuleModel =
     div [] <|
         List.intersperse (br [] [])
-            [ b [] [ text "update content:", i [] [ text updateContentModuleModel.contentId ] ]
+            [ b [] [ text "update content: ", i [] [ text updateContentModuleModel.contentId ] ]
             , viewInput "text" "title" updateContentModuleModel.title (UpdateContentModuleInputChanged Title)
             , viewContentTextArea "content*" updateContentModuleModel.text (UpdateContentModuleInputChanged Text)
             , viewTagPickerDiv updateContentModuleModel.tagPickerModelForTags WorkingOnUpdateContentModule
