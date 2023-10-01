@@ -26,6 +26,7 @@ class CondensedViewOfTagService(
                 .getContentsForTag(tag)
                 .filter { !it.isDeleted }
                 .map { ContentResponse.createWith(it) }
+                .sortedWith { a, b -> (a.createdAt.toLong() - b.createdAt.toLong()).toInt() }
             tagTextParts.add(
                 TagTextResponse.TagTextPart(
                     TagResponse.create(tag, tagRepository, contentRepository),
