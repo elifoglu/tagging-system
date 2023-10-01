@@ -14,10 +14,10 @@ import UpdateContent.View exposing (viewUpdateContentDiv)
 import UpdateTag.View exposing (viewUpdateTagDiv)
 
 
-viewTagPageDiv : InitializedTagPageModel -> List Tag -> Html Msg
-viewTagPageDiv initialized allTags =
+viewTagPageDiv : String -> InitializedTagPageModel -> List Tag -> Html Msg
+viewTagPageDiv homeTagId initialized allTags =
     div [ style "margin-top" "27px" ]
-        [ viewLeftFrame initialized allTags
+        [ viewLeftFrame homeTagId initialized allTags
         , viewMidFrame initialized
         , viewRightFrame initialized
         ]
@@ -35,8 +35,8 @@ viewRightFrame initialized =
         ]
 
 
-viewLeftFrame : InitializedTagPageModel -> List Tag -> Html Msg
-viewLeftFrame initialized allTags =
+viewLeftFrame : String -> InitializedTagPageModel -> List Tag -> Html Msg
+viewLeftFrame homeTagId initialized allTags =
     div [ class "leftFrameOnTagPage leftFrameTagsFont" ]
         [ viewTagsDiv initialized.tag.parentTags allTags Parent
         , div
@@ -58,7 +58,7 @@ viewLeftFrame initialized allTags =
                    viewCreateTagDiv initialized.createTagModuleModel
 
             UpdateTagModuleIsVisible ->
-                   viewUpdateTagDiv initialized.updateTagModuleModel
+                   viewUpdateTagDiv homeTagId initialized.updateTagModuleModel
         ]
 
 

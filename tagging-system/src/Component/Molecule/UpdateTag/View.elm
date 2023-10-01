@@ -8,8 +8,8 @@ import Html.Events exposing (onClick, onInput)
 import TagPicker.View exposing (viewTagPickerDiv)
 
 
-viewUpdateTagDiv : UpdateTagModuleModel -> Html Msg
-viewUpdateTagDiv updateTagModuleModel =
+viewUpdateTagDiv : String -> UpdateTagModuleModel -> Html Msg
+viewUpdateTagDiv homeTagId updateTagModuleModel =
     div [ class "createOrUpdateTagDiv" ] <|
         List.intersperse (br [] [])
             [ b [] [ text "update tag: ", i [] [ text updateTagModuleModel.tagId ] ]
@@ -18,7 +18,7 @@ viewUpdateTagDiv updateTagModuleModel =
             , viewTagPickerDiv updateTagModuleModel.tagPickerModelForParentTags WorkingOnUpdateTagModule
             , div [ class "updateOrDeleteTagButtonParentDiv" ]
                 [ viewUpdateTagButton UpdateTag
-                , viewDeleteTagButton DeleteTag
+                , viewDeleteTagButton DeleteTag homeTagId updateTagModuleModel.tagId
                 ]
             ]
 
@@ -35,9 +35,13 @@ viewUpdateTagButton msg =
         ]
 
 
-viewDeleteTagButton : msg -> Html msg
-viewDeleteTagButton msg =
-    div [ class "updateOrDeleteTagButtonDiv" ]
-        [ img [ class "deleteTagIcon", onClick msg, style "margin-left" "5px", src "/delete.png" ]
-            []
-        ]
+viewDeleteTagButton : msg -> String -> String -> Html msg
+viewDeleteTagButton msg homeTagId tagId =
+    if homeTagId == tagId then
+        text ""
+
+    else
+        div [ class "updateOrDeleteTagButtonDiv" ]
+            [ img [ class "deleteTagIcon", onClick msg, style "margin-left" "5px", src "/delete.png" ]
+                []
+            ]
