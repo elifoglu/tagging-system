@@ -398,7 +398,7 @@ update msg model =
                                     a.createContentModule.tagPickerModelForTags
 
                                 WorkingOnUpdateContentModule ->
-                                    a.createContentModule.tagPickerModelForTags
+                                    a.updateContentModule.tagPickerModelForTags
 
                         newTagPickerModuleModel =
                             case inputType of
