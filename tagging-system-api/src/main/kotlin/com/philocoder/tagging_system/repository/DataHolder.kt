@@ -141,6 +141,8 @@ open class DataHolder {
     }
 
     /* UNDO MODULE */
+    private val undoLimit: Int = 10
+
     private var undoStack: ArrayList<AtomicRollbackOperationOnData> = ArrayList()
 
     private fun groupedUndoStack(): ArrayList<OperationGroup> {
@@ -172,7 +174,7 @@ open class DataHolder {
         undoStack.add(operationData)
 
         //bu kısımda sadece, groupedUndoStack()'teki toplam grup sayısını hesaplayıp, 5'i geçtiyse en eski rollbackId'li atomik operasyon'ları uçuracak
-        if (groupedUndoStack().size > 5) {
+        if (groupedUndoStack().size > undoLimit) {
             undoStack = ArrayList(groupedUndoStack().drop(1).flatten())
         }
     }
