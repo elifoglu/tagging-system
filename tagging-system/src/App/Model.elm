@@ -25,7 +25,7 @@ type alias Model =
 
 
 type alias LocalStorage =
-    {}
+    { tagTextViewType: TagTextViewType }
 
 
 homepage : Page

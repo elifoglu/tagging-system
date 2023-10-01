@@ -2,13 +2,19 @@ import './style.css';
 //import './style_dark.css'; -- add this line to enable dark mode
 import {Elm} from './Main.elm';
 
-let obj = {
+var tagTextViewType = localStorage.getItem('ts-tagTextViewType');
 
+let obj = {
+    tagTextViewType: tagTextViewType
 };
 
 let elm = Elm.Main.init({
     node: document.getElementById('root'),
     flags: obj
+});
+
+elm.ports.storeTagTextViewType.subscribe(tagTextViewTypeValue => {
+    localStorage.setItem('ts-tagTextViewType', tagTextViewTypeValue);
 });
 
 elm.ports.title.subscribe(title => {

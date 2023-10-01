@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import App.Model exposing (..)
 import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), CrudAction(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
-import App.Ports exposing (sendTitle)
+import App.Ports exposing (sendTitle, storeTagTextViewType)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
 import Browser exposing (UrlRequest)
@@ -32,14 +32,28 @@ main =
         }
 
 
-init : {} -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init : { tagTextViewType : Maybe String } -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         page =
             pageBy url
 
+        tagTextViewType =
+            case flags.tagTextViewType of
+                Just "group" ->
+                    GroupView
+
+                Just "line" ->
+                    LineView
+
+                Just "distinct-group" ->
+                    DistinctGroupView
+
+                _ ->
+                    GroupView
+
         model =
-            Model "log" key [] "" False page LocalStorage False Time.utc
+            Model "log" key [] "" False page (LocalStorage tagTextViewType) False Time.utc
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -170,7 +184,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView GroupView (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -517,7 +531,19 @@ update msg model =
                         newTagPage =
                             TagPage (Initialized { a | activeTagTextViewType = selection })
                     in
-                    ( { model | activePage = newTagPage }, Cmd.none )
+                    ( { model | activePage = newTagPage }
+                    , storeTagTextViewType
+                        (case selection of
+                            GroupView ->
+                                "group"
+
+                            LineView ->
+                                "line"
+
+                            DistinctGroupView ->
+                                "distinct-group"
+                        )
+                    )
 
                 _ ->
                     ( model, Cmd.none )
