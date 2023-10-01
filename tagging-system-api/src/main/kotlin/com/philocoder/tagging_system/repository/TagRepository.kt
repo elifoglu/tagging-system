@@ -8,17 +8,25 @@ open class TagRepository(
     private val dataHolder: DataHolder
 ) {
 
-    fun getAllTags(): List<Tag> {
-        val entities = getEntities()
+    fun getNotDeletedAllTags(): List<Tag> {
+        val entities = getNotDeletedEntities()
         return entities.sortedWith { a, b -> 1 } //there will be nothing such as "allTags", so this will be changed. 1 is dummy here
     }
 
-    fun getEntities(): List<Tag> {
+    private fun getEntities(): List<Tag> {
         return dataHolder.data!!.tags
+    }
+
+    private fun getNotDeletedEntities(): List<Tag> {
+        return dataHolder.data!!.tags.filter { !it.isDeleted }
     }
 
     fun findEntity(id: String): Tag? {
         return getEntities().find { it.tagId == id }
+    }
+
+    fun findExistingEntity(id: String): Tag? {
+        return getNotDeletedEntities().find { it.tagId == id }
     }
 
     fun addEntity(it: Tag) {

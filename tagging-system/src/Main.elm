@@ -264,15 +264,24 @@ update msg model =
         CreateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, createContent a.createContentModule )
+                  ( model, if a.createContentModule.text == "" then
+                       Cmd.none
 
+                     else
+                       createContent a.createContentModule
+                   )
                 _ ->
                     ( model, Cmd.none )
 
         UpdateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, updateContent a.updateContentModule )
+                    ( model, if a.updateContentModule.text == "" then
+                                           Cmd.none
+
+                                         else
+                                           updateContent a.updateContentModule
+                                       )
 
                 _ ->
                     ( model, Cmd.none )

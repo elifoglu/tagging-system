@@ -16,6 +16,7 @@ class ContentController(
     private val service: ContentService,
 ) {
 
+    @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/contents-of-tag")
     fun get(@RequestBody req: ContentsOfTagRequest): TagTextResponse {

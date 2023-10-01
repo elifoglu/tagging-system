@@ -96,5 +96,9 @@ data class Tag(
                 isDeleted = t.isDeleted
             )
         }
+
+        fun onlyExistingChildTags(tag: Tag, repository: TagRepository): List<String>
+            = repository.pruneDeletedOnes(tag.childTags)
+
     }
 }

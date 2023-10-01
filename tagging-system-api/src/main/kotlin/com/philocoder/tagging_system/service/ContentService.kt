@@ -19,9 +19,10 @@ class ContentService(
     private val condensedViewOfTagService: CondensedViewOfTagService
 ) {
 
+    @ExperimentalStdlibApi
     fun getContentsResponse(req: ContentsOfTagRequest): TagTextResponse {
         val tagIdToUse = if (req.tagId == "tagging-system-home-page") tagRepository.getHomeTag() else req.tagId
-        val tag: Tag = tagRepository.findEntity(tagIdToUse)
+        val tag: Tag = tagRepository.findExistingEntity(tagIdToUse)
             ?: return TagTextResponse(Collections.emptyList())
         return condensedViewOfTagService.getTagTextResponse(tag)
     }

@@ -21,7 +21,7 @@ class TagController(
     @CrossOrigin
     @GetMapping("/get-initial-data")
     fun getInitialData(): InitialDataResponse {
-        val allTags: List<Tag> = tagRepository.getAllTags().filter { !it.isDeleted }
+        val allTags: List<Tag> = tagRepository.getNotDeletedAllTags()
         return InitialDataResponse(
             allTags = allTags.map {
                 TagResponse.create(

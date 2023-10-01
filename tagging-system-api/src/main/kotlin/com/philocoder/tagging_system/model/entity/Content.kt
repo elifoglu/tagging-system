@@ -29,7 +29,7 @@ data class Content(
                 uniqueContentId = RandomStringUtils.randomAlphanumeric(4).lowercase()
             } while ( repository.findEntity(uniqueContentId) != null )
 
-            if(req.text == null)
+            if(req.text == "")
                 return null
 
             return Content(
