@@ -114,6 +114,10 @@ hr {
     opacity: 1;
 }
 
+.contentLine:hover {
+    cursor: pointer;
+}
+
 .contentEditAndDeleteIcons {
     width: 13px;
     height: auto;

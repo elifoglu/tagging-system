@@ -39,7 +39,7 @@ viewContentLine : Content -> Html Msg
 viewContentLine content =
     div [ class "contentLineParent" ]
         [ div [ class "contentLineFirstChild" ]
-            [ a [ href ("/contents/" ++ content.contentId) ]
+            [ span [ class "contentLine" ]
                 [ text (" • " ++ content.text)
                 ]
             ]
