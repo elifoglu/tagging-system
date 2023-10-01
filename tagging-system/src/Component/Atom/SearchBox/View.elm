@@ -6,7 +6,6 @@ import Html exposing (Html, div, input, text)
 import Html.Attributes exposing (class, placeholder, type_, value)
 import Html.Events exposing (onInput)
 
-
 viewSearchBoxDiv : Page -> Html Msg
 viewSearchBoxDiv activePage =
     case activePage of

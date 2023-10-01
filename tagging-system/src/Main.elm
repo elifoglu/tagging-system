@@ -13,7 +13,7 @@ import Content.Model exposing (Content)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
 import List
-import Requests exposing (createContent, createTag, deleteContent, deleteTag, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, updateContent, updateTag)
+import Requests exposing (createContent, createTag, deleteContent, deleteTag, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
@@ -477,19 +477,48 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
+        Undo ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    ( model
+                    , undo
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        UndoDoneResponse res ->
+            case res of
+                Ok _ ->
+                    case model.activePage of
+                        TagPage (Initialized a) ->
+                            let
+                                newModel =
+                                    { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                            in
+                            ( newModel, getCmdToSendByPage newModel )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
         ChangeTagDeleteStrategySelection selection ->
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
                         currentUpdateTagModule : UpdateTagModuleModel
-                        currentUpdateTagModule = a.updateTagModule
+                        currentUpdateTagModule =
+                            a.updateTagModule
 
-                        newUpdateTagModule = { currentUpdateTagModule | tagDeleteStrategy = selection }
+                        newUpdateTagModule =
+                            { currentUpdateTagModule | tagDeleteStrategy = selection }
 
-                        newTagPage = TagPage (Initialized { a | updateTagModule = newUpdateTagModule })
+                        newTagPage =
+                            TagPage (Initialized { a | updateTagModule = newUpdateTagModule })
                     in
-                        ( { model | activePage = newTagPage }, Cmd.none)
-
+                    ( { model | activePage = newTagPage }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )

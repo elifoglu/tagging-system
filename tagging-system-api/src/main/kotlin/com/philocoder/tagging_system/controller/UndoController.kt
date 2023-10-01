@@ -1,6 +1,6 @@
 package com.philocoder.tagging_system.controller
 
-import com.philocoder.tagging_system.service.UndoService
+import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class UndoController(
-    private val service: UndoService
+    private val dataHolder: DataHolder
 ) {
 
     @CrossOrigin
     @GetMapping("/undo")
     fun getInitialData(): String {
-        service.undo()
+        dataHolder.undo()
         return "ok"
     }
 }

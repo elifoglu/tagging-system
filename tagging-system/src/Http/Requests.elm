@@ -1,4 +1,4 @@
-module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag)
+module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag, undo)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
@@ -101,6 +101,14 @@ deleteTag model =
         { url = apiURL ++ "delete-tag/" ++ model.tagId
         , body = Http.jsonBody (deleteTagRequestEncoder model)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse DeleteTagAct)
+        }
+
+
+undo : Cmd Msg
+undo =
+    Http.get
+        { url = apiURL ++ "undo"
+        , expect = Http.expectString UndoDoneResponse
         }
 
 getSearchResult : String -> Cmd Msg

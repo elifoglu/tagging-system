@@ -35,7 +35,9 @@ type Msg
     | UpdateTag
     | ChangeTagDeleteStrategySelection TagDeleteStrategyChoice
     | DeleteTag
+    | Undo
     | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)
+    | UndoDoneResponse (Result Http.Error String)
     | GotTimeZone Time.Zone
 
 type CrudAction =

@@ -65,6 +65,26 @@ hr {
     display: inline-block;
 }
 
+.undoDivInHeader {
+    padding: 5px;
+    display: inline-block;
+}
+
+.undoIcon {
+    width: 22px;
+    height: auto;
+    align-content: center;
+    align-self: center;
+}
+
+.undoIcon:hover {
+    background-color: #d5d5d5;
+    border-radius: 3px;
+    padding: 2px;
+    cursor: pointer;
+}
+
+
 .homeNavigator {
     padding: 10px;
     display: inline-block;
