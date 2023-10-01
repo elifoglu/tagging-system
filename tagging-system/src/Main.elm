@@ -159,12 +159,18 @@ update msg model =
                             case status of
                                 NonInitialized _ ->
                                     let
-                                        tagTextParts =
-                                            List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textParts
+                                        tagTextPartsForLineView =
+                                            List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textPartsForLineView
+
+                                        tagTextPartsForGroupView =
+                                            List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textPartsForGroupView
+
+                                        tagTextPartsForDistinctGroupView =
+                                            List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textPartsForDistinctGroupView
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts [] [] GroupView (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView GroupView (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
 
                                         newModel =
                                             { model | activePage = newPage }

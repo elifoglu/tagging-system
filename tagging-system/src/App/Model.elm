@@ -71,9 +71,9 @@ type TagIdInputType
 
 type alias InitializedTagPageModel =
     { tag : Tag
+    , textPartsForLineView : List TagTextPart
     , textPartsForGroupView : List TagTextPart
     , textPartsForDistinctGroupView : List TagTextPart
-    , textPartsForLineView : List TagTextPart
     , activeTagTextViewType : TagTextViewType
     , createContentModule : CreateContentModuleModel
     , updateContentModule : UpdateContentModuleModel

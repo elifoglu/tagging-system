@@ -1,5 +1,7 @@
 package com.philocoder.tagging_system.service
 
+import arrow.core.Tuple2
+import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.ContentsOfTagRequest
@@ -12,6 +14,7 @@ import com.philocoder.tagging_system.repository.DataHolder
 import org.apache.commons.lang3.StringUtils
 import org.springframework.stereotype.Repository
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Repository
 open class ContentService(
@@ -24,8 +27,12 @@ open class ContentService(
     fun getContentsResponse(req: ContentsOfTagRequest): TagTextResponse {
         val tagIdToUse = if (req.tagId == "tagging-system-home-page") tagService.getHomeTag() else req.tagId
         val tag: Tag = tagService.findExistingEntity(tagIdToUse)
-            ?: return TagTextResponse(Collections.emptyList())
-        return getTagTextResponse(tag)
+            ?: return TagTextResponse.empty
+        return TagTextResponse(
+            textPartsForGroupView = getTagTextPartsForGroupView(tag),
+            textPartsForDistinctGroupView = getTagTextPartsForDistinctGroupView(tag),
+            textPartsForLineView = getTagTextPartsForLineView(tag),
+        )
     }
 
     fun getContentsResponseByKeywordSearch(
@@ -57,7 +64,49 @@ open class ContentService(
     private val contentComparator = ContentComparator()
 
     @ExperimentalStdlibApi
-    fun getTagTextResponse(tag: Tag): TagTextResponse {
+    fun getTagTextPartsForGroupView(tag: Tag): List<TagTextResponse.TagTextPart> {
+        return getTagTextParts(tag)
+    }
+
+    @ExperimentalStdlibApi
+    fun getTagTextPartsForDistinctGroupView(tag: Tag): List<TagTextResponse.TagTextPart> {
+        val tagTextPartsForGroupView = getTagTextParts(tag)
+        var tagTextPartsForDistinctGroupView = ArrayList<Tuple2<TagResponse, ArrayList<ContentResponse>>>()
+
+        val alreadyAddedContents = ArrayList<ContentID>()
+        tagTextPartsForGroupView.forEach { it: TagTextResponse.TagTextPart ->
+            val initialTagTextPartToAdd: Tuple2<TagResponse, ArrayList<ContentResponse>> =
+                Tuple2(it.tag, ArrayList<ContentResponse>())
+            tagTextPartsForDistinctGroupView.add(initialTagTextPartToAdd)
+
+            val indexOfCurrentTagTextPart = tagTextPartsForDistinctGroupView.indexOf(initialTagTextPartToAdd)
+
+            it.contents.forEach { content ->
+                if (!alreadyAddedContents.contains(content.contentId)) {
+                    tagTextPartsForDistinctGroupView[indexOfCurrentTagTextPart].b.add(content)
+                    alreadyAddedContents.add(content.contentId)
+                }
+            }
+        }
+
+        val tagTextPartsWithDistinctContentsForDistinctGroupView = ArrayList<TagTextResponse.TagTextPart>()
+        tagTextPartsForDistinctGroupView.forEach { (a: TagResponse, b: ArrayList<ContentResponse>) ->
+            tagTextPartsWithDistinctContentsForDistinctGroupView.add(TagTextResponse.TagTextPart(a, b))
+        }
+        return tagTextPartsWithDistinctContentsForDistinctGroupView
+    }
+
+    @ExperimentalStdlibApi
+    fun getTagTextPartsForLineView(tag: Tag): List<TagTextResponse.TagTextPart> {
+        //I simply do this to use same TagTextPart model too in LineView: I get contents from DistinctGroupView data and flatten them into the base tag (which is always the first one on the TagTextPart lists)
+        val baseTag: TagResponse = getTagTextPartsForDistinctGroupView(tag).get(0).tag
+        val allContentResponsesFlatten: List<ContentResponse> =
+            getTagTextPartsForDistinctGroupView(tag).flatMap { it.contents }
+        return Collections.singletonList(TagTextResponse.TagTextPart(baseTag, allContentResponsesFlatten))
+    }
+
+    @ExperimentalStdlibApi
+    fun getTagTextParts(tag: Tag): List<TagTextResponse.TagTextPart> {
         var allRelatedTagsToCreateCondensedText = ArrayList<String>()
         rep(tag.tagId, allRelatedTagsToCreateCondensedText)
 
@@ -77,7 +126,7 @@ open class ContentService(
             )
         }
 
-        return TagTextResponse(tagTextParts)
+        return tagTextParts
     }
 
     @ExperimentalStdlibApi

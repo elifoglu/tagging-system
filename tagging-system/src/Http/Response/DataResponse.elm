@@ -8,7 +8,10 @@ type alias InitialDataResponse =
 
 
 type alias TagDataResponse =
-    { textParts : List GotTagTextPart }
+    { textPartsForGroupView : List GotTagTextPart
+    , textPartsForLineView : List GotTagTextPart
+    , textPartsForDistinctGroupView : List GotTagTextPart
+    }
 
 
 type alias GotTagTextPart =
@@ -54,8 +57,10 @@ initialDataResponseDecoder =
 
 tagDataResponseDecoder : Decoder TagDataResponse
 tagDataResponseDecoder =
-    map TagDataResponse
-        (field "textParts" (D.list tagTextPartDecoder))
+    map3 TagDataResponse
+        (field "textPartsForGroupView" (D.list tagTextPartDecoder))
+        (field "textPartsForLineView" (D.list tagTextPartDecoder))
+        (field "textPartsForDistinctGroupView" (D.list tagTextPartDecoder))
 
 
 contentSearchResponseDecoder : Decoder ContentSearchResponse
