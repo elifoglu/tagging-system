@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import App.Model exposing (..)
-import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
+import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), CrudAction(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
 import App.Ports exposing (sendTitle)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
@@ -505,7 +505,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        GotTagOrContentCreateUpdateDeleteDoneResponse res ->
+        GotTagOrContentCreateUpdateDeleteDoneResponse crudAction res ->
             case res of
                 Ok message ->
                     let
@@ -513,8 +513,12 @@ update msg model =
                             case model.activePage of
                                 TagPage (Initialized a) ->
                                     if message == "done" then
-                                        TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId)))
-                                        -- This is just to reinitialize the page to see newly created tags etc. in the page instantly
+                                        case crudAction of
+                                            DeleteTagAct ->
+                                                   TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput))
+                                            _ ->
+                                                   TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId)))
+                                                    -- This is just to reinitialize the page to see newly created tags etc. in the page instantly
 
                                     else
                                         NotFoundPage

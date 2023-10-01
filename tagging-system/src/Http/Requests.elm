@@ -1,7 +1,7 @@
 module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagPageModelEncoder)
-import App.Msg exposing (Msg(..))
+import App.Msg exposing (CrudAction(..), Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
 import Json.Encode as Encode
@@ -55,7 +55,7 @@ createContent model =
     Http.post
         { url = apiURL ++ "contents"
         , body = Http.jsonBody (createContentRequestEncoder model)
-        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse CreateContentAct)
         }
 
 
@@ -64,7 +64,7 @@ updateContent model =
     Http.post
         { url = apiURL ++ "contents/" ++ model.contentId
         , body = Http.jsonBody (updateContentRequestEncoder model)
-        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
         }
 
 
@@ -73,7 +73,7 @@ deleteContent contentId =
     Http.post
         { url = apiURL ++ "delete-content/" ++ contentId
         , body = Http.emptyBody
-        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse DeleteContentAct)
         }
 
 
@@ -82,7 +82,7 @@ createTag model =
     Http.post
         { url = apiURL ++ "tags"
         , body = Http.jsonBody (createTagRequestEncoder model)
-        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse CreateTagAct)
         }
 
 
@@ -91,7 +91,7 @@ updateTag model =
     Http.post
         { url = apiURL ++ "tags/" ++ model.tagId
         , body = Http.jsonBody (updateTagPageModelEncoder model)
-        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateTagAct)
         }
 
 
@@ -100,7 +100,7 @@ deleteTag tagId =
     Http.post
         { url = apiURL ++ "delete-tag/" ++ tagId
         , body = Http.emptyBody
-        , expect = Http.expectString GotTagOrContentCreateUpdateDeleteDoneResponse
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse DeleteTagAct)
         }
 
 

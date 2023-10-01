@@ -34,9 +34,16 @@ type Msg
     | CreateTag
     | UpdateTag
     | DeleteTag
-    | GotTagOrContentCreateUpdateDeleteDoneResponse (Result Http.Error String)
+    | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)
     | GotTimeZone Time.Zone
 
+type CrudAction =
+    CreateContentAct
+    | UpdateContentAct
+    | DeleteContentAct
+    | CreateTagAct
+    | UpdateTagAct
+    | DeleteTagAct
 
 type WorkingOnWhichModule
     = WorkingOnCreateTagModule
