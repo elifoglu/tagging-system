@@ -6,6 +6,7 @@ import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.repository.TagRepository
+import com.philocoder.tagging_system.service.DataService
 import org.apache.commons.lang3.RandomStringUtils
 import java.util.*
 
@@ -64,10 +65,17 @@ data class Tag(
             )
         }
 
-        fun returnItsIdIfValidForDelete(tagId: String, repository: TagRepository): Either<String, TagID> {
+        fun returnItsIdIfValidForDelete(
+            tagId: String,
+            repository: TagRepository,
+            dataService: DataService
+        ): Either<String, TagID> {
             //check if tag with specified id exists
             val existingTag: Tag = repository.findEntity(tagId)
                 ?: return Either.left("non-existing-content")
+
+            if (dataService.getAllData()!!.homeTagId == tagId)
+                return Either.left("cannot-delete-home-tag")
 
             return Either.right(existingTag.tagId)
         }
@@ -97,8 +105,8 @@ data class Tag(
             )
         }
 
-        fun onlyExistingChildTags(tag: Tag, repository: TagRepository): List<String>
-            = repository.pruneDeletedOnes(tag.childTags)
+        fun onlyExistingChildTags(tag: Tag, repository: TagRepository): List<String> =
+            repository.pruneDeletedOnes(tag.childTags)
 
     }
 }

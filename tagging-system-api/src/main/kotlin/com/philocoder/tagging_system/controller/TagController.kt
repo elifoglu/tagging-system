@@ -65,7 +65,7 @@ class TagController(
     fun deleteTag(
         @PathVariable("tagId") tagId: String,
     ): String =
-        Tag.returnItsIdIfValidForDelete(tagId, tagRepository)
+        Tag.returnItsIdIfValidForDelete(tagId, tagRepository, dataService)
             .fold({ err -> err }, { id ->
                 tagRepository.deleteEntity(id)
                 dataService.regenerateWholeData()

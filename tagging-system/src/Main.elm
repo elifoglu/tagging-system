@@ -264,24 +264,27 @@ update msg model =
         CreateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                  ( model, if a.createContentModule.text == "" then
-                       Cmd.none
+                    ( model
+                    , if a.createContentModule.text == "" then
+                        Cmd.none
 
-                     else
-                       createContent a.createContentModule
-                   )
+                      else
+                        createContent a.createContentModule
+                    )
+
                 _ ->
                     ( model, Cmd.none )
 
         UpdateContent ->
             case model.activePage of
                 TagPage (Initialized a) ->
-                    ( model, if a.updateContentModule.text == "" then
-                                           Cmd.none
+                    ( model
+                    , if a.updateContentModule.text == "" then
+                        Cmd.none
 
-                                         else
-                                           updateContent a.updateContentModule
-                                       )
+                      else
+                        updateContent a.updateContentModule
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -508,28 +511,26 @@ update msg model =
         GotTagOrContentCreateUpdateDeleteDoneResponse crudAction res ->
             case res of
                 Ok message ->
-                    let
-                        newActivePage =
-                            case model.activePage of
-                                TagPage (Initialized a) ->
-                                    if message == "done" then
-                                        case crudAction of
-                                            DeleteTagAct ->
-                                                   TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput))
-                                            _ ->
-                                                   TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId)))
-                                                    -- This is just to reinitialize the page to see newly created tags etc. in the page instantly
+                    case model.activePage of
+                        TagPage (Initialized a) ->
+                            if message == "done" then
+                                case crudAction of
+                                    DeleteTagAct ->
+                                        ( model, Nav.pushUrl model.key "/" )
 
-                                    else
-                                        NotFoundPage
+                                    _ ->
+                                        let
+                                            newModel =
+                                                { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                                        in
+                                        ( newModel, getCmdToSendByPage newModel )
+                                -- This is just to reinitialize the page to see newly created tags etc. in the page instantly
 
-                                _ ->
-                                    NotFoundPage
+                            else
+                                ( { model | activePage = NotFoundPage }, Cmd.none )
 
-                        newModel =
-                            { model | allTags = [], activePage = newActivePage }
-                    in
-                    ( newModel, getCmdToSendByPage newModel )
+                        _ ->
+                            ( { model | activePage = NotFoundPage }, Cmd.none )
 
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
