@@ -23,8 +23,5 @@ sendTitle model =
         NotFoundPage ->
             title "oops - tagging system"
 
-        MaintenancePage ->
-            title "bakım çalışması - tagging system"
-
 
 port consoleLog : String -> Cmd msg

@@ -128,7 +128,7 @@ update msg model =
                     ( newModel, getCmdToSendByPage newModel )
 
                 Err _ ->
-                    createNewModelAndCmdMsg model MaintenancePage
+                    createNewModelAndCmdMsg model NotFoundPage
 
         GotContentCreationResponse result ->
             case result of
@@ -140,7 +140,7 @@ update msg model =
                                     TagPage (Initialized { a | createContentModule = defaultCreateContentModule model.allTags })
 
                                 _ ->
-                                    MaintenancePage
+                                    NotFoundPage
 
                         newModel =
                             { model | activePage = newActivePage }
@@ -178,7 +178,7 @@ update msg model =
                             createNewModelAndCmdMsg model NotFoundPage
 
                 Err _ ->
-                    createNewModelAndCmdMsg model MaintenancePage
+                    createNewModelAndCmdMsg model NotFoundPage
 
         -- CREATE/UPDATE CONTENT PAGES --
         CreateContentModuleInputChanged inputType input ->
@@ -203,7 +203,7 @@ update msg model =
                     ( { model | activePage = newTagPage }, Cmd.none )
 
                 _ ->
-                    createNewModelAndCmdMsg model MaintenancePage
+                    createNewModelAndCmdMsg model NotFoundPage
 
         UpdateContentModuleInputChanged inputType input ->
             case model.activePage of
@@ -228,7 +228,7 @@ update msg model =
                     ( { model | activePage = newTagPage }, Cmd.none )
 
                 _ ->
-                    createNewModelAndCmdMsg model MaintenancePage
+                    createNewModelAndCmdMsg model NotFoundPage
 
         CreateContent ->
             case model.activePage of
@@ -471,7 +471,7 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     ( model
-                    , deleteTag a.updateTagModule.tagId
+                    , deleteTag a.updateTagModule
                     )
 
                 _ ->
@@ -484,7 +484,7 @@ update msg model =
                         currentUpdateTagModule : UpdateTagModuleModel
                         currentUpdateTagModule = a.updateTagModule
 
-                        newUpdateTagModule = { currentUpdateTagModule | tagDeleteOption = Just selection }
+                        newUpdateTagModule = { currentUpdateTagModule | tagDeleteStrategy = selection }
 
                         newTagPage = TagPage (Initialized { a | updateTagModule = newUpdateTagModule })
                     in
@@ -563,7 +563,7 @@ update msg model =
                     ( { model | activePage = newPage }, Cmd.none )
 
                 Err _ ->
-                    createNewModelAndCmdMsg model MaintenancePage
+                    createNewModelAndCmdMsg model NotFoundPage
 
         _ ->
             ( model, Cmd.none )

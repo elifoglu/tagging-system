@@ -1,6 +1,6 @@
 module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagPageModelEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
@@ -90,19 +90,18 @@ updateTag : UpdateTagModuleModel -> Cmd Msg
 updateTag model =
     Http.post
         { url = apiURL ++ "tags/" ++ model.tagId
-        , body = Http.jsonBody (updateTagPageModelEncoder model)
+        , body = Http.jsonBody (updateTagRequestEncoder model)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateTagAct)
         }
 
 
-deleteTag : String -> Cmd Msg
-deleteTag tagId =
+deleteTag : UpdateTagModuleModel -> Cmd Msg
+deleteTag model =
     Http.post
-        { url = apiURL ++ "delete-tag/" ++ tagId
-        , body = Http.emptyBody
+        { url = apiURL ++ "delete-tag/" ++ model.tagId
+        , body = Http.jsonBody (deleteTagRequestEncoder model)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse DeleteTagAct)
         }
-
 
 getSearchResult : String -> Cmd Msg
 getSearchResult searchKeyword =

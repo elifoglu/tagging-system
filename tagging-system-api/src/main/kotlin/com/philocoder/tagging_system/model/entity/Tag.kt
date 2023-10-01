@@ -3,6 +3,7 @@ package com.philocoder.tagging_system.model.entity
 import arrow.core.Either
 import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.request.CreateTagRequest
+import com.philocoder.tagging_system.model.request.DeleteTagRequest
 import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.repository.TagRepository
@@ -67,10 +68,17 @@ data class Tag(
 
         fun returnItsIdIfValidForDelete(
             tagId: String,
+            req: DeleteTagRequest,
             repository: TagRepository,
             dataService: DataService
         ): Either<String, TagID> {
-            //check if tag with specified id exists
+            val tagDeletionStrategy = req.tagDeletionStrategy
+
+            val validTagDeletionStrategies = listOf("only-tag", "tag-and-child-contents", "tag-with-all-descendants")
+
+            if (!validTagDeletionStrategies.contains(tagDeletionStrategy))
+                return Either.left("non-existing-tag-deletion-strategy")
+
             val existingTag: Tag = repository.findEntity(tagId)
                 ?: return Either.left("non-existing-content")
 

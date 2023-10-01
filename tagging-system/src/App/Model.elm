@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagPageModelEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent, TagDeleteStrategyChoice(..))
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagRequestEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent, TagDeleteStrategyChoice(..), deleteTagRequestEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -36,7 +36,6 @@ type Page
     = TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
     | ContentSearchPage String (List Content)
     | NotFoundPage
-    | MaintenancePage
 
 
 type alias ContentToAddToBottom =
@@ -137,7 +136,7 @@ tagToTagOption tag =
 
 defaultUpdateTagModule : Tag -> List Tag -> UpdateTagModuleModel
 defaultUpdateTagModule tagToUpdate allTags =
-    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId)) Nothing
+    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId)) DeleteTheTagOnly
 
 
 selectedTagOptionsForTag : Tag -> List Tag -> List TagOption
@@ -208,7 +207,7 @@ type alias UpdateTagModuleModel =
     , name : String
     , description : String
     , tagPickerModelForParentTags : TagPickerModuleModel
-    , tagDeleteOption : Maybe TagDeleteStrategyChoice
+    , tagDeleteStrategy : TagDeleteStrategyChoice
     }
 
 type TagDeleteStrategyChoice
@@ -258,10 +257,28 @@ createTagRequestEncoder model =
         ]
 
 
-updateTagPageModelEncoder : UpdateTagModuleModel -> Encode.Value
-updateTagPageModelEncoder model =
+updateTagRequestEncoder : UpdateTagModuleModel -> Encode.Value
+updateTagRequestEncoder model =
     Encode.object
         [ ( "name", Encode.string model.name )
         , ( "description", Encode.string model.description )
         , ( "parentTags", Encode.list Encode.string (model.tagPickerModelForParentTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
+        ]
+
+deleteTagRequestEncoder : UpdateTagModuleModel -> Encode.Value
+deleteTagRequestEncoder model =
+    Encode.object
+        [ ( "tagDeletionStrategy", Encode.string (
+                case model.tagDeleteStrategy of
+                    DeleteTheTagOnly ->
+                        "only-tag"
+
+                    DeleteTagAlongWithItsChildContents ->
+                        "tag-and-child-contents"
+
+                    DeleteTagAlongWithItsAllContents ->
+                        "tag-with-all-descendants"
+
+         )
+         )
         ]

@@ -13,7 +13,7 @@ import Json.Decode as Json
 type alias SelectTagConfig a msg =
     { onSelect : a -> msg
     , toString : a -> String
-    , selected : Maybe a
+    , selected : a
     , tags : List a
     }
 
@@ -27,7 +27,7 @@ selectTag cfg =
                     ( cfg.toString tag
                     , option
                         [ value (cfg.toString tag)
-                        , selected (Just (cfg.toString tag) == Maybe.map cfg.toString cfg.selected)
+                        , selected (tag == cfg.selected)
                         ]
                         [ text (cfg.toString tag) ]
                     )
@@ -35,12 +35,7 @@ selectTag cfg =
                 cfg.tags
 
         addEmpty opts =
-            case cfg.selected of
-                Nothing ->
-                    ( "default option", option [ disabled True, selected True ] [ text "by strategy" ] ) :: opts
-
-                Just _ ->
-                    opts
+            opts
 
         tagsDict =
             List.map (\tag -> ( cfg.toString tag, tag )) cfg.tags |> Dict.fromList
@@ -79,13 +74,13 @@ allCustomTags =
     [ DeleteTheTagOnly, DeleteTagAlongWithItsChildContents, DeleteTagAlongWithItsAllContents ]
 
 
-viewDeleteTagStrategySelectionBoxDiv : Maybe TagDeleteStrategyChoice -> Html Msg
-viewDeleteTagStrategySelectionBoxDiv maybeDeleteOption =
+viewDeleteTagStrategySelectionBoxDiv : TagDeleteStrategyChoice -> Html Msg
+viewDeleteTagStrategySelectionBoxDiv deleteStrategy =
     div []
         [ selectTag
             { onSelect = ChangeTagDeleteStrategySelection
             , toString = customToString
-            , selected = maybeDeleteOption
+            , selected = deleteStrategy
             , tags = allCustomTags
             }
         ]

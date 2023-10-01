@@ -2,6 +2,7 @@ package com.philocoder.tagging_system.controller
 
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.CreateTagRequest
+import com.philocoder.tagging_system.model.request.DeleteTagRequest
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.model.response.InitialDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
@@ -64,8 +65,9 @@ class TagController(
     @PostMapping("/delete-tag/{tagId}")
     fun deleteTag(
         @PathVariable("tagId") tagId: String,
+        @RequestBody req: DeleteTagRequest
     ): String =
-        Tag.returnItsIdIfValidForDelete(tagId, tagRepository, dataService)
+        Tag.returnItsIdIfValidForDelete(tagId, req, tagRepository, dataService)
             .fold({ err -> err }, { id ->
                 tagRepository.deleteEntity(id)
                 dataService.regenerateWholeData()

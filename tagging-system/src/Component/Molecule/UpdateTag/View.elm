@@ -33,7 +33,7 @@ viewDeleteBox homeTagId updateTagModuleModel =
         div
             []
             [ text "delete:"
-            , viewDeleteTagStrategySelectionBoxDiv updateTagModuleModel.tagDeleteOption
+            , viewDeleteTagStrategySelectionBoxDiv updateTagModuleModel.tagDeleteStrategy
             , viewDeleteTagButton DeleteTag
             ]
 
