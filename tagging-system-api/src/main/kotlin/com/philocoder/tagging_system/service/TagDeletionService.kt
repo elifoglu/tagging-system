@@ -2,6 +2,7 @@ package com.philocoder.tagging_system.service
 
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.repository.ContentRepository
+import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.repository.TagRepository
 import org.springframework.stereotype.Service
 import java.util.*
@@ -10,7 +11,8 @@ import java.util.*
 class TagDeletionService(
     private val tagRepository: TagRepository,
     private val contentRepository: ContentRepository,
-    private val dataService: DataService
+    private val dataService: DataService,
+    private val dataHolder: DataHolder
 ) {
     companion object {
         @ExperimentalStdlibApi
@@ -60,7 +62,7 @@ class TagDeletionService(
     }
 
     private fun deleteTag(tagId: String) {
-        tagRepository.deleteEntity(tagId)
+        dataHolder.deleteTag(tagId)
     }
 
     private fun deleteTagAndChildContents(tagId: String) {
@@ -69,10 +71,10 @@ class TagDeletionService(
         //Delete child contents
         contentRepository.getContentsForTag(tag)
             .filter { !it.isDeleted } //this is just to avoid deleting already deleted ones, because otherwise, lastModifiedDate field of content will be updated unnecessarily
-            .forEach { contentRepository.deleteEntity(it.contentId) }
+            .forEach { dataHolder.deleteContent(it.contentId) }
 
         //Delete tag itself
-        tagRepository.deleteEntity(tagId)
+        dataHolder.deleteTag(tagId)
 
     }
 
@@ -82,11 +84,11 @@ class TagDeletionService(
 
         //We have to call this fn recursively to be able to delete all descendant contents
         tag.childTags
-            .forEach { deleteAllDescendantContents(it)  }
+            .forEach { deleteAllDescendantContents(it) }
 
         //Delete all contents recursively
         contentRepository.getContentsForTag(tag)
             .filter { !it.isDeleted } //this is just to avoid deleting already deleted ones, because otherwise, lastModifiedDate field of content will be updated unnecessarily
-            .forEach { contentRepository.deleteEntity(it.contentId) }
+            .forEach { dataHolder.deleteContent(it.contentId) }
     }
 }

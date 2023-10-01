@@ -6,6 +6,7 @@ import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
 import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.ContentRepository
+import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.service.ContentService
 import org.springframework.web.bind.annotation.*
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 class ContentController(
     private val contentRepository: ContentRepository,
     private val service: ContentService,
+    private val dataHolder: DataHolder
 ) {
 
     @ExperimentalStdlibApi
@@ -38,7 +40,7 @@ class ContentController(
     fun createContent(@RequestBody req: CreateContentRequest): String =
         Content.createIfValidForCreation(req, contentRepository)!!
             .run {
-                contentRepository.addEntity(this)
+                dataHolder.addContent(this)
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }
@@ -52,7 +54,7 @@ class ContentController(
     ): String =
         Content.createIfValidForUpdate(contentId, req, contentRepository)!!
             .run {
-                contentRepository.updateEntity(this)
+                dataHolder.updateContent(this)
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }
@@ -63,7 +65,7 @@ class ContentController(
         @PathVariable("contentId") contentId: String,
     ): String =
         Content.returnItsIdIfValidForDelete(contentId, contentRepository)
-            .fold({ err -> err }, { id -> contentRepository.deleteEntity(id).run { "done" } })
+            .fold({ err -> err }, { id -> dataHolder.deleteContent(id).run { "done" } })
 
     @CrossOrigin
     @PostMapping("/search")

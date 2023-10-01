@@ -25,7 +25,7 @@ class DataService(
 
     @ExperimentalStdlibApi
     fun regenerateWholeData() { //this have to be called after every CRUD operation to do parentTags/childTags calculations from scratch
-        val currentData = dataHolder.data!!
+        val currentData = dataHolder.getAllData()
         val req = GenerateDataRequest(
             contents = currentData.contents,
             tags = currentData.tags.map { Tag.toWithoutChild(it) },
@@ -70,13 +70,5 @@ class DataService(
             allData.tags.map { Tag.toWithoutChild(it) },
             allData.homeTagId
         )
-    }
-
-
-    @CrossOrigin
-    @PostMapping("/clear-all-data")
-    fun clearAllData(): String {
-        dataHolder.clearData()
-        return "ok"
     }
 }

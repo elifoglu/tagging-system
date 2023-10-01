@@ -14,11 +14,11 @@ open class TagRepository(
     }
 
     private fun getEntities(): List<Tag> {
-        return dataHolder.data!!.tags
+        return dataHolder.getAllData().tags
     }
 
     private fun getNotDeletedEntities(): List<Tag> {
-        return dataHolder.data!!.tags.filter { !it.isDeleted }
+        return dataHolder.getAllData().tags.filter { !it.isDeleted }
     }
 
     fun findEntity(id: String): Tag? {
@@ -29,24 +29,8 @@ open class TagRepository(
         return getNotDeletedEntities().find { it.tagId == id }
     }
 
-    fun addEntity(it: Tag) {
-        dataHolder.addTag(it)
-    }
-
-    fun updateEntity(tag: Tag) {
-        dataHolder.updateTag(tag)
-    }
-
-    fun deleteEntity(id: String) {
-        dataHolder.deleteTag(id)
-    }
-
-    fun deleteAll() {
-        dataHolder.clearTags()
-    }
-
     fun getHomeTag(): String {
-        return dataHolder.getAllData()!!.homeTagId
+        return dataHolder.getAllData().homeTagId
     }
 
     fun pruneDeletedOnes(tags: List<String>): List<String> {

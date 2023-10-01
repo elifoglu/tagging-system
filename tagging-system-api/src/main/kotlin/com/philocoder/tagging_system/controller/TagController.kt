@@ -7,6 +7,7 @@ import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.model.response.InitialDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
 import com.philocoder.tagging_system.repository.ContentRepository
+import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.repository.TagRepository
 import com.philocoder.tagging_system.service.DataService
 import com.philocoder.tagging_system.service.TagDeletionService
@@ -18,7 +19,8 @@ class TagController(
     private val tagRepository: TagRepository,
     private val contentRepository: ContentRepository,
     private val dataService: DataService,
-    private val tagDeletionService: TagDeletionService
+    private val tagDeletionService: TagDeletionService,
+    private val dataHolder: DataHolder
 ) {
 
     @CrossOrigin
@@ -43,7 +45,7 @@ class TagController(
     fun createTag(@RequestBody req: CreateTagRequest): String =
         Tag.createIfValidForCreation(req, tagRepository)!!
             .run {
-                tagRepository.addEntity(this)
+                dataHolder.addTag(this)
                 dataService.regenerateWholeData()
                 "done"
             }
@@ -57,7 +59,7 @@ class TagController(
     ): String =
         Tag.createIfValidForUpdate(tagId, req, tagRepository)!!
             .run {
-                tagRepository.updateEntity(this)
+                dataHolder.updateTag(this)
                 dataService.regenerateWholeData()
                 "done"
             }
@@ -75,9 +77,4 @@ class TagController(
                 dataService.regenerateWholeData()
                 "done"
             })
-
-
-    @GetMapping("/delete-all-tags")
-    fun deleteAllTags(): Unit =
-        tagRepository.deleteAll()
 }

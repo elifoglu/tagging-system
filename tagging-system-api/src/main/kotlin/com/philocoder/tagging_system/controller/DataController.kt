@@ -28,10 +28,4 @@ class DataController(
     fun getAllData(): GetAllDataResponse? {
         return service.getAllData()
     }
-
-    @CrossOrigin
-    @PostMapping("/clear-all-data")
-    fun clearAllData(): String {
-        return service.clearAllData()
-    }
 }

@@ -2,6 +2,7 @@ package com.philocoder.tagging_system.repository
 
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
+import com.philocoder.tagging_system.service.UndoService
 import org.springframework.stereotype.Repository
 import java.util.*
 
@@ -25,7 +26,7 @@ open class ContentRepository(
     fun getContentsForTag(
         tag: Tag
     ): List<Content> {
-        var entities = dataHolder.data!!.contents
+        var entities = dataHolder.getAllData().contents
         entities = entities.filter { it.tags.contains(tag.tagId) }
         return entities.sortedWith(contentComparator).reversed()
     }
@@ -33,29 +34,17 @@ open class ContentRepository(
     fun getContentCount(
         tagName: String
     ): Int {
-        var entities = dataHolder.data!!.contents
+        var entities = dataHolder.getAllData().contents
         return entities.filter { it.tags.contains(tagName) }.count()
     }
 
     fun findEntity(id: String): Content? {
-        val contents = dataHolder.data!!.contents
+        val contents = dataHolder.getAllData().contents
         return contents.find { it.contentId == id }
     }
 
     fun getEntities(): List<Content> {
-        return dataHolder.data!!.contents
-    }
-
-    fun addEntity(it: Content) {
-        dataHolder.addContent(it)
-    }
-
-    fun updateEntity(it: Content) {
-        dataHolder.updateContent(it)
-    }
-
-    fun deleteEntity(id: String) {
-        dataHolder.deleteContent(id)
+        return dataHolder.getAllData().contents
     }
 }
 

@@ -9,17 +9,13 @@ import java.util.*
 @Component
 open class DataHolder {
 
-    var data: AllData? = null
+    private var data: AllData? = null
 
     fun addAllData(allData: AllData) {
         data = allData
     }
 
-    fun getAllData() = data
-
-    fun clearData() {
-        data = null
-    }
+    fun getAllData() = data!!
 
     fun addContent(content: Content) {
         val newList: ArrayList<Content> = ArrayList()
@@ -32,6 +28,11 @@ open class DataHolder {
         val updatedContentList = data!!.contents
             .map { if (it.contentId == content.contentId) content else it }
         data = data!!.copy(contents = updatedContentList)
+    }
+
+    fun deleteContent(id: String) {
+        val updatedContents = data!!.contents.map { if (it.contentId != id ) it else it.copy(isDeleted = true, lastModifiedAt = Calendar.getInstance().timeInMillis,) }
+        data = data!!.copy(contents = updatedContents)
     }
 
     fun addTag(tag: Tag) {
@@ -47,17 +48,8 @@ open class DataHolder {
         data = data!!.copy(tags = updatedTagList)
     }
 
-    fun deleteContent(id: String) {
-        val updatedContents = data!!.contents.map { if (it.contentId != id ) it else it.copy(isDeleted = true, lastModifiedAt = Calendar.getInstance().timeInMillis,) }
-        data = data!!.copy(contents = updatedContents)
-    }
-
     fun deleteTag(id: String) {
         val updatedTags = data!!.tags.map { if (it.tagId != id ) it else it.copy(isDeleted = true, lastModifiedAt = Calendar.getInstance().timeInMillis,) }
         data = data!!.copy(tags = updatedTags)
-    }
-
-    fun clearTags() {
-        data = data!!.copy(tags = emptyList())
     }
 }
