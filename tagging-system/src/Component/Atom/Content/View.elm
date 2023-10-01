@@ -1,14 +1,13 @@
-module Content.View exposing (viewContentDiv)
+module Content.View exposing (viewContentDiv, viewContentInfoDiv)
 
 import App.Model exposing (MaybeTextToHighlight)
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
-import Content.Util exposing (maybeDateText, maybeTagsOfContent)
-import Html exposing (Html, a, div, img, p, span, text)
-import Html.Attributes exposing (class, dir, href, property, src, title)
+import Content.Util exposing (createdDateOf, lastModifiedDateOf)
+import Html exposing (Html, a, div, img, p,  text)
+import Html.Attributes exposing (class, href, src, title)
 import Html.Parser
 import Html.Parser.Util
-import Json.Encode exposing (string)
 import Tag.Model exposing (Tag)
 
 
@@ -35,15 +34,10 @@ viewContentTitle maybeTitle =
 
 viewContentInfoDiv : Content -> Html Msg
 viewContentInfoDiv content =
-    div [ class "contentInfoDiv" ]
-        ((case ( maybeTagsOfContent content, maybeDateText content ) of
-            ( Just displayableTagsOfContent, Just dateText ) ->
-                viewTagLinks displayableTagsOfContent
-                    ++ [ text (", " ++ dateText) ]
-
-            ( _, _ ) ->
-                []
-         )
+    div [ class "contentInfoDivOnSearchPage" ]
+        (viewTagLinks content.tags
+            ++ [ text (" | created at: " ++ createdDateOf content) ]
+            ++ [ text (", modified at: " ++ lastModifiedDateOf content) ]
             ++ [ text " ", viewContentLinkWithLinkIcon content ]
         )
 

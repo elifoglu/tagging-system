@@ -39,11 +39,18 @@ html, body {
     font-size: 11.6px;
 }
 
-.contentInfoDiv {
+.contentInfoDivOnSearchPage {
     font-size: 12px;
     letter-spacing: 0.5px;
     word-spacing: 0.1px;
     margin-bottom: 20px;
+}
+
+
+.contentInfoDivOnUpdateContentModule {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
 }
 
 hr {

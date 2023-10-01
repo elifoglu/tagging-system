@@ -62,7 +62,7 @@ createContent model =
 updateContent : UpdateContentModuleModel -> Cmd Msg
 updateContent model =
     Http.post
-        { url = apiURL ++ "contents/" ++ model.contentId
+        { url = apiURL ++ "contents/" ++ model.content.contentId
         , body = Http.jsonBody (updateContentRequestEncoder model)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
         }

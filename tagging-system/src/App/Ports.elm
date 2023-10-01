@@ -1,6 +1,6 @@
 port module App.Ports exposing (consoleLog, sendTitle, title)
 
-import App.Model exposing (Initializable(..), MaySendRequest(..), Model, Page(..))
+import App.Model exposing (Initializable(..), Model, Page(..))
 
 
 port title : String -> Cmd a
@@ -9,19 +9,6 @@ port title : String -> Cmd a
 sendTitle : Model -> Cmd msg
 sendTitle model =
     case model.activePage of
-        ContentPage status ->
-            case status of
-                NonInitialized _ ->
-                    Cmd.none
-
-                Initialized content ->
-                    case content.title of
-                        Just t ->
-                            title (t ++ " - tagging system")
-
-                        Nothing ->
-                            title (content.contentId ++ " - tagging system")
-
         TagPage status ->
             case status of
                 NonInitialized _ ->

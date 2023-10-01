@@ -55,10 +55,10 @@ viewLeftFrame homeTagId initialized allTags =
         , viewTagsDiv initialized.tag.childTags allTags Child
         , case initialized.oneOfTagModuleIsVisible of
             CreateTagModuleIsVisible ->
-                   viewCreateTagDiv initialized.createTagModuleModel
+                   viewCreateTagDiv initialized.createTagModule
 
             UpdateTagModuleIsVisible ->
-                   viewUpdateTagDiv homeTagId initialized.updateTagModuleModel
+                   viewUpdateTagDiv homeTagId initialized.updateTagModule
         ]
 
 

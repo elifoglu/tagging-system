@@ -1,13 +1,14 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaySendRequest(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModuleModel, defaultUpdateContentModule, defaultUpdateTagModuleModel, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagPageModelEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent)
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagPageModelEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent, TagDeleteStrategyChoice(..))
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, GotContent, GotTagTextPart)
+import Date exposing (fromPosix)
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
 import TagTextPart.Model exposing (TagTextPart)
-import Time
+import Time exposing (millisToPosix, utc)
 
 
 type alias Model =
@@ -32,8 +33,7 @@ homepage =
 
 
 type Page
-    = ContentPage (Initializable String Content)
-    | TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
+    = TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
     | ContentSearchPage String (List Content)
     | NotFoundPage
     | MaintenancePage
@@ -59,22 +59,6 @@ type Initializable a b
     | Initialized b
 
 
-type MaySendRequest pageData requestSentData
-    = NoRequestSentYet pageData
-    | RequestSent requestSentData
-
-
-
-{-
-
-   type UpdateContentModuleBaseModel
-       = NotInitializedYet ContentID
-       | GotContentToUpdate UpdateContentModuleData
-       | UpdateRequestIsSent UpdateContentModuleData
-
--}
-
-
 type alias NonInitializedYetTagPageModel =
     { tagId : TagIdInputType
     }
@@ -90,8 +74,8 @@ type alias InitializedTagPageModel =
     , textParts : List TagTextPart
     , createContentModule : CreateContentModuleModel
     , updateContentModule : UpdateContentModuleModel
-    , createTagModuleModel : CreateTagModuleModel
-    , updateTagModuleModel : UpdateTagModuleModel
+    , createTagModule : CreateTagModuleModel
+    , updateTagModule : UpdateTagModuleModel
     , oneOfContentModuleIsVisible : ContentModuleVisibility
     , oneOfTagModuleIsVisible : TagModuleVisibility
     }
@@ -114,11 +98,15 @@ defaultCreateContentModule allTags =
 
 defaultUpdateContentModule : UpdateContentModuleModel
 defaultUpdateContentModule =
-    UpdateContentModuleModel "" "" "" (TagPickerModuleModel "" [] [] Nothing)
+    UpdateContentModuleModel dummyContent "" "" (TagPickerModuleModel "" [] [] Nothing)
 
 
-defaultCreateTagModuleModel : List Tag -> CreateTagModuleModel
-defaultCreateTagModuleModel allTags =
+dummyContent : Content
+dummyContent =
+       Content Nothing (fromPosix utc (millisToPosix 0))  (fromPosix utc (millisToPosix 0)) False "" "" []
+
+defaultCreateTagModule : List Tag -> CreateTagModuleModel
+defaultCreateTagModule allTags =
     CreateTagModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [] Nothing)
 
 
@@ -147,9 +135,9 @@ tagToTagOption tag =
     TagOption tag.tagId tag.name
 
 
-defaultUpdateTagModuleModel : Tag -> List Tag -> UpdateTagModuleModel
-defaultUpdateTagModuleModel tagToUpdate allTags =
-    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId))
+defaultUpdateTagModule : Tag -> List Tag -> UpdateTagModuleModel
+defaultUpdateTagModule tagToUpdate allTags =
+    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId)) Nothing
 
 
 selectedTagOptionsForTag : Tag -> List Tag -> List TagOption
@@ -201,7 +189,7 @@ type alias CreateContentModuleModel =
 
 
 type alias UpdateContentModuleModel =
-    { contentId : ContentID
+    { content : Content
     , title : String
     , text : String
     , tagPickerModelForTags : TagPickerModuleModel
@@ -220,7 +208,13 @@ type alias UpdateTagModuleModel =
     , name : String
     , description : String
     , tagPickerModelForParentTags : TagPickerModuleModel
+    , tagDeleteOption : Maybe TagDeleteStrategyChoice
     }
+
+type TagDeleteStrategyChoice
+    = DeleteTheTagOnly
+    | DeleteTagAlongWithItsChildContents
+    | DeleteTagAlongWithItsAllContents
 
 
 getContentRequestModelEncoder : GetContentRequestModel -> Encode.Value

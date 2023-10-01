@@ -1,6 +1,6 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (TagOption)
+import App.Model exposing (TagDeleteStrategyChoice, TagOption)
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
@@ -33,6 +33,7 @@ type Msg
     | DeleteContent Content
     | CreateTag
     | UpdateTag
+    | ChangeTagDeleteStrategySelection TagDeleteStrategyChoice
     | DeleteTag
     | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)
     | GotTimeZone Time.Zone

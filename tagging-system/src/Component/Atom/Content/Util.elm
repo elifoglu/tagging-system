@@ -1,11 +1,10 @@
-module Content.Util exposing (gotContentToContent, maybeDateText, maybeTagsOfContent)
+module Content.Util exposing (gotContentToContent, createdDateOf, lastModifiedDateOf)
 
 import App.Model exposing (Model)
 import Content.Model exposing (Content, ContentDate)
 import DataResponse exposing (GotContent, GotContentDate, GotTag)
 import Date exposing (format)
 import Maybe.Extra exposing (values)
-import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagById)
 import Time
 
@@ -39,29 +38,11 @@ gotContentDateToContentDate timeZone gotContentDate =
             Date.fromPosix timeZone (Time.millisToPosix jan2000)
 
 
-contentHasTags : Content -> Bool
-contentHasTags content =
-    (content.tags
-        |> List.length
-    )
-        > 0
 
+createdDateOf : Content -> String
+createdDateOf content =
+    format "dd.MM.yy" content.createdAt
 
-maybeTagsOfContent : Content -> Maybe (List Tag)
-maybeTagsOfContent content =
-    case contentHasTags content of
-        True ->
-            Just content.tags
-
-        False ->
-            Nothing
-
-
-maybeDateText : Content -> Maybe String
-maybeDateText content =
-    let
-        dateText : String
-        dateText =
-            format "dd.MM.yy" content.createdAt
-    in
-    Just dateText
+lastModifiedDateOf : Content -> String
+lastModifiedDateOf content =
+    format "dd.MM.yy" content.lastModifiedAt

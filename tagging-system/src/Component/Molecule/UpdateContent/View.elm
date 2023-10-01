@@ -2,8 +2,10 @@ module UpdateContent.View exposing (viewUpdateContentDiv)
 
 import App.Model exposing (CreateContentModuleModel, Model, UpdateContentModuleModel)
 import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..), WorkingOnWhichModule(..))
-import Html exposing (Html, b, br, button, div, i, input, text, textarea)
-import Html.Attributes exposing (placeholder, style, type_, value)
+import Content.Model exposing (Content)
+import Content.Util exposing (createdDateOf, lastModifiedDateOf)
+import Html exposing (Html, b, br, button, div, input, text, textarea)
+import Html.Attributes exposing (class, placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import TagPicker.View exposing (viewTagPickerDiv)
 
@@ -12,12 +14,24 @@ viewUpdateContentDiv : UpdateContentModuleModel -> Html Msg
 viewUpdateContentDiv updateContentModuleModel =
     div [] <|
         List.intersperse (br [] [])
-            [ b [] [ text "update content: ", i [] [ text updateContentModuleModel.contentId ] ]
+            [ b [] [ text "update content" ]
+            , viewContentDates updateContentModuleModel.content
             , viewInput "text" "title" updateContentModuleModel.title (UpdateContentModuleInputChanged Title)
             , viewContentTextArea "content*" updateContentModuleModel.text (UpdateContentModuleInputChanged Text)
             , viewTagPickerDiv updateContentModuleModel.tagPickerModelForTags WorkingOnUpdateContentModule
             , viewUpdateContentButton <| UpdateContent
             ]
+
+
+viewContentDates : Content -> Html Msg
+viewContentDates content =
+    div [ class "contentInfoDivOnUpdateContentModule" ]
+        [ text ("id: " ++ content.contentId)
+        , br [] []
+        , text ("created at: " ++ createdDateOf content)
+        , br [] []
+        , text ("modified at: " ++ lastModifiedDateOf content)
+        ]
 
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
@@ -33,4 +47,3 @@ viewContentTextArea p v toMsg =
 viewUpdateContentButton : msg -> Html msg
 viewUpdateContentButton msg =
     button [ onClick msg ] [ text "✓" ]
-
