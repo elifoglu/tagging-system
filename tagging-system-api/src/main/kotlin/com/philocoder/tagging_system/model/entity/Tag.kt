@@ -8,6 +8,7 @@ import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.repository.TagRepository
 import com.philocoder.tagging_system.service.DataService
+import com.philocoder.tagging_system.service.TagDeletionService
 import org.apache.commons.lang3.RandomStringUtils
 import java.util.*
 
@@ -72,11 +73,7 @@ data class Tag(
             repository: TagRepository,
             dataService: DataService
         ): Either<String, TagID> {
-            val tagDeletionStrategy = req.tagDeletionStrategy
-
-            val validTagDeletionStrategies = listOf("only-tag", "tag-and-child-contents", "tag-with-all-descendants")
-
-            if (!validTagDeletionStrategies.contains(tagDeletionStrategy))
+            if (!TagDeletionService.isValidStrategy(req.tagDeletionStrategy))
                 return Either.left("non-existing-tag-deletion-strategy")
 
             val existingTag: Tag = repository.findEntity(tagId)

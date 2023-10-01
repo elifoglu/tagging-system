@@ -9,6 +9,7 @@ import com.philocoder.tagging_system.model.response.TagResponse
 import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.TagRepository
 import com.philocoder.tagging_system.service.DataService
+import com.philocoder.tagging_system.service.TagDeletionService
 import org.springframework.web.bind.annotation.*
 
 
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.*
 class TagController(
     private val tagRepository: TagRepository,
     private val contentRepository: ContentRepository,
-    private val dataService: DataService
+    private val dataService: DataService,
+    private val tagDeletionService: TagDeletionService
 ) {
 
     @CrossOrigin
@@ -69,7 +71,7 @@ class TagController(
     ): String =
         Tag.returnItsIdIfValidForDelete(tagId, req, tagRepository, dataService)
             .fold({ err -> err }, { id ->
-                tagRepository.deleteEntity(id)
+                tagDeletionService.deleteTagWithStrategy(id, req.tagDeletionStrategy)
                 dataService.regenerateWholeData()
                 "done"
             })
