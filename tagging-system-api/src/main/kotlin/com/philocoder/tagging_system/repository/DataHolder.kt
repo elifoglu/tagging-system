@@ -177,6 +177,8 @@ open class DataHolder {
         }
     }
 
+    fun isRollbackStackEmpty() = groupedUndoStack().isEmpty()
+
     fun undo() {
         if (groupedUndoStack().isEmpty()) {
             return

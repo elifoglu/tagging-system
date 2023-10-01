@@ -39,7 +39,7 @@ init flags url key =
             pageBy url
 
         model =
-            Model "log" key [] "" page LocalStorage False Time.utc
+            Model "log" key [] "" False page LocalStorage False Time.utc
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -123,7 +123,7 @@ update msg model =
                 Ok got ->
                     let
                         newModel =
-                            { model | allTags = got.allTags, homeTagId = got.homeTagId }
+                            { model | allTags = got.allTags, homeTagId = got.homeTagId, undoable = got.undoable }
                     in
                     ( newModel, getCmdToSendByPage newModel )
 

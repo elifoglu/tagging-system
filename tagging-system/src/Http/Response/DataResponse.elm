@@ -1,10 +1,10 @@
 module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagDataResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagDataResponseDecoder)
 
-import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map6, map7, maybe, string)
+import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map7, maybe, string)
 
 
 type alias InitialDataResponse =
-    { allTags : List GotTag, homeTagId : String }
+    { allTags : List GotTag, homeTagId : String, undoable: Bool }
 
 
 type alias TagDataResponse =
@@ -46,9 +46,10 @@ type alias ContentSearchResponse =
 
 initialDataResponseDecoder : Decoder InitialDataResponse
 initialDataResponseDecoder =
-    map2 InitialDataResponse
+    map3 InitialDataResponse
         (field "allTags" (D.list tagDecoder))
         (field "homeTagId" string)
+        (field "undoable" bool)
 
 
 tagDataResponseDecoder : Decoder TagDataResponse

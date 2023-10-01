@@ -18,7 +18,7 @@ view model =
     { title = "tagging system"
     , body =
         [ div []
-            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewUndoDiv]
+            [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewUndoDiv model ]
             , div [ class "body" ]
                 (case model.activePage of
                     TagPage status ->
@@ -40,9 +40,13 @@ view model =
     }
 
 
-viewUndoDiv : Html Msg
-viewUndoDiv =
-    div [ class "undoDivInHeader" ]
-        [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.png" ]
-            []
-        ]
+viewUndoDiv : Model -> Html Msg
+viewUndoDiv model =
+    if not model.undoable then
+        text ""
+
+    else
+        div [ class "undoDivInHeader" ]
+            [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.png" ]
+                []
+            ]

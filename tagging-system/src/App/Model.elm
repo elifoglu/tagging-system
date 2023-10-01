@@ -16,6 +16,7 @@ type alias Model =
     , key : Nav.Key
     , allTags : List Tag
     , homeTagId : String
+    , undoable : Bool
     , activePage : Page
     , localStorage : LocalStorage
     , waitingForContentCheckResponse : Bool

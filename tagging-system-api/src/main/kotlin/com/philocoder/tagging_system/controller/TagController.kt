@@ -36,7 +36,8 @@ class TagController(
                     contentService
                 )
             },
-            homeTagId = tagService.getHomeTag()
+            homeTagId = tagService.getHomeTag(),
+            undoable = !dataHolder.isRollbackStackEmpty()
         )
     }
 
