@@ -5,16 +5,15 @@ import com.philocoder.tagging_system.model.request.*
 import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
 import com.philocoder.tagging_system.model.response.TagTextResponse
-import com.philocoder.tagging_system.repository.ContentRepository
 import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.service.ContentService
+import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 class ContentController(
-    private val contentRepository: ContentRepository,
-    private val service: ContentService,
+    private val contentService: ContentService,
     private val dataHolder: DataHolder
 ) {
 
@@ -22,7 +21,7 @@ class ContentController(
     @CrossOrigin
     @PostMapping("/contents-of-tag")
     fun get(@RequestBody req: ContentsOfTagRequest): TagTextResponse {
-        return service.getContentsResponse(req)
+        return contentService.getContentsResponse(req)
     }
 
 
@@ -30,7 +29,7 @@ class ContentController(
     @PostMapping("/get-content")
     fun getContent(@RequestBody req: GetContentRequest): ContentResponse {
         return ContentResponse.createWith(
-            contentRepository.findEntity(req.contentID)!!
+            contentService.findEntity(req.contentID)!!
         )
     }
 
@@ -38,9 +37,9 @@ class ContentController(
     @CrossOrigin
     @PostMapping("/contents")
     fun createContent(@RequestBody req: CreateContentRequest): String =
-        Content.createIfValidForCreation(req, contentRepository)!!
+        Content.createIfValidForCreation(req, contentService)!!
             .run {
-                dataHolder.addContent(this)
+                dataHolder.addContent(this, now())
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }
@@ -52,9 +51,9 @@ class ContentController(
         @PathVariable("contentId") contentId: String,
         @RequestBody req: UpdateContentRequest
     ): String =
-        Content.createIfValidForUpdate(contentId, req, contentRepository)!!
+        Content.createIfValidForUpdate(contentId, req, contentService)!!
             .run {
-                dataHolder.updateContent(this)
+                dataHolder.updateContent(this, now())
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }
@@ -64,12 +63,12 @@ class ContentController(
     fun deleteContent(
         @PathVariable("contentId") contentId: String,
     ): String =
-        Content.returnItsIdIfValidForDelete(contentId, contentRepository)
-            .fold({ err -> err }, { id -> dataHolder.deleteContent(id).run { "done" } })
+        Content.returnItsIdIfValidForDelete(contentId, contentService)
+            .fold({ err -> err }, { id -> dataHolder.deleteContent(id, now()).run { "done" } })
 
     @CrossOrigin
     @PostMapping("/search")
     fun searchContent(@RequestBody req: SearchContentRequest): SearchContentResponse {
-        return service.getContentsResponseByKeywordSearch(req)
+        return contentService.getContentsResponseByKeywordSearch(req)
     }
 }

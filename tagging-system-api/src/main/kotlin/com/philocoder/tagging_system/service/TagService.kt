@@ -1,10 +1,11 @@
-package com.philocoder.tagging_system.repository
+package com.philocoder.tagging_system.service
 
 import com.philocoder.tagging_system.model.entity.Tag
+import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Repository
 
 @Repository
-open class TagRepository(
+open class TagService(
     private val dataHolder: DataHolder
 ) {
 

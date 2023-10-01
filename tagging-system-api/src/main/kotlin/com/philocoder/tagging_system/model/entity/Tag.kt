@@ -6,9 +6,10 @@ import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.DeleteTagRequest
 import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
-import com.philocoder.tagging_system.repository.TagRepository
+import com.philocoder.tagging_system.service.TagService
 import com.philocoder.tagging_system.service.DataService
 import com.philocoder.tagging_system.service.TagDeletionService
+import com.philocoder.tagging_system.util.DateUtils.now
 import org.apache.commons.lang3.RandomStringUtils
 import java.util.*
 
@@ -27,7 +28,7 @@ data class Tag(
     companion object {
         fun createIfValidForCreation(
             req: CreateTagRequest,
-            repository: TagRepository
+            service: TagService
         ): Tag? {
             if (req.name.isEmpty())
                 return null
@@ -35,7 +36,7 @@ data class Tag(
             var uniqueTagId: String
             do {
                 uniqueTagId = RandomStringUtils.randomAlphanumeric(4).lowercase()
-            } while (repository.findEntity(uniqueTagId) != null)
+            } while (service.findEntity(uniqueTagId) != null)
 
             return Tag(
                 tagId = uniqueTagId,
@@ -43,8 +44,8 @@ data class Tag(
                 parentTags = req.parentTags,
                 childTags = Collections.emptyList(),
                 description = req.description,
-                createdAt = Calendar.getInstance().timeInMillis,
-                lastModifiedAt = Calendar.getInstance().timeInMillis,
+                createdAt = now(),
+                lastModifiedAt = now(),
                 isDeleted = false
             )
         }
@@ -52,31 +53,31 @@ data class Tag(
         fun createIfValidForUpdate(
             tagId: String,
             req: UpdateTagRequest,
-            repository: TagRepository
+            service: TagService
         ): Tag? {
             if (req.name.isEmpty())
                 return null
 
-            val tag: Tag = repository.findEntity(tagId)!!
+            val tag: Tag = service.findEntity(tagId)!!
 
             return tag.copy(
                 name = req.name,
                 description = req.description,
                 parentTags = req.parentTags,
-                lastModifiedAt = Calendar.getInstance().timeInMillis
+                lastModifiedAt = now()
             )
         }
 
         fun returnItsIdIfValidForDelete(
             tagId: String,
             req: DeleteTagRequest,
-            repository: TagRepository,
+            service: TagService,
             dataService: DataService
         ): Either<String, TagID> {
             if (!TagDeletionService.isValidStrategy(req.tagDeletionStrategy))
                 return Either.left("non-existing-tag-deletion-strategy")
 
-            val existingTag: Tag = repository.findEntity(tagId)
+            val existingTag: Tag = service.findEntity(tagId)
                 ?: return Either.left("non-existing-content")
 
             if (dataService.getAllData()!!.homeTagId == tagId)
@@ -110,8 +111,8 @@ data class Tag(
             )
         }
 
-        fun onlyExistingChildTags(tag: Tag, repository: TagRepository): List<String> =
-            repository.pruneDeletedOnes(tag.childTags)
+        fun onlyExistingChildTags(tag: Tag, service: TagService): List<String> =
+            service.pruneDeletedOnes(tag.childTags)
 
     }
 }

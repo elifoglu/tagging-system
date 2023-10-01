@@ -6,18 +6,19 @@ import com.philocoder.tagging_system.model.request.DeleteTagRequest
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.model.response.InitialDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
-import com.philocoder.tagging_system.repository.ContentRepository
+import com.philocoder.tagging_system.service.ContentService
 import com.philocoder.tagging_system.repository.DataHolder
-import com.philocoder.tagging_system.repository.TagRepository
+import com.philocoder.tagging_system.service.TagService
 import com.philocoder.tagging_system.service.DataService
 import com.philocoder.tagging_system.service.TagDeletionService
+import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.web.bind.annotation.*
 
 
 @RestController
 class TagController(
-    private val tagRepository: TagRepository,
-    private val contentRepository: ContentRepository,
+    private val tagService: TagService,
+    private val contentService: ContentService,
     private val dataService: DataService,
     private val tagDeletionService: TagDeletionService,
     private val dataHolder: DataHolder
@@ -26,16 +27,16 @@ class TagController(
     @CrossOrigin
     @GetMapping("/get-initial-data")
     fun getInitialData(): InitialDataResponse {
-        val allTags: List<Tag> = tagRepository.getNotDeletedAllTags()
+        val allTags: List<Tag> = tagService.getNotDeletedAllTags()
         return InitialDataResponse(
             allTags = allTags.map {
                 TagResponse.create(
                     it,
-                    tagRepository,
-                    contentRepository
+                    tagService,
+                    contentService
                 )
             },
-            homeTagId = tagRepository.getHomeTag()
+            homeTagId = tagService.getHomeTag()
         )
     }
 
@@ -43,9 +44,9 @@ class TagController(
     @PostMapping("/tags")
     @kotlin.ExperimentalStdlibApi
     fun createTag(@RequestBody req: CreateTagRequest): String =
-        Tag.createIfValidForCreation(req, tagRepository)!!
+        Tag.createIfValidForCreation(req, tagService)!!
             .run {
-                dataHolder.addTag(this)
+                dataHolder.addTag(this, now())
                 dataService.regenerateWholeData()
                 "done"
             }
@@ -57,9 +58,9 @@ class TagController(
         @PathVariable("tagId") tagId: String,
         @RequestBody req: UpdateTagRequest
     ): String =
-        Tag.createIfValidForUpdate(tagId, req, tagRepository)!!
+        Tag.createIfValidForUpdate(tagId, req, tagService)!!
             .run {
-                dataHolder.updateTag(this)
+                dataHolder.updateTag(this, now())
                 dataService.regenerateWholeData()
                 "done"
             }
@@ -71,9 +72,9 @@ class TagController(
         @PathVariable("tagId") tagId: String,
         @RequestBody req: DeleteTagRequest
     ): String =
-        Tag.returnItsIdIfValidForDelete(tagId, req, tagRepository, dataService)
+        Tag.returnItsIdIfValidForDelete(tagId, req, tagService, dataService)
             .fold({ err -> err }, { id ->
-                tagDeletionService.deleteTagWithStrategy(id, req.tagDeletionStrategy)
+                tagDeletionService.deleteTagWithStrategy(id, req.tagDeletionStrategy, now())
                 dataService.regenerateWholeData()
                 "done"
             })

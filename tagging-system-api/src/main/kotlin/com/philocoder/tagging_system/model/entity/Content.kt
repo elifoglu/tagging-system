@@ -4,9 +4,9 @@ import arrow.core.Either
 import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.request.CreateContentRequest
 import com.philocoder.tagging_system.model.request.UpdateContentRequest
-import com.philocoder.tagging_system.repository.ContentRepository
+import com.philocoder.tagging_system.service.ContentService
+import com.philocoder.tagging_system.util.DateUtils.now
 import org.apache.commons.lang3.RandomStringUtils
-import java.util.*
 
 data class Content(
     val contentId: String,
@@ -22,14 +22,14 @@ data class Content(
         @ExperimentalStdlibApi
         fun createIfValidForCreation(
             req: CreateContentRequest,
-            repository: ContentRepository,
+            service: ContentService,
         ): Content? {
             var uniqueContentId: String
             do {
                 uniqueContentId = RandomStringUtils.randomAlphanumeric(4).lowercase()
-            } while ( repository.findEntity(uniqueContentId) != null )
+            } while (service.findEntity(uniqueContentId) != null)
 
-            if(req.text == "")
+            if (req.text == "")
                 return null
 
             return Content(
@@ -37,8 +37,8 @@ data class Content(
                 contentId = uniqueContentId,
                 content = req.text,
                 tags = req.tags,
-                createdAt = Calendar.getInstance().timeInMillis,
-                lastModifiedAt = Calendar.getInstance().timeInMillis,
+                createdAt = now(),
+                lastModifiedAt = now(),
                 isDeleted = false
             )
         }
@@ -46,14 +46,14 @@ data class Content(
         fun createIfValidForUpdate(
             contentId: ContentID,
             req: UpdateContentRequest,
-            repository: ContentRepository,
+            service: ContentService,
         ): Content? {
             if (req.text.isEmpty()) {
                 return null
             }
 
             //check if content with specified id not exists
-            val existingContent: Content = repository.findEntity(contentId)
+            val existingContent: Content = service.findEntity(contentId)
                 ?: return null
 
             return Content(
@@ -62,17 +62,17 @@ data class Content(
                 content = req.text,
                 tags = req.tags,
                 createdAt = existingContent.createdAt,
-                lastModifiedAt = Calendar.getInstance().timeInMillis,
+                lastModifiedAt = now(),
                 isDeleted = existingContent.isDeleted
             )
         }
 
         fun returnItsIdIfValidForDelete(
             contentId: ContentID,
-            repository: ContentRepository,
+            service: ContentService,
         ): Either<String, ContentID> {
             //check if content with specified id exists
-            val existingContent: Content = repository.findEntity(contentId)
+            val existingContent: Content = service.findEntity(contentId)
                 ?: return Either.left("non-existing-content")
 
             return Either.right(existingContent.contentId)
