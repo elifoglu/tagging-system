@@ -8,6 +8,7 @@ import Html exposing (Html, a, b, br, div, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Tag.Model exposing (Tag)
+import Tag.TagTextTypeSelectionBox exposing (viewTagTextTypeSelectionBoxDiv)
 import Tag.TagTextUtil exposing (viewTagText)
 import Tag.Util exposing (tagByIdForced)
 import UpdateContent.View exposing (viewUpdateContentDiv)
@@ -55,10 +56,10 @@ viewLeftFrame homeTagId initialized allTags =
         , viewTagsDiv initialized.tag.childTags allTags Child
         , case initialized.oneOfTagModuleIsVisible of
             CreateTagModuleIsVisible ->
-                   viewCreateTagDiv initialized.createTagModule
+                viewCreateTagDiv initialized.createTagModule
 
             UpdateTagModuleIsVisible ->
-                   viewUpdateTagDiv homeTagId initialized.updateTagModule
+                viewUpdateTagDiv homeTagId initialized.updateTagModule
         ]
 
 
@@ -80,7 +81,12 @@ viewTagsDiv tagIds allTags tagType =
 viewMidFrame : InitializedTagPageModel -> Html Msg
 viewMidFrame initialized =
     div [ class "midFrameOnTagPage" ]
-        [ viewTagText initialized.tag initialized.textParts
+        [ viewTagTextTypeSelectionBoxDiv initialized.activeTagTextViewType
+        , viewTagText initialized.tag
+            initialized.textPartsForGroupView
+            initialized.textPartsForLineView
+            initialized.textPartsForDistinctGroupView
+            initialized.activeTagTextViewType
         ]
 
 

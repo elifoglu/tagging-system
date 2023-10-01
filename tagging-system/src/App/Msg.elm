@@ -1,6 +1,6 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (TagDeleteStrategyChoice, TagOption)
+import App.Model exposing (TagDeleteStrategyChoice, TagOption, TagTextViewType)
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
@@ -34,6 +34,7 @@ type Msg
     | CreateTag
     | UpdateTag
     | ChangeTagDeleteStrategySelection TagDeleteStrategyChoice
+    | ChangeTagTextViewTypeSelection TagTextViewType
     | DeleteTag
     | Undo
     | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)

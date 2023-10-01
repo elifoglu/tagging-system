@@ -164,7 +164,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextParts (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
+                                                Initialized (InitializedTagPageModel tag tagTextParts [] [] GroupView (defaultCreateContentModule model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -503,6 +503,18 @@ update msg model =
 
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
+
+        ChangeTagTextViewTypeSelection selection ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    let
+                        newTagPage =
+                            TagPage (Initialized { a | activeTagTextViewType = selection })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
         ChangeTagDeleteStrategySelection selection ->
             case model.activePage of

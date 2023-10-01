@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagRequestEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent, TagDeleteStrategyChoice(..), deleteTagRequestEncoder)
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagRequestEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent, TagDeleteStrategyChoice(..), deleteTagRequestEncoder, TagTextViewType(..))
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -71,7 +71,10 @@ type TagIdInputType
 
 type alias InitializedTagPageModel =
     { tag : Tag
-    , textParts : List TagTextPart
+    , textPartsForGroupView : List TagTextPart
+    , textPartsForDistinctGroupView : List TagTextPart
+    , textPartsForLineView : List TagTextPart
+    , activeTagTextViewType : TagTextViewType
     , createContentModule : CreateContentModuleModel
     , updateContentModule : UpdateContentModuleModel
     , createTagModule : CreateTagModuleModel
@@ -80,6 +83,12 @@ type alias InitializedTagPageModel =
     , oneOfTagModuleIsVisible : TagModuleVisibility
     }
 
+type TagTextViewType
+    = LineView
+    | GroupView
+    | DistinctGroupView
+
+type alias ViewContentsDistinct = Bool
 
 type TagModuleVisibility
     = CreateTagModuleIsVisible

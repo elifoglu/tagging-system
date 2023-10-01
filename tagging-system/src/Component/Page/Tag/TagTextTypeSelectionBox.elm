@@ -1,10 +1,10 @@
-module UpdateContent.DeleteTagStrategySelectionBox exposing (viewDeleteTagStrategySelectionBoxDiv)
+module Tag.TagTextTypeSelectionBox exposing (viewTagTextTypeSelectionBoxDiv)
 
-import App.Model exposing (TagDeleteStrategyChoice(..))
+import App.Model exposing (TagTextViewType(..))
 import App.Msg exposing (Msg(..))
 import Dict
 import Html exposing (Html, div, option, text)
-import Html.Attributes exposing (selected, value)
+import Html.Attributes exposing (selected, style, value)
 import Html.Events exposing (on, targetValue)
 import Html.Keyed as Keyed
 import Json.Decode as Json
@@ -56,29 +56,28 @@ selectTag cfg =
     Keyed.node "select" [ on "change" decoder ] (addEmpty options)
 
 
-customToString : TagDeleteStrategyChoice -> String
+customToString : TagTextViewType -> String
 customToString val =
     case val of
-        DeleteTheTagOnly ->
-            "the tag only"
+        GroupView ->
+            "group"
+        LineView ->
+            "line"
 
-        DeleteTagAlongWithItsChildContents ->
-            "w/ its child contents"
-
-        DeleteTagAlongWithItsAllContents ->
-            "w/ its all descendants"
+        DistinctGroupView ->
+            "group with distinct contents"
 
 
-allCustomTags : List TagDeleteStrategyChoice
+allCustomTags : List TagTextViewType
 allCustomTags =
-    [ DeleteTheTagOnly, DeleteTagAlongWithItsChildContents, DeleteTagAlongWithItsAllContents ]
+    [ GroupView, LineView, DistinctGroupView ]
 
 
-viewDeleteTagStrategySelectionBoxDiv : TagDeleteStrategyChoice -> Html Msg
-viewDeleteTagStrategySelectionBoxDiv deleteStrategy =
-    div []
+viewTagTextTypeSelectionBoxDiv : TagTextViewType -> Html Msg
+viewTagTextTypeSelectionBoxDiv deleteStrategy =
+    div [ style "margin-bottom" "20px" ]
         [ selectTag
-            { onSelect = ChangeTagDeleteStrategySelection
+            { onSelect = ChangeTagTextViewTypeSelection
             , toString = customToString
             , selected = deleteStrategy
             , tags = allCustomTags
