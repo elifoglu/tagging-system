@@ -29,24 +29,24 @@ open class DragService(
     }
 
     fun dragContentOnLineView(req: DragContentRequest, rollbackMoment: Long): String {
-        if(!arrayListOf("front", "back").contains(req.dropToFrontOrBack)) {
+        if (!arrayListOf("front", "back").contains(req.dropToFrontOrBack)) {
             return "not-existing-path"
         }
 
         val currentOrder = dataHolder.getAllData().contentViewOrder
         val currentOrderOnLineView: ArrayList<ContentID> = arrayListOf()
         currentOrder.forEach {
-            if(!currentOrderOnLineView.contains(it.a)) {
+            if (!currentOrderOnLineView.contains(it.a)) {
                 currentOrderOnLineView.add(it.a)
             }
         }
 
-        val contentTagDuoToDrag: Tuple2<ContentID /* = kotlin.String */, TagID /* = kotlin.String */> =
-            currentOrder.find { (a, _) -> a == req.idOfDraggedContent  }!!
+        val contentTagDuoToDrag: Tuple2<ContentID, TagID> =
+            currentOrder.find { (a, _) -> a == req.idOfDraggedContent }!!
 
         val orderAfterDuoRemoved = currentOrder.filterNot { it == contentTagDuoToDrag }
 
-        val contentTagDuoToDropDraggedOn =
+        val contentTagDuoToDropDraggedOn: Tuple2<ContentID, TagID> =
             orderAfterDuoRemoved.find { (a, _) -> a == req.idOfContentToDropOn }!!
 
         val index = orderAfterDuoRemoved
@@ -54,10 +54,11 @@ open class DragService(
 
         val leftSideOfTheList = orderAfterDuoRemoved.take(index)
         val rightSideOfTheList = orderAfterDuoRemoved.drop(index + 1)
-        val newContentViewOrder : ArrayList<Tuple2<ContentID /* = kotlin.String */, TagID /* = kotlin.String */>> = ArrayList()
+        val newContentViewOrder: ArrayList<Tuple2<ContentID, TagID>> =
+            ArrayList()
         newContentViewOrder.addAll(leftSideOfTheList)
 
-        if(req.dropToFrontOrBack == "front") {
+        if (req.dropToFrontOrBack == "front") {
             newContentViewOrder.add(contentTagDuoToDrag)
             newContentViewOrder.add(contentTagDuoToDropDraggedOn)
         } else {
