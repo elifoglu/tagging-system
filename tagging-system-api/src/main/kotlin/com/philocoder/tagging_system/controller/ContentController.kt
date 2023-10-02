@@ -7,7 +7,7 @@ import com.philocoder.tagging_system.model.response.SearchContentResponse
 import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.service.ContentService
-import com.philocoder.tagging_system.service.DragService
+import com.philocoder.tagging_system.service.drag.DragService
 import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.web.bind.annotation.*
 
