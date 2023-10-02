@@ -18,6 +18,17 @@ type alias SelectTagConfig a msg =
     }
 
 
+viewTagTextTypeSelectionBoxDiv : TagTextViewType -> Html Msg
+viewTagTextTypeSelectionBoxDiv deleteStrategy =
+    div [ style "margin-bottom" "20px" ]
+        [ selectTag
+            { onSelect = ChangeTagTextViewTypeSelection
+            , toString = tagTextViewTypeToTextToShow
+            , selected = deleteStrategy
+            , tags = allViewTypes
+            }
+        ]
+
 selectTag : SelectTagConfig a msg -> Html msg
 selectTag cfg =
     let
@@ -68,18 +79,6 @@ tagTextViewTypeToTextToShow val =
             "group with distinct contents"
 
 
-allCustomTags : List TagTextViewType
-allCustomTags =
+allViewTypes : List TagTextViewType
+allViewTypes =
     [ GroupView, LineView, DistinctGroupView ]
-
-
-viewTagTextTypeSelectionBoxDiv : TagTextViewType -> Html Msg
-viewTagTextTypeSelectionBoxDiv deleteStrategy =
-    div [ style "margin-bottom" "20px" ]
-        [ selectTag
-            { onSelect = ChangeTagTextViewTypeSelection
-            , toString = tagTextViewTypeToTextToShow
-            , selected = deleteStrategy
-            , tags = allCustomTags
-            }
-        ]

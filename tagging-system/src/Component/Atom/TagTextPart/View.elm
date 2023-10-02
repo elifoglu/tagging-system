@@ -4,10 +4,11 @@ import App.Model exposing (..)
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
-import Html exposing (Attribute, Html, a, br, div, hr, img, span, text)
+import Html exposing (Attribute, Html, a, b, div, hr, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
+import List.Extra
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
 import Tuple exposing (second)
@@ -17,7 +18,7 @@ viewTextPart : Model -> Tag -> TagTextPart -> Html Msg
 viewTextPart model baseTag tagTextPart =
     div []
         [ viewTagAsATitle baseTag tagTextPart
-        , viewContentsLineByLine model tagTextPart.contents tagTextPart.tag.tagId
+        , viewContentsLineByLine model tagTextPart tagTextPart.tag.tagId
         ]
 
 
@@ -30,22 +31,31 @@ viewTagAsATitle baseTag tagTextPart =
         text ""
 
 
-viewContentsLineByLine : Model -> List Content -> TagID -> Html Msg
-viewContentsLineByLine model contents tagId =
+viewContentsLineByLine : Model -> TagTextPart -> TagID -> Html Msg
+viewContentsLineByLine model currentTagTextPart tagId =
     div []
-        (contents
-            |> List.map (viewContentLine model tagId)
+        (currentTagTextPart.contents
+            |> List.map (viewContentLine model currentTagTextPart tagId)
         )
 
 
-viewContentLine : Model -> TagID -> Content -> Html Msg
-viewContentLine model tagId content =
+viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
+viewContentLine model currentTagTextPart tagId content =
     div [ onMouseDown content tagId, onMouseOver content tagId, onMouseLeave ]
-        [ viewTopDownHrLineOfContent model content Top
+        [ viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
         , div [ class "contentLineParent" ]
             [ div [ class "contentLineFirstChild" ]
                 [ span [ class "contentLine" ]
-                    [ text (" • " ++ content.text)
+                    [ case model.contentTagIdDuoThatIsBeingDragged of
+                        Just draggedContent ->
+                            if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
+                                b [] [ text (" • " ++ content.text) ]
+
+                            else
+                                text (" • " ++ content.text)
+
+                        Nothing ->
+                            text (" • " ++ content.text)
                     ]
                 ]
             , div [ class "contentLineSecondChild" ]
@@ -57,7 +67,7 @@ viewContentLine model tagId content =
                     []
                 ]
             ]
-        , viewTopDownHrLineOfContent model content Down
+        , viewTopDownHrLineOfContent model content tagId currentTagTextPart Down
         ]
 
 
@@ -65,18 +75,67 @@ type WhichHrLine
     = Top
     | Down
 
---this lines are just to show for content drag feature
-viewTopDownHrLineOfContent : Model -> Content -> WhichHrLine -> Html Msg
-viewTopDownHrLineOfContent model content whichHrLine =
+
+currentTextPartDoesNotHaveSameContentWithBeingDraggedContent : ContentTagIdDuo -> TagTextPart -> Bool
+currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart =
+    if currentTagTextPart.tag.tagId == beingDraggedContent.tagId then
+        True
+
+    else
+        not (List.any (\content -> content.contentId == beingDraggedContent.contentId) currentTagTextPart.contents)
+
+
+contentWhichCursorIsOnItNowIsNotSameWithDraggedContent : ContentTagIdDuo -> ContentTagIdDuoWithOffsetPosY -> Bool
+contentWhichCursorIsOnItNowIsNotSameWithDraggedContent a b =
+    not (a.contentId == b.contentId && a.tagId == b.tagId)
+
+
+beingDraggedContentIsNotAtNear : WhichHrLine -> TagTextPart -> ContentTagIdDuo -> ContentTagIdDuoWithOffsetPosY -> Bool
+beingDraggedContentIsNotAtNear whichHrLine tagTextPart beingDraggedContent possiblyNearContent =
+    let
+        beingDraggedContentIndex : Maybe Int
+        beingDraggedContentIndex =
+            List.Extra.findIndex (\c -> c.contentId == beingDraggedContent.contentId) tagTextPart.contents
+
+        possiblyNearContentIndex : Maybe Int
+        possiblyNearContentIndex =
+            List.Extra.findIndex (\c -> c.contentId == possiblyNearContent.contentId) tagTextPart.contents
+
+        result =
+            case ( beingDraggedContentIndex, possiblyNearContentIndex ) of
+                ( Just draggedIndexInList, Just nearIndexInList ) ->
+                    if draggedIndexInList - nearIndexInList == 1 && whichHrLine == Down then
+                        False
+
+                    else if nearIndexInList - draggedIndexInList == 1 && whichHrLine == Top then
+                        False
+
+                    else
+                        True
+
+                _ ->
+                    True
+    in
+    result
+
+
+viewTopDownHrLineOfContent : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
+viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
     case model.contentTagIdDuoThatIsBeingDragged of
-        Just _ ->
+        Just beingDraggedContent ->
             case model.contentTagDuoWhichCursorIsOverItNow of
-                Just contentTagIdDuoWithOffsetY ->
-                    if contentTagIdDuoWithOffsetY.contentId == content.contentId then
-                        if contentTagIdDuoWithOffsetY.offsetPosY < 3 && whichHrLine == Top then
+                Just contentWhichCursorIsOnItNow ->
+                    if
+                        (contentWhichCursorIsOnItNow.contentId == content.contentId)
+                            && (contentWhichCursorIsOnItNow.tagId == tagIdOfTextPartThatContentBelongs)
+                            && contentWhichCursorIsOnItNowIsNotSameWithDraggedContent beingDraggedContent contentWhichCursorIsOnItNow
+                            && currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart
+                            && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
+                    then
+                        if contentWhichCursorIsOnItNow.offsetPosY < 3 && whichHrLine == Top then
                             div [ class "separatorDiv" ] [ hr [ class "separator" ] [] ]
 
-                        else if contentTagIdDuoWithOffsetY.offsetPosY > 14 && whichHrLine == Down then
+                        else if contentWhichCursorIsOnItNow.offsetPosY > 14 && whichHrLine == Down then
                             div [ class "separatorDiv" ] [ hr [ class "separator" ] [] ]
 
                         else

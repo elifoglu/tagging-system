@@ -551,8 +551,14 @@ update msg model =
                     let
                         newTagPage =
                             TagPage (Initialized { a | activeTagTextViewType = selection })
+
+                        localStorage =
+                            model.localStorage
+
+                        newLocalStorage =
+                            { localStorage | tagTextViewType = selection }
                     in
-                    ( { model | activePage = newTagPage }
+                    ( { model | activePage = newTagPage, localStorage = newLocalStorage }
                     , storeTagTextViewType
                         (case selection of
                             GroupView ->
@@ -672,12 +678,12 @@ update msg model =
                         Just toDrag ->
                             case model.contentTagDuoWhichCursorIsOverItNow of
                                 Just toDropOn ->
-                                    -- do not do anything in any situation if beingDraggedContent and theContentToDragTopOrBottom has the same contentId
+                                    -- do not do anything in any situation if beingDraggedContent and theContentToDragTopOrBottom has the same contentId. just clear contentTagIdDuoThatIsBeingDragged
                                     if toDrag.contentId == toDropOn.contentId then
-                                        ( model, Cmd.none )
+                                        ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
 
                                     else
-                                        ( model
+                                        ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }
                                         , dragContent
                                             (DragContentRequestModel
                                                 tagPage.activeTagTextViewType
@@ -687,7 +693,7 @@ update msg model =
                                         )
 
                                 Nothing ->
-                                    ( model, Cmd.none )
+                                    ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
 
                         Nothing ->
                             ( model, Cmd.none )
