@@ -7,12 +7,16 @@ import org.springframework.stereotype.Repository
 @Repository
 open class DragService(
     private val lineViewDragService: LineViewDragService,
-    private val groupViewDragService: DistinctGroupViewDragService,
-    private val distinctGroupViewDragService: DistinctGroupViewDragService,
-    private val dataHolder: DataHolder
+    private val groupViewDragService: GroupViewDragService,
+    private val distinctGroupViewDragService: DistinctGroupViewDragService
 ) {
 
+    @ExperimentalStdlibApi
     fun dragContent(req: DragContentRequest, rollbackMoment: Long): String {
+        if (!arrayListOf("front", "back").contains(req.dropToFrontOrBack)) {
+            return "not-existing-path"
+        }
+
         return when (req.tagTextViewType) {
             "line" -> {
                 lineViewDragService.dragContent(req, rollbackMoment)

@@ -6,5 +6,6 @@ data class DragContentRequest(
     val idOfTagGroupThatDraggedContentBelong: String,
     val idOfContentToDropOn: String,
     val idOfTagGroupToDropOn: String,
-    val dropToFrontOrBack: String
+    val dropToFrontOrBack: String,
+    val idOfActiveTagPage: String
 )

@@ -262,6 +262,7 @@ type alias DragContentRequestModel =
     , draggedContentTagIdDuo : ( String, String )
     , toDroppedOnContentTagIdDuo : ( String, String )
     , dropToFrontOfContent : DropSection
+    , idOfActiveTagPage: String
     }
 
 
@@ -373,4 +374,5 @@ dragContentRequestEncoder model =
                         "not-existing-path"
                 )
           )
+        , ( "idOfActiveTagPage", Encode.string model.idOfActiveTagPage )
         ]

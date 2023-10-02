@@ -130,8 +130,12 @@ open class ContentService(
         }
 
         val tagTextPartsButProperlyOrdered: java.util.ArrayList<TagTextResponse.TagTextPart> = ArrayList()
-        val properOrderOfDescendantTags = getProperOrderOfDescendantTags(tag)
-        properOrderOfDescendantTags
+
+        val properOrderOfDescendantTagsOfTagTextParts =
+            getProperOrderOfDescendantTags(tag)
+                .filter { tagId -> tagTextParts.any { it.tag.tagId == tagId }}
+
+        properOrderOfDescendantTagsOfTagTextParts
             .forEach { tagId ->
                 tagTextPartsButProperlyOrdered.add(tagTextParts.find { it.tag.tagId == tagId }!!)
             }
@@ -145,30 +149,6 @@ open class ContentService(
         return allRelatedTagsToCreateCondensedText
     }
 
-    /*    @ExperimentalStdlibApi
-        fun getTagTextParts(tag: Tag): List<TagTextResponse.TagTextPart> {
-            var allRelatedTagsToCreateCondensedText = ArrayList<String>()
-            rep(tag.tagId, allRelatedTagsToCreateCondensedText)
-
-            var tagTextParts = ArrayList<TagTextResponse.TagTextPart>()
-            allRelatedTagsToCreateCondensedText.forEach { tagId ->
-                val tag: Tag = tagService.findEntity(tagId)!!
-                val contentResponses: List<ContentResponse> =
-                    getContentsForTag(tag)
-                        .filter { !it.isDeleted }
-                        .map { ContentResponse.createWith(it) }
-                        .sortedWith { a, b -> (a.createdAt.toLong() - b.createdAt.toLong()).toInt() }
-                tagTextParts.add(
-                    TagTextResponse.TagTextPart(
-                        TagResponse.create(tag, tagService, this),
-                        contentResponses
-                    )
-                )
-            }
-
-            return tagTextParts
-        }
-    */
     @ExperimentalStdlibApi
     private fun rep(
         tagId: String,

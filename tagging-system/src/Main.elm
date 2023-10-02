@@ -697,6 +697,7 @@ update msg model =
                                                             ( toDrag.contentId, toDrag.tagId )
                                                             ( toDropOn.contentId, toDropOn.tagId )
                                                             topOrDown
+                                                            tagPage.tag.tagId
                                                         )
                                                     )
 

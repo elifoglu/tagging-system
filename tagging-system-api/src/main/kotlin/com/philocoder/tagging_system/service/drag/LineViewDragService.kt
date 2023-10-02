@@ -13,10 +13,6 @@ open class LineViewDragService(
 ) {
 
     fun dragContent(req: DragContentRequest, rollbackMoment: Long): String {
-        if (!arrayListOf("front", "back").contains(req.dropToFrontOrBack)) {
-            return "not-existing-path"
-        }
-
         val currentOrder = dataHolder.getAllData().contentViewOrder
         val currentOrderOnLineView: ArrayList<ContentID> = arrayListOf()
         currentOrder.forEach {

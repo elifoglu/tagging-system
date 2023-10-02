@@ -74,6 +74,7 @@ class ContentController(
         return contentService.getContentsResponseByKeywordSearch(req)
     }
 
+    @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/drag-content")
     fun dragContent(@RequestBody req: DragContentRequest): String {
