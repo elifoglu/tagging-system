@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, updateContentRequestEncoder, updateTagRequestEncoder, dragContentRequestEncoder)
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -118,6 +118,14 @@ type TagModuleVisibility
 type ContentModuleVisibility
     = CreateContentModuleIsVisible
     | UpdateContentModuleIsVisible
+
+
+topOffsetForContentLine =
+    3
+
+
+downOffsetForContentLine =
+    14
 
 
 defaultCreateContentModule : List Tag -> CreateContentModuleModel
@@ -252,8 +260,15 @@ type TagDeleteStrategyChoice
 type alias DragContentRequestModel =
     { tagTextViewType : TagTextViewType
     , draggedContentTagIdDuo : ( String, String )
-    , toDroppedOnContentTagIdDuoWithYOffset : { contentId : String, tagId : String, offsetY : Float }
+    , toDroppedOnContentTagIdDuo : ( String, String )
+    , dropToFrontOfContent : DropSection
     }
+
+
+type DropSection
+    = Top
+    | Middle
+    | Down
 
 
 getContentRequestModelEncoder : GetContentRequestModel -> Encode.Value
@@ -343,16 +358,19 @@ dragContentRequestEncoder model =
           )
         , ( "idOfDraggedContent", Encode.string (first model.draggedContentTagIdDuo) )
         , ( "idOfTagGroupThatDraggedContentBelong", Encode.string (second model.draggedContentTagIdDuo) )
-        , ( "idOfContentToDropOn", Encode.string model.toDroppedOnContentTagIdDuoWithYOffset.contentId )
-        , ( "idOfTagGroupToDropOn", Encode.string model.toDroppedOnContentTagIdDuoWithYOffset.tagId )
-        , ( "offsetYOnDropMoment", Encode.float model.toDroppedOnContentTagIdDuoWithYOffset.offsetY )
+        , ( "idOfContentToDropOn", Encode.string (first model.toDroppedOnContentTagIdDuo) )
+        , ( "idOfTagGroupToDropOn", Encode.string (second model.toDroppedOnContentTagIdDuo) )
+        , ( "dropToFrontOrBack"
+          , Encode.string
+                (case model.dropToFrontOfContent of
+                    Top ->
+                        "front"
+
+                    Down ->
+                        "back"
+
+                    Middle ->
+                        "not-existing-path"
+                )
+          )
         ]
-
-
-
-{- type alias DragContentRequestModel =
-   { tagTextViewType : TagTextViewType
-   , draggedContentTagIdDuo : (String, String)
-   , toDroppedOnContentTagIdDuoWithYOffset : (String, String, Float)
-   }
--}

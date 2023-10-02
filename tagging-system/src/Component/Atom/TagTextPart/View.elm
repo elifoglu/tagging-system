@@ -132,10 +132,10 @@ viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs curre
                             && currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart
                             && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
                     then
-                        if contentWhichCursorIsOnItNow.offsetPosY < 3 && whichHrLine == Top then
+                        if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
                             div [ class "separatorDiv" ] [ hr [ class "separator" ] [] ]
 
-                        else if contentWhichCursorIsOnItNow.offsetPosY > 14 && whichHrLine == Down then
+                        else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
                             div [ class "separatorDiv" ] [ hr [ class "separator" ] [] ]
 
                         else

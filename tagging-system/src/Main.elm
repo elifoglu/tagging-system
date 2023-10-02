@@ -683,14 +683,22 @@ update msg model =
                                         ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
 
                                     else
-                                        ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }
-                                        , dragContent
-                                            (DragContentRequestModel
-                                                tagPage.activeTagTextViewType
-                                                ( toDrag.contentId, toDrag.tagId )
-                                                { contentId = toDropOn.contentId, tagId = toDropOn.tagId, offsetY = 0 }
-                                            )
-                                        )
+                                        let
+                                          abc = droppedOnWhichSection toDropOn.offsetPosY
+                                        in
+                                           case abc of
+                                               Middle ->
+                                                    ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
+                                               topOrDown ->
+                                                    ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }
+                                                    , dragContent
+                                                        (DragContentRequestModel
+                                                            tagPage.activeTagTextViewType
+                                                            ( toDrag.contentId, toDrag.tagId )
+                                                            ( toDropOn.contentId, toDropOn.tagId )
+                                                            topOrDown
+                                                        )
+                                                    )
 
                                 Nothing ->
                                     ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
@@ -703,6 +711,18 @@ update msg model =
 
         _ ->
             ( model, Cmd.none )
+
+
+droppedOnWhichSection : Float -> DropSection
+droppedOnWhichSection float =
+    if float < topOffsetForContentLine then
+        Top
+
+    else if float > downOffsetForContentLine then
+        Down
+
+    else
+        Middle
 
 
 subscriptions : Model -> Sub Msg
