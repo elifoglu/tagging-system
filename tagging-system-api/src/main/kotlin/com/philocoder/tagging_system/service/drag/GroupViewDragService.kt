@@ -170,19 +170,10 @@ open class GroupViewDragService(
             droppedOnContentTagIdDuo.b
         )
 
-        val updatedCurrentOrder = currentOrder
-            .map {
-                if (it == draggedContentTagIdDuo) updatedDraggedContentIdTagDuo else it
-            }
-
         val draggedToUpside: Boolean =
             draggedToUpside(currentOrder, draggedContentTagIdDuo, droppedOnContentTagIdDuo)
 
-        val contentTagDuoToDrag: Tuple2<ContentID, TagID> =
-            updatedCurrentOrder.find { it == updatedDraggedContentIdTagDuo }!!
-
-        val orderStatusAfterDuoToDragIsRemoved = currentOrder.filterNot { it == contentTagDuoToDrag }
-
+        val orderStatusAfterDuoToDragIsRemoved = currentOrder.filterNot { it == draggedContentTagIdDuo }
 
         val contentTagDuoToDropDraggedOn: Tuple2<ContentID, TagID> =
             if (draggedToUpside) {

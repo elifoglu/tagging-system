@@ -20,6 +20,8 @@ open class DistinctGroupViewDragService(
 
     @ExperimentalStdlibApi
     fun dragContent(req: DragContentRequest, rollbackMoment: Long): String {
+        //This is also completely done, but unused since drag on DistinctGroupView is cancelled
+
         val currentOrder = dataHolder.getAllData().contentViewOrder
         val tagTextPartsForDistinctGroupView: List<TagTextResponse.TagTextPart> =
             contentService.getTagTextPartsForDistinctGroupView(tagService.findEntity(req.idOfActiveTagPage)!!)

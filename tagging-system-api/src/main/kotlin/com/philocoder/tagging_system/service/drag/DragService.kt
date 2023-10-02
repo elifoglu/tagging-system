@@ -26,7 +26,7 @@ open class DragService(
                 groupViewDragService.dragContent(req, rollbackMoment)
             }
             "distinct-group" -> {
-                distinctGroupViewDragService.dragContent(req, rollbackMoment)
+                "not-existing-path-since-drag-on-distinct-group-view-is-disabled"
             }
             else -> "not-ok"
         }

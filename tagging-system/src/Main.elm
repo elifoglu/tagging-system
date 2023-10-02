@@ -669,7 +669,33 @@ update msg model =
             ( { model | contentTagDuoWhichCursorIsOverItNow = contentTagDuoWhichCursorIsOverItNow }, Cmd.none )
 
         SetContentTagIdDuoToDrag contentTagDuo ->
-            ( { model | contentTagIdDuoThatIsBeingDragged = contentTagDuo }, Cmd.none )
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    let
+                        activeTagTextViewType =
+                            case a.activeTagTextViewType of
+                                DistinctGroupView ->
+                                    GroupView
+
+                                other ->
+                                    other
+
+                        newTagPage =
+                            TagPage (Initialized { a | activeTagTextViewType = activeTagTextViewType })
+
+                        localStorage =
+                            model.localStorage
+
+                        newLocalStorage =
+                            { localStorage | tagTextViewType = activeTagTextViewType }
+
+                        newModel =
+                            { model | localStorage = newLocalStorage, activePage = newTagPage, contentTagIdDuoThatIsBeingDragged = contentTagDuo }
+                    in
+                    ( newModel, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
         DragEnd xy ->
             case model.activePage of
@@ -684,22 +710,24 @@ update msg model =
 
                                     else
                                         let
-                                          abc = droppedOnWhichSection toDropOn.offsetPosY
+                                            abc =
+                                                droppedOnWhichSection toDropOn.offsetPosY
                                         in
-                                           case abc of
-                                               Middle ->
-                                                    ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
-                                               topOrDown ->
-                                                    ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }
-                                                    , dragContent
-                                                        (DragContentRequestModel
-                                                            tagPage.activeTagTextViewType
-                                                            ( toDrag.contentId, toDrag.tagId )
-                                                            ( toDropOn.contentId, toDropOn.tagId )
-                                                            topOrDown
-                                                            tagPage.tag.tagId
-                                                        )
+                                        case abc of
+                                            Middle ->
+                                                ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
+
+                                            topOrDown ->
+                                                ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }
+                                                , dragContent
+                                                    (DragContentRequestModel
+                                                        tagPage.activeTagTextViewType
+                                                        ( toDrag.contentId, toDrag.tagId )
+                                                        ( toDropOn.contentId, toDropOn.tagId )
+                                                        topOrDown
+                                                        tagPage.tag.tagId
                                                     )
+                                                )
 
                                 Nothing ->
                                     ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
