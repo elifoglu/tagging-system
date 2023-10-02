@@ -3,8 +3,9 @@ package com.philocoder.tagging_system.service.drag
 import com.philocoder.tagging_system.model.request.DragContentRequest
 import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
 
-@Repository
+@Service
 open class DragService(
     private val lineViewDragService: LineViewDragService,
     private val groupViewDragService: GroupViewDragService,

@@ -14,10 +14,11 @@ import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import org.apache.commons.lang3.StringUtils
 import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Repository
+@Service
 open class ContentService(
     private val tagService: TagService,
     private val dataHolder: DataHolder

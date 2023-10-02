@@ -6,8 +6,9 @@ import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.request.DragContentRequest
 import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
 
-@Repository
+@Service
 open class LineViewDragService(
     private val dataHolder: DataHolder
 ) {

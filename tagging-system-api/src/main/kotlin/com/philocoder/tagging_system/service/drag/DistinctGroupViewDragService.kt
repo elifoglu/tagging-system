@@ -9,9 +9,9 @@ import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.service.ContentService
 import com.philocoder.tagging_system.service.TagService
 import com.philocoder.tagging_system.util.DateUtils.now
-import org.springframework.stereotype.Repository
+import org.springframework.stereotype.Service
 
-@Repository
+@Service
 open class DistinctGroupViewDragService(
     private val contentService: ContentService,
     private val tagService: TagService,
@@ -41,7 +41,6 @@ open class DistinctGroupViewDragService(
                 req,
                 currentOrder,
                 currentOrderOnDistinctGroupView,
-                tagTextPartsForDistinctGroupView,
                 draggedContentIdTagIdDuo,
                 toDropOnContentIdTagIdDuo,
                 rollbackMoment
@@ -51,7 +50,7 @@ open class DistinctGroupViewDragService(
         val draggedToUpside: Boolean =
             draggedToUpside(currentOrderOnDistinctGroupView, draggedContentIdTagIdDuo, toDropOnContentIdTagIdDuo)
 
-        if (onAfterAnotherAndNotMoveable(
+        if (oneAfterAnotherAndNotMoveable(
                 currentOrderOnDistinctGroupView,
                 draggedContentIdTagIdDuo,
                 toDropOnContentIdTagIdDuo,
@@ -106,7 +105,7 @@ open class DistinctGroupViewDragService(
         )
     }
 
-    private fun onAfterAnotherAndNotMoveable(
+    private fun oneAfterAnotherAndNotMoveable(
         currentOrderOnDistinctGroupView: List<Tuple2<ContentID, TagID>>,
         draggedContentTagIdDuo: Tuple2<ContentID, TagID>,
         droppedOnContentTagIdDuo: Tuple2<ContentID, TagID>,
@@ -142,7 +141,6 @@ open class DistinctGroupViewDragService(
         req: DragContentRequest,
         currentOrder: List<Tuple2<ContentID, TagID>>,
         currentOrderOnDistinctGroupView: ArrayList<Tuple2<ContentID, TagID>>,
-        tagTextPartsForDistinctGroupView: List<TagTextResponse.TagTextPart>,
         draggedContentTagIdDuo: Tuple2<ContentID, TagID>,
         droppedOnContentTagIdDuo: Tuple2<ContentID, TagID>,
         rollbackMoment: Long
@@ -208,5 +206,3 @@ open class DistinctGroupViewDragService(
         return "ok"
     }
 }
-
-
