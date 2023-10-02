@@ -148,22 +148,29 @@ update msg model =
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
-        GotContentCreationResponse result ->
-            case result of
-                Ok _ ->
-                    let
-                        newActivePage =
-                            case model.activePage of
-                                TagPage (Initialized a) ->
-                                    TagPage (Initialized { a | createContentModule = defaultCreateContentModule model.allTags })
+        GotTagOrContentCreateUpdateDeleteDoneResponse crudAction res ->
+            case res of
+                Ok message ->
+                    case model.activePage of
+                        TagPage (Initialized a) ->
+                            if message == "done" then
+                                case crudAction of
+                                    DeleteTagAct ->
+                                        ( model, Nav.pushUrl model.key "/" )
 
-                                _ ->
-                                    NotFoundPage
+                                    _ ->
+                                        let
+                                            newModel =
+                                                { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                                        in
+                                        ( newModel, getCmdToSendByPage newModel )
+                                -- This is just to reinitialize the page to see newly created tags etc. in the page instantly
 
-                        newModel =
-                            { model | activePage = newActivePage }
-                    in
-                    ( newModel, getCmdToSendByPage newModel )
+                            else
+                                ( model, Cmd.none )
+
+                        _ ->
+                            ( { model | activePage = NotFoundPage }, Cmd.none )
 
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
@@ -204,7 +211,37 @@ update msg model =
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
-        -- CREATE/UPDATE CONTENT PAGES --
+        ChangeTagTextViewTypeSelection selection ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    let
+                        newTagPage =
+                            TagPage (Initialized { a | activeTagTextViewType = selection })
+
+                        localStorage =
+                            model.localStorage
+
+                        newLocalStorage =
+                            { localStorage | tagTextViewType = selection }
+                    in
+                    ( { model | activePage = newTagPage, localStorage = newLocalStorage }
+                    , storeTagTextViewType
+                        (case selection of
+                            GroupView ->
+                                "group"
+
+                            LineView ->
+                                "line"
+
+                            DistinctGroupView ->
+                                "distinct-group"
+                        )
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        -- CREATE/UPDATE CONTENT MODULES --
         CreateContentModuleInputChanged inputType input ->
             case model.activePage of
                 TagPage (Initialized tagPage) ->
@@ -309,7 +346,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        -- CREATE TAG MODULE --
+        -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
             case model.activePage of
                 TagPage (Initialized a) ->
@@ -333,7 +370,6 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        -- UPDATE TAG MODULE --
         ToggleUpdateTagModuleVisibility ->
             case model.activePage of
                 TagPage (Initialized a) ->
@@ -491,90 +527,6 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        DeleteTag ->
-            case model.activePage of
-                TagPage (Initialized a) ->
-                    ( model
-                    , deleteTag a.updateTagModule
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
-        Undo ->
-            case model.activePage of
-                TagPage (Initialized a) ->
-                    ( model
-                    , undo
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
-        UndoDoneResponse res ->
-            case res of
-                Ok _ ->
-                    case model.activePage of
-                        TagPage (Initialized a) ->
-                            let
-                                newModel =
-                                    { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
-                            in
-                            ( newModel, getCmdToSendByPage newModel )
-
-                        _ ->
-                            ( model, Cmd.none )
-
-                Err _ ->
-                    createNewModelAndCmdMsg model NotFoundPage
-
-        DragDoneResponse res ->
-            case res of
-                Ok _ ->
-                    case model.activePage of
-                        TagPage (Initialized a) ->
-                            let
-                                newModel =
-                                    { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
-                            in
-                            ( newModel, getCmdToSendByPage newModel )
-
-                        _ ->
-                            ( model, Cmd.none )
-
-                Err _ ->
-                    createNewModelAndCmdMsg model NotFoundPage
-
-        ChangeTagTextViewTypeSelection selection ->
-            case model.activePage of
-                TagPage (Initialized a) ->
-                    let
-                        newTagPage =
-                            TagPage (Initialized { a | activeTagTextViewType = selection })
-
-                        localStorage =
-                            model.localStorage
-
-                        newLocalStorage =
-                            { localStorage | tagTextViewType = selection }
-                    in
-                    ( { model | activePage = newTagPage, localStorage = newLocalStorage }
-                    , storeTagTextViewType
-                        (case selection of
-                            GroupView ->
-                                "group"
-
-                            LineView ->
-                                "line"
-
-                            DistinctGroupView ->
-                                "distinct-group"
-                        )
-                    )
-
-                _ ->
-                    ( model, Cmd.none )
-
         ChangeTagDeleteStrategySelection selection ->
             case model.activePage of
                 TagPage (Initialized a) ->
@@ -594,32 +546,15 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        GotTagOrContentCreateUpdateDeleteDoneResponse crudAction res ->
-            case res of
-                Ok message ->
-                    case model.activePage of
-                        TagPage (Initialized a) ->
-                            if message == "done" then
-                                case crudAction of
-                                    DeleteTagAct ->
-                                        ( model, Nav.pushUrl model.key "/" )
+        DeleteTag ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    ( model
+                    , deleteTag a.updateTagModule
+                    )
 
-                                    _ ->
-                                        let
-                                            newModel =
-                                                { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
-                                        in
-                                        ( newModel, getCmdToSendByPage newModel )
-                                -- This is just to reinitialize the page to see newly created tags etc. in the page instantly
-
-                            else
-                                ( { model | activePage = NotFoundPage }, Cmd.none )
-
-                        _ ->
-                            ( { model | activePage = NotFoundPage }, Cmd.none )
-
-                Err _ ->
-                    createNewModelAndCmdMsg model NotFoundPage
+                _ ->
+                    ( model, Cmd.none )
 
         -- SEARCH PAGE --
         GotSearchInput searchKeyword ->
@@ -661,6 +596,52 @@ update msg model =
                                     model.activePage
                     in
                     ( { model | activePage = newPage }, Cmd.none )
+
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
+        -- UNDO --
+        Undo ->
+            case model.activePage of
+                TagPage (Initialized a) ->
+                    ( model
+                    , undo
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        UndoDoneResponse res ->
+            case res of
+                Ok _ ->
+                    case model.activePage of
+                        TagPage (Initialized a) ->
+                            let
+                                newModel =
+                                    { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                            in
+                            ( newModel, getCmdToSendByPage newModel )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
+        -- DRAG CONTENT --
+        DragDoneResponse res ->
+            case res of
+                Ok _ ->
+                    case model.activePage of
+                        TagPage (Initialized a) ->
+                            let
+                                newModel =
+                                    { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                            in
+                            ( newModel, getCmdToSendByPage newModel )
+
+                        _ ->
+                            ( model, Cmd.none )
 
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage

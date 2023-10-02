@@ -1,14 +1,13 @@
 package com.philocoder.tagging_system.model.entity
 
 import arrow.core.Either
-import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.DeleteTagRequest
 import com.philocoder.tagging_system.model.request.TagWithoutChildTags
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
-import com.philocoder.tagging_system.service.TagService
 import com.philocoder.tagging_system.service.DataService
 import com.philocoder.tagging_system.service.TagDeletionService
+import com.philocoder.tagging_system.service.TagService
 import com.philocoder.tagging_system.util.DateUtils.now
 import org.apache.commons.lang3.RandomStringUtils
 import java.util.*
@@ -73,7 +72,7 @@ data class Tag(
             req: DeleteTagRequest,
             service: TagService,
             dataService: DataService
-        ): Either<String, TagID> {
+        ): Either<String, Tag> {
             if (!TagDeletionService.isValidStrategy(req.tagDeletionStrategy))
                 return Either.left("non-existing-tag-deletion-strategy")
 
@@ -83,7 +82,7 @@ data class Tag(
             if (dataService.getAllData()!!.homeTagId == tagId)
                 return Either.left("cannot-delete-home-tag")
 
-            return Either.right(existingTag.tagId)
+            return Either.right(existingTag)
         }
 
         fun createWith(t: TagWithoutChildTags, parentToChildTagMap: HashMap<String, ArrayList<String>>): Tag {

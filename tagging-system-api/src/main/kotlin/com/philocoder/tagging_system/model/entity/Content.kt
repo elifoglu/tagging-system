@@ -70,12 +70,12 @@ data class Content(
         fun returnItsIdIfValidForDelete(
             contentId: ContentID,
             service: ContentService,
-        ): Either<String, ContentID> {
+        ): Either<String, Content> {
             //check if content with specified id exists
             val existingContent: Content = service.findEntity(contentId)
                 ?: return Either.left("non-existing-content")
 
-            return Either.right(existingContent.contentId)
+            return Either.right(existingContent)
         }
     }
 }
