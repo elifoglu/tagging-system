@@ -38,33 +38,32 @@ open class LineViewDragService(
             return "it-will-stay-on-same-place-so-no-need-to-drag"
         }
 
-        val contentTagDuoToDrag: Tuple2<ContentID, TagID> =
-            currentOrder.find { (a, _) -> a == req.idOfDraggedContent }!!
+        val contentTagDuosToDrag: List<Tuple2<ContentID, TagID>> =
+            currentOrder.filter { (a, _) -> a == req.idOfDraggedContent }!!
 
-        val orderAfterDuoRemoved = currentOrder.filterNot { it == contentTagDuoToDrag }
+        val orderStatusAfterDuosToDragAreRemoved = currentOrder.filterNot { contentTagDuosToDrag.contains(it) }
 
         val contentTagDuoToDropDraggedOn: Tuple2<ContentID, TagID> =
             if (draggedToUpside) {
-                orderAfterDuoRemoved.find { (a, _) -> a == req.idOfContentToDropOn }!!
+                orderStatusAfterDuosToDragAreRemoved.find { (a, _) -> a == req.idOfContentToDropOn }!!
             } else {
-                orderAfterDuoRemoved.findLast { (a, _) -> a == req.idOfContentToDropOn }!!
+                orderStatusAfterDuosToDragAreRemoved.findLast { (a, _) -> a == req.idOfContentToDropOn }!!
             }
 
-        val index = orderAfterDuoRemoved
+        val index = orderStatusAfterDuosToDragAreRemoved
             .indexOf(contentTagDuoToDropDraggedOn)
 
-        val leftSideOfTheList = orderAfterDuoRemoved.take(index)
-        val rightSideOfTheList = orderAfterDuoRemoved.drop(index + 1)
-        val newContentViewOrder: ArrayList<Tuple2<ContentID, TagID>> =
-            ArrayList()
+        val leftSideOfTheList = orderStatusAfterDuosToDragAreRemoved.take(index)
+        val rightSideOfTheList = orderStatusAfterDuosToDragAreRemoved.drop(index + 1)
+        val newContentViewOrder: ArrayList<Tuple2<ContentID, TagID>> = ArrayList()
         newContentViewOrder.addAll(leftSideOfTheList)
 
         if (req.dropToFrontOrBack == "front") {
-            newContentViewOrder.add(contentTagDuoToDrag)
+            contentTagDuosToDrag.forEach { newContentViewOrder.add(it) }
             newContentViewOrder.add(contentTagDuoToDropDraggedOn)
         } else {
             newContentViewOrder.add(contentTagDuoToDropDraggedOn)
-            newContentViewOrder.add(contentTagDuoToDrag)
+            contentTagDuosToDrag.forEach { newContentViewOrder.add(it) }
         }
 
         newContentViewOrder.addAll(rightSideOfTheList)
