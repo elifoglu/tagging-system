@@ -1,6 +1,9 @@
 package com.philocoder.tagging_system.repository
 
+import arrow.core.Tuple2
 import com.philocoder.tagging_system.model.AllData
+import com.philocoder.tagging_system.model.ContentID
+import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.util.DateUtils.now
@@ -206,6 +209,7 @@ open class DataHolder {
                         it.oldVersionOfTag,
                         null
                     )
+                    is AtomicRollbackOperationOnData.RollbackDragOperation -> updateContentViewOrderWith(it.previousVersionOfContentViewOrder, null)
                 }
             }
     }
@@ -230,10 +234,30 @@ open class DataHolder {
 
             class RollbackTagDeletion(rollbackId: Long, val oldVersionOfTag: Tag) :
                 AtomicRollbackOperationOnData(rollbackId)
+
+            class RollbackDragOperation(rollbackId: Long, val previousVersionOfContentViewOrder: List<Tuple2<ContentID, TagID>>) :
+                AtomicRollbackOperationOnData(rollbackId)
         }
     }
 
     /* UNDO MODULE - END */
+
+    fun updateContentViewOrderWith(newContentViewOrder: List<Tuple2<ContentID, TagID>>, rollbackMoment: Long?) {
+        val previousVersionOfContentViewOrder = data!!.contentViewOrder
+        data = data!!.copy( contentViewOrder =  newContentViewOrder)
+
+        if (rollbackMoment == null) {
+            return
+        }
+
+        addAtomicOperation(
+            Companion.AtomicRollbackOperationOnData.RollbackDragOperation(
+                rollbackMoment,
+                previousVersionOfContentViewOrder
+            )
+        )
+    }
+
 }
 
 typealias OperationGroup = List<DataHolder.Companion.AtomicRollbackOperationOnData>

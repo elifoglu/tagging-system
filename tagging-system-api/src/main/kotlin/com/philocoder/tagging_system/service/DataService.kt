@@ -9,8 +9,6 @@ import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
 @Service
@@ -20,7 +18,7 @@ class DataService(
 
     @ExperimentalStdlibApi
     fun addAllData(req: AddAllDataRequest): String {
-        return setWholeData(GenerateDataRequest(req.contents, req.tags, req.homeTagId))
+        return setWholeData(GenerateDataRequest(req.contents, req.tags, req.contentViewOrder, req.homeTagId))
     }
 
     @ExperimentalStdlibApi
@@ -29,6 +27,7 @@ class DataService(
         val req = GenerateDataRequest(
             contents = currentData.contents,
             tags = currentData.tags.map { Tag.toWithoutChild(it) },
+            contentViewOrder = currentData.contentViewOrder,
             homeTagId = currentData.homeTagId
         )
         setWholeData(req)
@@ -54,6 +53,7 @@ class DataService(
         val allData = AllData(
             contents = allContents,
             tags = allTags,
+            contentViewOrder = req.contentViewOrder,
             homeTagId = req.homeTagId
         )
         dataHolder.addAllData(allData)
@@ -68,6 +68,7 @@ class DataService(
         return GetAllDataResponse(
             allData.contents.sortedBy { it.contentId },
             allData.tags.map { Tag.toWithoutChild(it) },
+            allData.contentViewOrder,
             allData.homeTagId
         )
     }

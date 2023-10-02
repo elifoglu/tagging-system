@@ -76,7 +76,7 @@ class ContentController(
 
     @CrossOrigin
     @PostMapping("/drag-content")
-    fun searchContent(@RequestBody req: DragContentRequest): String {
-        return dragService.dragContent(req)
+    fun dragContent(@RequestBody req: DragContentRequest): String {
+        return dragService.dragContent(req, now())
     }
 }

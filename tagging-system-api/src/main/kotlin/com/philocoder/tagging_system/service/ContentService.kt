@@ -2,6 +2,7 @@ package com.philocoder.tagging_system.service
 
 import arrow.core.Tuple2
 import com.philocoder.tagging_system.model.ContentID
+import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.ContentsOfTagRequest
@@ -98,37 +99,76 @@ open class ContentService(
 
     @ExperimentalStdlibApi
     fun getTagTextPartsForLineView(tag: Tag): List<TagTextResponse.TagTextPart> {
-        //I simply do this to use same TagTextPart model too in LineView: I get contents from DistinctGroupView data and flatten them into the base tag (which is always the first one on the TagTextPart lists)
-        val baseTag: TagResponse = getTagTextPartsForDistinctGroupView(tag).get(0).tag
-        val allContentResponsesFlatten: List<ContentResponse> =
-            getTagTextPartsForDistinctGroupView(tag).flatMap { it.contents }
-        return Collections.singletonList(TagTextResponse.TagTextPart(baseTag, allContentResponsesFlatten))
+        val baseTag: TagResponse = TagResponse.create(tag, tagService, this)
+
+        val currentContentViewOrderForLineView: List<ContentResponse> =
+            dataHolder.getAllData().contentViewOrder
+                .map { it.a }
+                .distinct()
+                .map { contentId -> ContentResponse.createWith(findEntity(contentId)!!) }
+
+        return Collections.singletonList(
+            TagTextResponse.TagTextPart(
+                baseTag,
+                ArrayList(currentContentViewOrderForLineView)
+            )
+        )
     }
 
     @ExperimentalStdlibApi
     fun getTagTextParts(tag: Tag): List<TagTextResponse.TagTextPart> {
-        var allRelatedTagsToCreateCondensedText = ArrayList<String>()
-        rep(tag.tagId, allRelatedTagsToCreateCondensedText)
-
-        var tagTextParts = ArrayList<TagTextResponse.TagTextPart>()
-        allRelatedTagsToCreateCondensedText.forEach { tagId ->
-            val tag: Tag = tagService.findEntity(tagId)!!
-            val contentResponses: List<ContentResponse> =
-                getContentsForTag(tag)
-                    .filter { !it.isDeleted }
-                    .map { ContentResponse.createWith(it) }
-                    .sortedWith { a, b -> (a.createdAt.toLong() - b.createdAt.toLong()).toInt() }
-            tagTextParts.add(
-                TagTextResponse.TagTextPart(
-                    TagResponse.create(tag, tagService, this),
-                    contentResponses
-                )
-            )
+        val currentOrder = dataHolder.getAllData().contentViewOrder
+        val tagTextParts: ArrayList<TagTextResponse.TagTextPart> = arrayListOf<TagTextResponse.TagTextPart>()
+        currentOrder.forEach { (contentId, tagId) ->
+            var tagTextPart: TagTextResponse.TagTextPart? = tagTextParts.find { it.tag.tagId == tagId }
+            if (tagTextPart == null) {
+                val tagResponse = TagResponse.create(tagService.findEntity(tagId)!!, tagService, this)
+                tagTextPart = TagTextResponse.TagTextPart(tagResponse, arrayListOf())
+                tagTextParts.add(tagTextPart)
+            }
+            tagTextPart.contents.add(ContentResponse.createWith(findEntity(contentId)!!))
         }
 
-        return tagTextParts
+        val tagTextPartsButProperlyOrdered: java.util.ArrayList<TagTextResponse.TagTextPart> = ArrayList()
+        val properOrderOfDescendantTags = getProperOrderOfDescendantTags(tag)
+        properOrderOfDescendantTags
+            .forEach { tagId ->
+                tagTextPartsButProperlyOrdered.add(tagTextParts.find { it.tag.tagId == tagId }!!)
+            }
+        return tagTextPartsButProperlyOrdered
     }
 
+    @ExperimentalStdlibApi
+    fun getProperOrderOfDescendantTags(tag: Tag): ArrayList<TagID> {
+        var allRelatedTagsToCreateCondensedText = ArrayList<String>()
+        rep(tag.tagId, allRelatedTagsToCreateCondensedText)
+        return allRelatedTagsToCreateCondensedText
+    }
+
+    /*    @ExperimentalStdlibApi
+        fun getTagTextParts(tag: Tag): List<TagTextResponse.TagTextPart> {
+            var allRelatedTagsToCreateCondensedText = ArrayList<String>()
+            rep(tag.tagId, allRelatedTagsToCreateCondensedText)
+
+            var tagTextParts = ArrayList<TagTextResponse.TagTextPart>()
+            allRelatedTagsToCreateCondensedText.forEach { tagId ->
+                val tag: Tag = tagService.findEntity(tagId)!!
+                val contentResponses: List<ContentResponse> =
+                    getContentsForTag(tag)
+                        .filter { !it.isDeleted }
+                        .map { ContentResponse.createWith(it) }
+                        .sortedWith { a, b -> (a.createdAt.toLong() - b.createdAt.toLong()).toInt() }
+                tagTextParts.add(
+                    TagTextResponse.TagTextPart(
+                        TagResponse.create(tag, tagService, this),
+                        contentResponses
+                    )
+                )
+            }
+
+            return tagTextParts
+        }
+    */
     @ExperimentalStdlibApi
     private fun rep(
         tagId: String,

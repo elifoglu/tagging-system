@@ -8,7 +8,7 @@ data class TagTextResponse(
     val textPartsForDistinctGroupView: List<TagTextPart>
 ) {
 
-    data class TagTextPart(val tag: TagResponse, val contents: List<ContentResponse>)
+    data class TagTextPart(val tag: TagResponse, val contents: ArrayList<ContentResponse>)
 
     companion object {
         val empty = TagTextResponse(Collections.emptyList(), Collections.emptyList(), Collections.emptyList())
