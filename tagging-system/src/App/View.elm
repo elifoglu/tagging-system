@@ -45,8 +45,11 @@ viewUndoDiv model =
     if not model.undoable then
         text ""
 
-    else
-        div [ class "undoDivInHeader" ]
-            [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.png" ]
-                []
-            ]
+    else case model.activePage of
+        TagPage _ ->
+            div [ class "undoDivInHeader" ]
+                [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.png" ]
+                    []
+                ]
+        _ -> text ""
+

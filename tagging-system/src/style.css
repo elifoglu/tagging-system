@@ -44,6 +44,7 @@ html, body {
     letter-spacing: 0.5px;
     word-spacing: 0.1px;
     margin-bottom: 20px;
+    margin-top: 10px;
 }
 
 
@@ -421,13 +422,14 @@ input[type='checkbox'] {
     display: none;
 }
 
-
 .separatorDiv hr {
     margin: 0;
     width: 200px;
     background-color: red;
 }
 
-.separatorDiv:hover hr {
-    cursor: pointer;
+.contentSAUDiv hr {
+    margin: 0;
+    width: 200px;
+    background-color: #02bdf6;
 }

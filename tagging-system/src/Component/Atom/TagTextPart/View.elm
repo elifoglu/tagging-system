@@ -1,7 +1,7 @@
 module TagTextPart.View exposing (viewTextPart)
 
 import App.Model exposing (..)
-import App.Msg exposing (Msg(..))
+import App.Msg exposing (LocatedAt(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, span, text)
@@ -41,8 +41,9 @@ viewContentsLineByLine model currentTagTextPart tagId =
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagId content =
-    div [ onMouseDown content tagId, onMouseOver content tagId, onMouseLeave ]
-        [ viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
+    div [ onMouseDown model content tagId, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
+        [ viewContentSAU model content tagId currentTagTextPart Top
+        , viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
         , div [ class "contentLineParent" ]
             [ div [ class "contentLineFirstChild" ]
                 [ span [ class "contentLine" ]
@@ -68,6 +69,7 @@ viewContentLine model currentTagTextPart tagId content =
                 ]
             ]
         , viewTopDownHrLineOfContent model content tagId currentTagTextPart Down
+        , viewContentSAU model content tagId currentTagTextPart Down
         ]
 
 
@@ -119,6 +121,35 @@ beingDraggedContentIsNotAtNear whichHrLine tagTextPart beingDraggedContent possi
     result
 
 
+viewContentSAU : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
+viewContentSAU model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
+    case model.contentTagIdDuoThatIsBeingDragged of
+        Just _ ->
+            text ""
+
+        Nothing ->
+            case model.contentTagDuoWhichCursorIsOverItNow of
+                Just contentWhichCursorIsOnItNow ->
+                    if
+                        (contentWhichCursorIsOnItNow.contentId == content.contentId)
+                            && (contentWhichCursorIsOnItNow.tagId == tagIdOfTextPartThatContentBelongs)
+                    then
+                        if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
+                            div [ class "contentSAUDiv" ] [ hr [] [] ]
+
+                        else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
+                            div [ class "contentSAUDiv" ] [ hr [] [] ]
+
+                        else
+                            text ""
+
+                    else
+                        text ""
+
+                Nothing ->
+                    text ""
+
+
 viewTopDownHrLineOfContent : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
 viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
     case model.contentTagIdDuoThatIsBeingDragged of
@@ -133,10 +164,10 @@ viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs curre
                             && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
-                            div [ class "separatorDiv" ] [ hr [ class "separator" ] [] ]
+                            div [ class "separatorDiv" ] [ hr [] [] ]
 
                         else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
-                            div [ class "separatorDiv" ] [ hr [ class "separator" ] [] ]
+                            div [ class "separatorDiv" ] [ hr [] [] ]
 
                         else
                             text ""
@@ -151,16 +182,36 @@ viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs curre
             text ""
 
 
-onMouseDown : Content -> TagID -> Attribute Msg
-onMouseDown content tagId =
+onMouseDown : Model -> Content -> TagID -> Attribute Msg
+onMouseDown model content tagIdOfTextPartThatContentBelongs =
     Mouse.onDown
         (\event ->
             case event.button of
                 MainButton ->
-                    SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagId))
+                    case model.contentTagDuoWhichCursorIsOverItNow of
+                        Just c ->
+                            if c.offsetPosY < topOffsetForContentLine then
+                                OpenSAUBox content.contentId tagIdOfTextPartThatContentBelongs BeforeContentLine
+
+                            else if c.offsetPosY > downOffsetForContentLine then
+                                OpenSAUBox content.contentId tagIdOfTextPartThatContentBelongs AfterContentLine
+
+                            else
+                                SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagIdOfTextPartThatContentBelongs))
+
+                        Nothing ->
+                            DoNothing
 
                 _ ->
                     SetContentTagIdDuoToDrag Nothing
+        )
+
+
+onMouseDoubleClick : Content -> TagID -> Attribute Msg
+onMouseDoubleClick content tagIdOfTextPartThatContentBelongs =
+    Mouse.onContextMenu
+        (\_ ->
+            OpenQuickEditInput content.contentId tagIdOfTextPartThatContentBelongs
         )
 
 

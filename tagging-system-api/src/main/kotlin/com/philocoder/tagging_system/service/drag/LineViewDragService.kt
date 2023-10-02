@@ -5,11 +5,13 @@ import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.request.DragContentRequest
 import com.philocoder.tagging_system.repository.DataHolder
-import org.springframework.stereotype.Repository
+import com.philocoder.tagging_system.service.ContentService
+import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.stereotype.Service
 
 @Service
 open class LineViewDragService(
+    private val contentService: ContentService,
     private val dataHolder: DataHolder
 ) {
 
@@ -36,7 +38,7 @@ open class LineViewDragService(
         }
 
         val contentTagDuosToDrag: List<Tuple2<ContentID, TagID>> =
-            currentOrder.filter { (a, _) -> a == req.idOfDraggedContent }!!
+            currentOrder.filter { (a, _) -> a == req.idOfDraggedContent }
 
         val orderStatusAfterDuosToDragAreRemoved = currentOrder.filterNot { contentTagDuosToDrag.contains(it) }
 
@@ -64,6 +66,11 @@ open class LineViewDragService(
         }
 
         newContentViewOrder.addAll(rightSideOfTheList)
+
+        val updatedContent = contentService.findEntity(req.idOfDraggedContent)!!.copy(
+            lastModifiedAt = now()
+        )
+        dataHolder.updateContent(updatedContent, rollbackMoment)
 
         dataHolder.updateContentViewOrderWith(newContentViewOrder, rollbackMoment)
 

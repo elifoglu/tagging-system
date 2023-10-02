@@ -4,7 +4,7 @@ import App.Model exposing (MaybeTextToHighlight)
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
-import Html exposing (Html, a, div, img, p,  text)
+import Html exposing (Html, a, br, div, img, p, text)
 import Html.Attributes exposing (class, href, src, title)
 import Html.Parser
 import Html.Parser.Util
@@ -36,7 +36,8 @@ viewContentInfoDiv : Content -> Html Msg
 viewContentInfoDiv content =
     div [ class "contentInfoDivOnSearchPage" ]
         (viewTagLinks content.tags
-            ++ [ text (" | created at: " ++ createdDateOf content) ]
+            ++ [ if List.length content.tags > 0 then br [] [] else text ""]
+            ++ [ text ("created at: " ++ createdDateOf content) ]
             ++ [ text (", modified at: " ++ lastModifiedDateOf content) ]
             ++ [ text " ", viewContentLinkWithLinkIcon content ]
         )
@@ -46,7 +47,7 @@ viewTagLinks : List Tag -> List (Html Msg)
 viewTagLinks tags =
     tags
         |> List.map viewTagLink
-        |> List.intersperse (text " ")
+        |> List.intersperse (text ", ")
 
 
 viewTagLink : Tag -> Html Msg

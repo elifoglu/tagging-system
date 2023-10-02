@@ -46,9 +46,9 @@ open class ContentService(
                     StringUtils.containsIgnoreCase(it.content!!, req.keyword)
                             || StringUtils.containsIgnoreCase(it.title, req.keyword)
                 }
-                .filter { it.tags.count() > 0 } // hidden contents have no tags and we don't want to show them on search result
+                .filter { !it.isDeleted }
                 .map { ContentResponse.createWith(it) }
-                .sortedBy { it.createdAt }
+                .sortedBy { it.lastModifiedAt }
                 .reversed()
         return SearchContentResponse(contents)
     }

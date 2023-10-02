@@ -20,7 +20,6 @@ type Msg
     | FocusResult (Result Dom.Error ())
     | GotDataOfTag Tag (Result Http.Error TagDataResponse)
     | GotContent (Result Http.Error GotContent)
-    | GotContentCreationResponse (Result Http.Error GotContent)
     | CreateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | UpdateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | CreateTagModuleInputChanged TagInputType
@@ -42,8 +41,15 @@ type Msg
     | DragDoneResponse (Result Http.Error String)
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
+    | OpenQuickEditInput ContentID TagID
+    | OpenSAUBox ContentID TagID LocatedAt
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
+    | DoNothing
+
+type LocatedAt
+    = BeforeContentLine
+    | AfterContentLine
 
 
 type CrudAction =
