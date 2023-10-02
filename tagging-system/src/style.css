@@ -420,3 +420,14 @@ input[type='checkbox'] {
     float: left;
     display: none;
 }
+
+
+.separatorDiv hr {
+    margin: 0;
+    width: 200px;
+    background-color: red;
+}
+
+.separatorDiv:hover hr {
+    cursor: pointer;
+}

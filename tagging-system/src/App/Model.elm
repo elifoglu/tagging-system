@@ -1,14 +1,15 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, updateContentRequestEncoder, updateTagRequestEncoder, allTagOptions, selectedTagOptionsForTag, selectedTagOptionsForContent, TagDeleteStrategyChoice(..), deleteTagRequestEncoder, TagTextViewType(..))
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, updateContentRequestEncoder, updateTagRequestEncoder, dragContentRequestEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
-import DataResponse exposing (ContentID, GotContent, GotTagTextPart)
+import DataResponse exposing (ContentID, GotContent, GotTagTextPart, TagID)
 import Date exposing (fromPosix)
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
 import TagTextPart.Model exposing (TagTextPart)
 import Time exposing (millisToPosix, utc)
+import Tuple exposing (first, second)
 
 
 type alias Model =
@@ -17,6 +18,8 @@ type alias Model =
     , allTags : List Tag
     , homeTagId : String
     , undoable : Bool
+    , contentTagIdDuoThatIsBeingDragged : Maybe ContentTagIdDuo
+    , contentTagDuoWhichCursorIsOverItNow : Maybe ContentTagIdDuoWithOffsetPosY
     , activePage : Page
     , localStorage : LocalStorage
     , waitingForContentCheckResponse : Bool
@@ -24,8 +27,21 @@ type alias Model =
     }
 
 
+type alias ContentTagIdDuoWithOffsetPosY =
+    { contentId : ContentID
+    , tagId : TagID
+    , offsetPosY : Float
+    }
+
+
+type alias ContentTagIdDuo =
+    { contentId : ContentID
+    , tagId : TagID
+    }
+
+
 type alias LocalStorage =
-    { tagTextViewType: TagTextViewType }
+    { tagTextViewType : TagTextViewType }
 
 
 homepage : Page
@@ -83,12 +99,16 @@ type alias InitializedTagPageModel =
     , oneOfTagModuleIsVisible : TagModuleVisibility
     }
 
+
 type TagTextViewType
     = LineView
     | GroupView
     | DistinctGroupView
 
-type alias ViewContentsDistinct = Bool
+
+type alias ViewContentsDistinct =
+    Bool
+
 
 type TagModuleVisibility
     = CreateTagModuleIsVisible
@@ -112,7 +132,8 @@ defaultUpdateContentModule =
 
 dummyContent : Content
 dummyContent =
-       Content Nothing (fromPosix utc (millisToPosix 0))  (fromPosix utc (millisToPosix 0)) False "" "" []
+    Content Nothing (fromPosix utc (millisToPosix 0)) (fromPosix utc (millisToPosix 0)) False "" "" []
+
 
 defaultCreateTagModule : List Tag -> CreateTagModuleModel
 defaultCreateTagModule allTags =
@@ -160,6 +181,7 @@ selectedTagOptionsForTag tag allTags =
     allTags
         |> List.filter (\t -> List.member t parentTagsOfTagToUpdate)
         |> List.map tagToTagOption
+
 
 selectedTagOptionsForContent : Content -> List Tag -> List TagOption
 selectedTagOptionsForContent content allTags =
@@ -220,10 +242,18 @@ type alias UpdateTagModuleModel =
     , tagDeleteStrategy : TagDeleteStrategyChoice
     }
 
+
 type TagDeleteStrategyChoice
     = DeleteTheTagOnly
     | DeleteTagAlongWithItsChildContents
     | DeleteTagAlongWithItsAllContents
+
+
+type alias DragContentRequestModel =
+    { tagTextViewType : TagTextViewType
+    , draggedContentTagIdDuo : ( String, String )
+    , toDroppedOnContentTagIdDuoWithYOffset : { contentId : String, tagId : String, offsetY : Float }
+    }
 
 
 getContentRequestModelEncoder : GetContentRequestModel -> Encode.Value
@@ -275,11 +305,13 @@ updateTagRequestEncoder model =
         , ( "parentTags", Encode.list Encode.string (model.tagPickerModelForParentTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
 
+
 deleteTagRequestEncoder : UpdateTagModuleModel -> Encode.Value
 deleteTagRequestEncoder model =
     Encode.object
-        [ ( "tagDeletionStrategy", Encode.string (
-                case model.tagDeleteStrategy of
+        [ ( "tagDeletionStrategy"
+          , Encode.string
+                (case model.tagDeleteStrategy of
                     DeleteTheTagOnly ->
                         "only-tag"
 
@@ -288,7 +320,39 @@ deleteTagRequestEncoder model =
 
                     DeleteTagAlongWithItsAllContents ->
                         "tag-with-all-descendants"
-
-         )
-         )
+                )
+          )
         ]
+
+
+dragContentRequestEncoder : DragContentRequestModel -> Encode.Value
+dragContentRequestEncoder model =
+    Encode.object
+        [ ( "tagTextViewType"
+          , Encode.string
+                (case model.tagTextViewType of
+                    LineView ->
+                        "line"
+
+                    GroupView ->
+                        "group"
+
+                    DistinctGroupView ->
+                        "distinct-group"
+                )
+          )
+        , ( "idOfDraggedContent", Encode.string (first model.draggedContentTagIdDuo) )
+        , ( "idOfTagGroupThatDraggedContentBelong", Encode.string (second model.draggedContentTagIdDuo) )
+        , ( "idOfContentToDropOn", Encode.string model.toDroppedOnContentTagIdDuoWithYOffset.contentId )
+        , ( "idOfTagGroupToDropOn", Encode.string model.toDroppedOnContentTagIdDuoWithYOffset.tagId )
+        , ( "offsetYOnDropMoment", Encode.float model.toDroppedOnContentTagIdDuoWithYOffset.offsetY )
+        ]
+
+
+
+{- type alias DragContentRequestModel =
+   { tagTextViewType : TagTextViewType
+   , draggedContentTagIdDuo : (String, String)
+   , toDroppedOnContentTagIdDuoWithYOffset : (String, String, Float)
+   }
+-}

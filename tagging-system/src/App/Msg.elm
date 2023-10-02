@@ -1,10 +1,10 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (TagDeleteStrategyChoice, TagOption, TagTextViewType)
+import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, TagDeleteStrategyChoice, TagOption, TagTextViewType)
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
-import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagDataResponse)
+import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagDataResponse, TagID)
 import Http
 import Tag.Model exposing (Tag)
 import Time
@@ -39,7 +39,12 @@ type Msg
     | Undo
     | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)
     | UndoDoneResponse (Result Http.Error String)
+    | DragDoneResponse (Result Http.Error String)
+    | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
+    | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
+    | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
+
 
 type CrudAction =
     CreateContentAct

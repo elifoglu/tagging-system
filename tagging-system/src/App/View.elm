@@ -24,7 +24,7 @@ view model =
                     TagPage status ->
                         case status of
                             Initialized initialized ->
-                                [ viewTagPageDiv model.homeTagId initialized model.allTags ]
+                                [ viewTagPageDiv model initialized ]
 
                             _ ->
                                 []

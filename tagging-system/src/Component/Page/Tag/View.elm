@@ -1,6 +1,6 @@
 module Tag.View exposing (..)
 
-import App.Model exposing (ContentModuleVisibility(..), InitializedTagPageModel, TagModuleVisibility(..), UpdateContentModuleModel)
+import App.Model exposing (ContentModuleVisibility(..), InitializedTagPageModel, Model, TagModuleVisibility(..), UpdateContentModuleModel)
 import App.Msg exposing (Msg(..))
 import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
@@ -15,11 +15,11 @@ import UpdateContent.View exposing (viewUpdateContentDiv)
 import UpdateTag.View exposing (viewUpdateTagDiv)
 
 
-viewTagPageDiv : String -> InitializedTagPageModel -> List Tag -> Html Msg
-viewTagPageDiv homeTagId initialized allTags =
+viewTagPageDiv : Model -> InitializedTagPageModel -> Html Msg
+viewTagPageDiv model initialized =
     div [ style "margin-top" "27px" ]
-        [ viewLeftFrame homeTagId initialized allTags
-        , viewMidFrame initialized
+        [ viewLeftFrame model.homeTagId initialized model.allTags
+        , viewMidFrame model initialized
         , viewRightFrame initialized
         ]
 
@@ -78,11 +78,12 @@ viewTagsDiv tagIds allTags tagType =
         )
 
 
-viewMidFrame : InitializedTagPageModel -> Html Msg
-viewMidFrame initialized =
+viewMidFrame : Model -> InitializedTagPageModel -> Html Msg
+viewMidFrame model initialized =
     div [ class "midFrameOnTagPage" ]
         [ viewTagTextTypeSelectionBoxDiv initialized.activeTagTextViewType
-        , viewTagText initialized.tag
+        , viewTagText model
+            initialized.tag
             initialized.textPartsForGroupView
             initialized.textPartsForLineView
             initialized.textPartsForDistinctGroupView

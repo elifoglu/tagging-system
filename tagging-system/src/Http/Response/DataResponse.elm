@@ -1,4 +1,4 @@
-module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagDataResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagDataResponseDecoder)
+module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagDataResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagDataResponseDecoder, TagID)
 
 import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map7, maybe, string)
 
@@ -35,6 +35,10 @@ type alias GotContent =
 
 
 type alias ContentID =
+    String
+
+
+type alias TagID =
     String
 
 

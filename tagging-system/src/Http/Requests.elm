@@ -1,6 +1,6 @@
-module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag, undo)
+module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag, undo, dragContent)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
 import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
 import Http
@@ -101,6 +101,15 @@ deleteTag model =
         { url = apiURL ++ "delete-tag/" ++ model.tagId
         , body = Http.jsonBody (deleteTagRequestEncoder model)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse DeleteTagAct)
+        }
+
+
+dragContent : DragContentRequestModel -> Cmd Msg
+dragContent model =
+    Http.post
+        { url = apiURL ++ "drag-content"
+        , body = Http.jsonBody (dragContentRequestEncoder model)
+        , expect = Http.expectString DragDoneResponse
         }
 
 

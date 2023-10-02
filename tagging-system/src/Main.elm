@@ -7,17 +7,21 @@ import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
 import Browser exposing (UrlRequest)
 import Browser.Dom as Dom
+import Browser.Events
 import Browser.Navigation as Nav
 import Component.Page.Util exposing (tagsNotLoaded)
 import Content.Model exposing (Content)
 import Content.Util exposing (gotContentToContent)
 import DataResponse exposing (ContentID)
+import Html.Events.Extra.Mouse as Mouse exposing (Event)
+import Json.Decode as Decode
 import List
-import Requests exposing (createContent, createTag, deleteContent, deleteTag, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
+import Requests exposing (createContent, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
 import Time
+import Tuple exposing (first, second)
 import Url
 
 
@@ -53,7 +57,7 @@ init flags url key =
                     GroupView
 
         model =
-            Model "log" key [] "" False page (LocalStorage tagTextViewType) False Time.utc
+            Model "log" key [] "" False Nothing Nothing page (LocalStorage tagTextViewType) False Time.utc
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -524,6 +528,23 @@ update msg model =
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
+        DragDoneResponse res ->
+            case res of
+                Ok _ ->
+                    case model.activePage of
+                        TagPage (Initialized a) ->
+                            let
+                                newModel =
+                                    { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                            in
+                            ( newModel, getCmdToSendByPage newModel )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
         ChangeTagTextViewTypeSelection selection ->
             case model.activePage of
                 TagPage (Initialized a) ->
@@ -638,10 +659,56 @@ update msg model =
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
+        SetContentWhichCursorIsOverIt contentTagDuoWhichCursorIsOverItNow ->
+            ( { model | contentTagDuoWhichCursorIsOverItNow = contentTagDuoWhichCursorIsOverItNow }, Cmd.none )
+
+        SetContentTagIdDuoToDrag contentTagDuo ->
+            ( { model | contentTagIdDuoThatIsBeingDragged = contentTagDuo }, Cmd.none )
+
+        DragEnd xy ->
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    case model.contentTagIdDuoThatIsBeingDragged of
+                        Just toDrag ->
+                            case model.contentTagDuoWhichCursorIsOverItNow of
+                                Just toDropOn ->
+                                    -- do not do anything in any situation if beingDraggedContent and theContentToDragTopOrBottom has the same contentId
+                                    if toDrag.contentId == toDropOn.contentId then
+                                        ( model, Cmd.none )
+
+                                    else
+                                        ( model
+                                        , dragContent
+                                            (DragContentRequestModel
+                                                tagPage.activeTagTextViewType
+                                                ( toDrag.contentId, toDrag.tagId )
+                                                { contentId = toDropOn.contentId, tagId = toDropOn.tagId, offsetY = 0 }
+                                            )
+                                        )
+
+                                Nothing ->
+                                    ( model, Cmd.none )
+
+                        Nothing ->
+                            ( model, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
+
         _ ->
             ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Browser.Events.onMouseUp (Decode.map (\event -> DragEnd ( setX event, setY event )) Mouse.eventDecoder)
+
+
+setX : Event -> Float
+setX event =
+    first event.clientPos
+
+
+setY : Event -> Float
+setY event =
+    second event.clientPos

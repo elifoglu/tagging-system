@@ -56,8 +56,8 @@ selectTag cfg =
     Keyed.node "select" [ on "change" decoder ] (addEmpty options)
 
 
-customToString : TagTextViewType -> String
-customToString val =
+tagTextViewTypeToTextToShow : TagTextViewType -> String
+tagTextViewTypeToTextToShow val =
     case val of
         GroupView ->
             "group"
@@ -78,7 +78,7 @@ viewTagTextTypeSelectionBoxDiv deleteStrategy =
     div [ style "margin-bottom" "20px" ]
         [ selectTag
             { onSelect = ChangeTagTextViewTypeSelection
-            , toString = customToString
+            , toString = tagTextViewTypeToTextToShow
             , selected = deleteStrategy
             , tags = allCustomTags
             }
