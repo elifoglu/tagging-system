@@ -11,17 +11,13 @@ import Html.Events exposing (onInput)
 viewSearchContentDiv : String -> List Content -> Html Msg
 viewSearchContentDiv searchKeyword contents =
     div []
-        [ input [ type_ "text", id "contentSearchInput", class "contentSearchInput", placeholder "ara...", value searchKeyword, onInput GotSearchInput, style "width" "100px" ] []
+        [ input [ type_ "text", id "contentSearchInput", class "contentSearchInput", placeholder "write sth to search", value searchKeyword, onInput GotSearchInput, style "width" "130px" ] []
         , span [ class "searchContentInfoText" ]
             [ text
                 (if List.length contents > 0 then
-                    String.fromInt (List.length contents) ++ " adet içerik bulundu"
+                    String.fromInt (List.length contents) ++ " items found"
 
-                 else if String.length searchKeyword >= 5 && List.isEmpty contents then
-                    "içerik bulunamadı"
-
-                 else
-                    "(en az 5 karakter girerek içerik ara)"
+                 else "search better!"
                 )
             ]
         , div [ style "margin-top" "20px" ]

@@ -18,7 +18,7 @@ sendTitle model =
                     title (initialized.tag.name ++ " - tagging system")
 
         ContentSearchPage _ _ ->
-            title "içerik ara - tagging system"
+            title "search - tagging system"
 
         NotFoundPage ->
             title "oops - tagging system"

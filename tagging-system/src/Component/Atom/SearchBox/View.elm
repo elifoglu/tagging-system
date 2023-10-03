@@ -14,4 +14,4 @@ viewSearchBoxDiv activePage =
 
         _ ->
             div [ class "searchBoxInHeader" ]
-                [ input [ type_ "text", class "contentSearchInput", placeholder "search...", value "", onInput GotSearchInput ] [] ]
+                [ input [ type_ "text", class "contentSearchInput", placeholder "search >", value "", onInput GotSearchInput ] [] ]
