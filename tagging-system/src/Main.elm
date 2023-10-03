@@ -16,8 +16,10 @@ import DataResponse exposing (ContentID)
 import Html.Events.Extra.Mouse as Mouse exposing (Event)
 import Json.Decode as Decode
 import List
+import List.Extra
 import Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
 import Tag.Util exposing (tagById)
+import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
 import Time
@@ -57,7 +59,7 @@ init flags url key =
                     GroupView
 
         model =
-            Model "log" key [] "" False Nothing Nothing page (LocalStorage tagTextViewType) False Time.utc
+            Model "log" key [] "" False Nothing Nothing page (LocalStorage tagTextViewType) False Time.utc Nothing
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -158,6 +160,21 @@ update msg model =
                                     DeleteTagAct ->
                                         ( model, Nav.pushUrl model.key "/" )
 
+                                    CreateContentActViaCSAAdder ->
+                                        let
+                                            csaBoxModule =
+                                                case a.csaBoxModule of
+                                                    JustCSABoxModuleData csaBoxLocation _ ->
+                                                        Just csaBoxLocation
+
+                                                    NothingButTextToStore _ ->
+                                                        Nothing
+
+                                            newModel =
+                                                { model | previousCsaBoxLocationToKeepOpenAfterEnter = csaBoxModule, allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                                        in
+                                        ( newModel, getCmdToSendByPage newModel )
+
                                     _ ->
                                         let
                                             newModel =
@@ -193,14 +210,37 @@ update msg model =
                                         tagTextPartsForDistinctGroupView =
                                             List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textPartsForDistinctGroupView
 
+                                        csaBoxModuleWithFocusCmd =
+                                            case model.previousCsaBoxLocationToKeepOpenAfterEnter of
+                                                Just prevCSABoxLocation ->
+                                                    let
+                                                        relatedTagTextPart =
+                                                            case model.localStorage.tagTextViewType of
+                                                                LineView ->
+                                                                    tagTextPartsForLineView
+
+                                                                GroupView ->
+                                                                    tagTextPartsForGroupView
+
+                                                                DistinctGroupView ->
+                                                                    tagTextPartsForDistinctGroupView
+
+                                                        csaBoxLocationInNextLine =
+                                                            findNextLocationOfCSABox relatedTagTextPart prevCSABoxLocation model.localStorage.tagTextViewType
+                                                    in
+                                                    (csaBoxLocationInNextLine, Dom.focus "csaAdderBox" |> Task.attempt FocusResult)
+
+                                                Nothing ->
+                                                    (NothingButTextToStore "", Cmd.none)
+
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (NothingButTextToStore ""))
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (first csaBoxModuleWithFocusCmd))
 
                                         newModel =
-                                            { model | activePage = newPage }
+                                            { model | activePage = newPage, previousCsaBoxLocationToKeepOpenAfterEnter = Nothing }
                                     in
-                                    ( newModel, getCmdToSendByPage newModel )
+                                    ( newModel, Cmd.batch [ (second csaBoxModuleWithFocusCmd), getCmdToSendByPage newModel ] )
 
                                 _ ->
                                     createNewModelAndCmdMsg model NotFoundPage
@@ -850,6 +890,71 @@ droppedOnWhichSection float =
 
     else
         Middle
+
+
+findNextLocationOfCSABox : List TagTextPart -> CSABoxLocation -> TagTextViewType -> CSABoxModuleModel
+findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
+    let
+        maybeRelatedTagTextPart : Maybe TagTextPart
+        maybeRelatedTagTextPart =
+            case activeTagTextViewType of
+                LineView ->
+                    List.head tagTextParts
+
+                _ ->
+                    List.head (List.filter (\ttp -> ttp.tag.tagId == prevCSABoxLocation.contentLineTagId) tagTextParts)
+
+        result : CSABoxModuleModel
+        result = case maybeRelatedTagTextPart of
+            Nothing -> -- not-existing path
+                NothingButTextToStore ""
+
+            Just relatedTextPart ->
+                let
+                    relatedContents = relatedTextPart.contents
+
+                    contentIdEquivalentOfRelatedTextPart : List String
+                    contentIdEquivalentOfRelatedTextPart =
+                        List.map (\c -> c.contentId ) relatedContents
+
+
+                    indexOfContentOnItsTagTextPart : Int
+                    indexOfContentOnItsTagTextPart =
+                         Maybe.withDefault -1 (List.Extra.elemIndex prevCSABoxLocation.contentLineContentId contentIdEquivalentOfRelatedTextPart)
+
+                    idToUse = case prevCSABoxLocation.locatedAt of
+                                            BeforeContentLine ->
+                                                indexOfContentOnItsTagTextPart - 1
+
+                                            AfterContentLine ->
+                                                indexOfContentOnItsTagTextPart
+
+                    newPrevLineContent : Maybe Content
+                    newPrevLineContent =
+                        List.Extra.getAt (idToUse) relatedContents
+
+                    newCurrentLineContent : Content
+                    newCurrentLineContent =
+                        Maybe.withDefault dummyContent (List.Extra.getAt (idToUse + 1) relatedContents)
+
+                    newNextLineContent : Maybe Content
+                    newNextLineContent =
+                        List.Extra.getAt (idToUse + 2) relatedContents
+
+                    newCsaBoxLocation: CSABoxLocation
+                    newCsaBoxLocation =
+                            { contentLineContentId = newCurrentLineContent.contentId
+                            , contentLineTagId = newCurrentLineContent.tagIdOfCurrentTextPart
+                            , tagIdOfActiveTagPage = prevCSABoxLocation.tagIdOfActiveTagPage
+                            , locatedAt = prevCSABoxLocation.locatedAt
+                            , prevLineContentId = Maybe.map (\a -> a.contentId) newPrevLineContent
+                            , nextLineContentId = Maybe.map (\a -> a.contentId) newNextLineContent
+                            }
+                in
+                    JustCSABoxModuleData newCsaBoxLocation ""
+
+    in
+        result
 
 
 subscriptions : Model -> Sub Msg
