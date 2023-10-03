@@ -1,4 +1,4 @@
-module Content.Util exposing (gotContentToContent, createdDateOf, lastModifiedDateOf)
+module Content.Util exposing (createdDateOf, gotContentToContent, lastModifiedDateOf)
 
 import App.Model exposing (Model)
 import Content.Model exposing (Content, ContentDate)
@@ -21,6 +21,13 @@ gotContentToContent model gotContent =
         gotContent.tagIds
             |> List.map (tagById model.allTags)
             |> values
+    , tagIdOfCurrentTextPart =
+        case gotContent.tagIdOfCurrentTextPart of
+            Nothing ->
+                ""
+
+            Just tagId ->
+                tagId
     }
 
 
@@ -38,10 +45,10 @@ gotContentDateToContentDate timeZone gotContentDate =
             Date.fromPosix timeZone (Time.millisToPosix jan2000)
 
 
-
 createdDateOf : Content -> String
 createdDateOf content =
     format "dd.MM.yy" content.createdAt
+
 
 lastModifiedDateOf : Content -> String
 lastModifiedDateOf content =

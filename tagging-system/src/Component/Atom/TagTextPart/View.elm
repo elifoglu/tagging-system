@@ -1,13 +1,14 @@
 module TagTextPart.View exposing (viewTextPart)
 
 import App.Model exposing (..)
-import App.Msg exposing (Msg(..))
+import App.Msg exposing (KeyDownPlace(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
-import Html exposing (Attribute, Html, a, b, button, div, hr, img, input, span, text)
+import Html exposing (Attribute, Html, a, b, div, hr, img, input, span, text)
 import Html.Attributes exposing (class, href, id, placeholder, src, style, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (keyCode, on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
+import Json.Decode exposing (map)
 import List.Extra
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
@@ -18,7 +19,7 @@ viewTextPart : Model -> Tag -> TagTextPart -> Html Msg
 viewTextPart model baseTag tagTextPart =
     div []
         [ viewTagAsATitle baseTag tagTextPart
-        , viewContentsLineByLine model tagTextPart tagTextPart.tag.tagId
+        , viewContentsLineByLine model tagTextPart baseTag.tagId tagTextPart.tag.tagId
         ]
 
 
@@ -31,20 +32,20 @@ viewTagAsATitle baseTag tagTextPart =
         text ""
 
 
-viewContentsLineByLine : Model -> TagTextPart -> TagID -> Html Msg
-viewContentsLineByLine model currentTagTextPart tagId =
+viewContentsLineByLine : Model -> TagTextPart -> TagID -> TagID -> Html Msg
+viewContentsLineByLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatContentBelongs =
     div []
         (currentTagTextPart.contents
-            |> List.map (viewContentLine model currentTagTextPart tagId)
+            |> List.map (viewContentLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatContentBelongs)
         )
 
 
-viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
-viewContentLine model currentTagTextPart tagId content =
+viewContentLine : Model -> TagTextPart -> TagID -> TagID -> Content -> Html Msg
+viewContentLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatContentBelongs content =
     div [ ]
-        [ viewContentSeparatorAdder model content tagId currentTagTextPart Top
-        , viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
-        , div [ class "contentLineParent", onMouseDown model content tagId currentTagTextPart.contents, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
+        [ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs Top
+        , viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart Top
+        , div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content tagIdOfTextPartThatContentBelongs, onMouseLeave, onMouseDoubleClick content tagIdOfTextPartThatContentBelongs ]
             [ div [ class "contentLineFirstChild" ]
                 [ span [ class "contentLine" ]
                     [ case model.contentTagIdDuoThatIsBeingDragged of
@@ -68,8 +69,8 @@ viewContentLine model currentTagTextPart tagId content =
                     []
                 ]
             ]
-        , viewTopDownHrLineOfContent model content tagId currentTagTextPart Down
-        , viewContentSeparatorAdder model content tagId currentTagTextPart Down
+        , viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart Down
+        , viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs Down
         ]
 
 
@@ -121,8 +122,8 @@ beingDraggedContentIsNotAtNear whichHrLine tagTextPart beingDraggedContent possi
     result
 
 
-viewContentSeparatorAdder : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
-viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
+viewContentSeparatorAdder : Model -> Content -> String -> WhichHrLine -> Html Msg
+viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs whichHrLine =
     case model.activePage of
         TagPage (Initialized tagPage) ->
             case tagPage.csaBoxModule of
@@ -231,12 +232,16 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
 
 viewCSAAdder : String -> Html Msg
 viewCSAAdder inputText =
-    viewInput "csaAdderBox" "text" "add new content..." inputText CSAAdderInputChanged
+    viewInput "csaAdderBox" "text" "add new content..." inputText CSAAdderInputChanged (KeyDown CSAAdderInput)
 
 
-viewInput : String -> String -> String -> String -> (String -> msg) -> Html msg
-viewInput i t p v toMsg =
-    input [ type_ t, id i, placeholder p, value v, onInput toMsg, style "width" "200px" ] []
+viewInput : String -> String -> String -> String -> (String -> msg) -> (Int -> msg) -> Html msg
+viewInput i t p v toMsg keyDownMsg =
+    input [ type_ t, id i, placeholder p, value v, onInput toMsg, onKeyDown keyDownMsg ] []
+
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+  on "keydown" (map tagger keyCode)
 
 
 viewTopDownHrLineOfContent : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
@@ -272,7 +277,7 @@ viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs curre
 
 
 onMouseDown : Model -> Content -> TagID -> List Content -> Attribute Msg
-onMouseDown model content tagIdOfTextPartThatContentBelongs contentsOfCurrentTextPart =
+onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
     Mouse.onDown
         (\event ->
             case event.button of
@@ -308,10 +313,10 @@ onMouseDown model content tagIdOfTextPartThatContentBelongs contentsOfCurrentTex
                                     nextLineContentId =
                                         Maybe.map (\a -> a.contentId) nextLineContent
                                 in
-                                ToggleCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs locateAt prevLineContentId nextLineContentId
+                                ToggleCSAAdderBox content.contentId tagIdOfTagPage content.tagIdOfCurrentTextPart locateAt prevLineContentId nextLineContentId
 
                             else
-                                SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagIdOfTextPartThatContentBelongs))
+                                SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId content.tagIdOfCurrentTextPart))
 
                         Nothing ->
                             DoNothing

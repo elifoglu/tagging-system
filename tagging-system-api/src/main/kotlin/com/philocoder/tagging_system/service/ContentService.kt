@@ -5,7 +5,7 @@ import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
-import com.philocoder.tagging_system.model.request.ContentsOfTagRequest
+import com.philocoder.tagging_system.model.request.TagTextRequest
 import com.philocoder.tagging_system.model.request.SearchContentRequest
 import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
@@ -13,7 +13,6 @@ import com.philocoder.tagging_system.model.response.TagResponse
 import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import org.apache.commons.lang3.StringUtils
-import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.util.*
 import kotlin.collections.ArrayList
@@ -26,7 +25,7 @@ open class ContentService(
 
 
     @ExperimentalStdlibApi
-    fun getContentsResponse(req: ContentsOfTagRequest): TagTextResponse {
+    fun getTagTextResponse(req: TagTextRequest): TagTextResponse {
         val tagIdToUse = if (req.tagId == "tagging-system-home-page") tagService.getHomeTag() else req.tagId
         val tag: Tag = tagService.findExistingEntity(tagIdToUse)
             ?: return TagTextResponse.empty
@@ -47,7 +46,7 @@ open class ContentService(
                             || StringUtils.containsIgnoreCase(it.title, req.keyword)
                 }
                 .filter { !it.isDeleted }
-                .map { ContentResponse.createWith(it) }
+                .map { ContentResponse.createWith(it, null) }
                 .sortedBy { it.lastModifiedAt }
                 .reversed()
         return SearchContentResponse(contents)
@@ -104,9 +103,8 @@ open class ContentService(
 
         val currentContentViewOrderForLineView: List<ContentResponse> =
             dataHolder.getAllData().contentViewOrder
-                .map { it.a }
-                .distinct()
-                .map { contentId -> ContentResponse.createWith(findEntity(contentId)!!) }
+                .distinctBy { it.a }
+                .map { ContentResponse.createWith(findEntity(it.a)!!, it.b ) }
 
         return Collections.singletonList(
             TagTextResponse.TagTextPart(
@@ -127,7 +125,7 @@ open class ContentService(
                 tagTextPart = TagTextResponse.TagTextPart(tagResponse, arrayListOf())
                 tagTextParts.add(tagTextPart)
             }
-            tagTextPart.contents.add(ContentResponse.createWith(findEntity(contentId)!!))
+            tagTextPart.contents.add(ContentResponse.createWith(findEntity(contentId)!!, tagId))
         }
 
         val tagTextPartsButProperlyOrdered: java.util.ArrayList<TagTextResponse.TagTextPart> = ArrayList()

@@ -29,6 +29,32 @@ open class ContentViewOrderService(
     }
 
     @ExperimentalStdlibApi
+    fun updateContentViewOrderForCreatedContentViaCSABox(content: Content, existingContentContentIdToAddFrontOrBackOfIt: String, existingContentTagIdToAddFrontOrBackOfIt: String, frontOrBack: String, rollbackMoment: Long) {
+        val existingContentToAddFrontOrBackOfItIdDuo = Tuple2(existingContentContentIdToAddFrontOrBackOfIt, existingContentTagIdToAddFrontOrBackOfIt)
+        val idDuoOfNewlyCreatedContent = Tuple2(content.contentId, content.tags[0])
+
+        val contentViewOrder: ArrayList<Tuple2<ContentID, TagID>> = ArrayList(dataHolder.getAllData().contentViewOrder)
+
+        val indexOfExisting = contentViewOrder.indexOf(existingContentToAddFrontOrBackOfItIdDuo)
+
+        val leftSideOfTheList = contentViewOrder.take(indexOfExisting)
+        val rightSideOfTheList = contentViewOrder.drop(indexOfExisting + 1)
+        val newContentViewOrder: ArrayList<Tuple2<ContentID, TagID>> = ArrayList()
+        newContentViewOrder.addAll(leftSideOfTheList)
+
+        if (frontOrBack == "front") {
+            newContentViewOrder.add(idDuoOfNewlyCreatedContent)
+            newContentViewOrder.add(existingContentToAddFrontOrBackOfItIdDuo)
+        } else {
+            newContentViewOrder.add(existingContentToAddFrontOrBackOfItIdDuo)
+            newContentViewOrder.add(idDuoOfNewlyCreatedContent)
+        }
+
+        newContentViewOrder.addAll(rightSideOfTheList)
+        dataHolder.updateContentViewOrderWith(newContentViewOrder, rollbackMoment)
+    }
+
+    @ExperimentalStdlibApi
     fun updateContentViewOrderForUpdatedContent(
         previousVersionOfContent: Content,
         content: Content,

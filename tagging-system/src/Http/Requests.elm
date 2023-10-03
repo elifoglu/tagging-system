@@ -1,8 +1,8 @@
-module Requests exposing (createTag, getInitialData, getContent, getSearchResult, getTagContents, getTimeZone, createContent, updateContent, updateTag, deleteContent, deleteTag, undo, dragContent)
+module Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Model, UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
-import DataResponse exposing (ContentID, initialDataResponseDecoder, contentDecoder, contentSearchResponseDecoder, tagDataResponseDecoder)
+import DataResponse exposing (ContentID, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder)
 import Http
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
@@ -35,18 +35,9 @@ getTagContents tag =
             GetTagContentsRequestModel tag.tagId
     in
     Http.post
-        { url = apiURL ++ "contents-of-tag"
+        { url = apiURL ++ "tag-text"
         , body = Http.jsonBody (getDataOfTagRequestModelEncoder getTagContentsRequestModel)
-        , expect = Http.expectJson (GotDataOfTag tag) tagDataResponseDecoder
-        }
-
-
-getContent : String -> Cmd Msg
-getContent contentId =
-    Http.post
-        { url = apiURL ++ "get-content"
-        , body = Http.jsonBody (getContentRequestModelEncoder (GetContentRequestModel contentId))
-        , expect = Http.expectJson GotContent contentDecoder
+        , expect = Http.expectJson (GotTagTextOfTag tag) tagTextResponseDecoder
         }
 
 
@@ -56,6 +47,37 @@ createContent model =
         { url = apiURL ++ "contents"
         , body = Http.jsonBody (createContentRequestEncoder model)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse CreateContentAct)
+        }
+
+
+createContentViaCSAAdder : String -> String -> String -> TagTextViewType -> String -> String -> Cmd Msg
+createContentViaCSAAdder text tagIdOfTagTextPart tagIdOfActiveTagPage activeTagTextViewType existingContentToAddFrontOrBackOfIt frontOrBack =
+    Http.post
+        { url = apiURL ++ "contents"
+        , body =
+            Http.jsonBody
+                (Encode.object
+                    [ ( "title", Encode.string "" )
+                    , ( "text", Encode.string text )
+                    , ( "tags"
+                      , Encode.list Encode.string
+                            [ case activeTagTextViewType of
+                                GroupView ->
+                                    tagIdOfTagTextPart
+
+                                DistinctGroupView ->
+                                    tagIdOfTagTextPart
+
+                                LineView ->
+                                    tagIdOfActiveTagPage
+                            ]
+                      )
+                    , ( "existingContentContentIdToAddFrontOrBackOfIt", Encode.string existingContentToAddFrontOrBackOfIt )
+                    , ( "existingContentTagIdToAddFrontOrBackOfIt", Encode.string tagIdOfTagTextPart )
+                    , ( "frontOrBack", Encode.string frontOrBack )
+                    ]
+                )
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse CreateContentActViaCSAAdder)
         }
 
 
@@ -119,6 +141,7 @@ undo =
         { url = apiURL ++ "undo"
         , expect = Http.expectString UndoDoneResponse
         }
+
 
 getSearchResult : String -> Cmd Msg
 getSearchResult searchKeyword =

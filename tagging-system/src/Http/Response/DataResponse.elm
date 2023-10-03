@@ -1,13 +1,13 @@
-module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagDataResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagDataResponseDecoder, TagID)
+module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagTextResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder, TagID)
 
-import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map7, maybe, string)
+import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map7, map8, maybe, string)
 
 
 type alias InitialDataResponse =
     { allTags : List GotTag, homeTagId : String, undoable: Bool }
 
 
-type alias TagDataResponse =
+type alias TagTextResponse =
     { textPartsForGroupView : List GotTagTextPart
     , textPartsForLineView : List GotTagTextPart
     , textPartsForDistinctGroupView : List GotTagTextPart
@@ -31,7 +31,7 @@ type alias GotTag =
 
 
 type alias GotContent =
-    { title : Maybe String, createdAt : GotContentDate, lastModifiedAt : GotContentDate, isDeleted: Bool, contentId : String, content : String, tagIds : List String }
+    { title : Maybe String, createdAt : GotContentDate, lastModifiedAt : GotContentDate, isDeleted: Bool, contentId : String, content : String, tagIds : List String, tagIdOfCurrentTextPart: Maybe String }
 
 
 type alias ContentID =
@@ -59,9 +59,9 @@ initialDataResponseDecoder =
         (field "undoable" bool)
 
 
-tagDataResponseDecoder : Decoder TagDataResponse
-tagDataResponseDecoder =
-    map3 TagDataResponse
+tagTextResponseDecoder : Decoder TagTextResponse
+tagTextResponseDecoder =
+    map3 TagTextResponse
         (field "textPartsForGroupView" (D.list tagTextPartDecoder))
         (field "textPartsForLineView" (D.list tagTextPartDecoder))
         (field "textPartsForDistinctGroupView" (D.list tagTextPartDecoder))
@@ -86,7 +86,7 @@ tagDecoder =
 
 contentDecoder : Decoder GotContent
 contentDecoder =
-    map7 GotContent
+    map8 GotContent
         (maybe (field "title" string))
         (field "createdAt" dateDecoder)
         (field "lastModifiedAt" dateDecoder)
@@ -94,6 +94,7 @@ contentDecoder =
         (field "contentId" string)
         (field "content" string)
         (field "tagIds" (D.list string))
+        (field "tagIdOfCurrentTextPart" (D.maybe string))
 
 
 tagTextPartDecoder : Decoder GotTagTextPart

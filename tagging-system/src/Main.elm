@@ -1,7 +1,7 @@
 module Main exposing (main)
 
 import App.Model exposing (..)
-import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), CrudAction(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
+import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), CrudAction(..), KeyDownPlace(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
 import App.Ports exposing (sendTitle, storeTagTextViewType)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
@@ -16,7 +16,7 @@ import DataResponse exposing (ContentID)
 import Html.Events.Extra.Mouse as Mouse exposing (Event)
 import Json.Decode as Decode
 import List
-import Requests exposing (createContent, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
+import Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
 import Task
@@ -176,7 +176,7 @@ update msg model =
                     createNewModelAndCmdMsg model NotFoundPage
 
         -- TAG PAGE --
-        GotDataOfTag tag result ->
+        GotTagTextOfTag tag result ->
             case result of
                 Ok tagDataResponse ->
                     case model.activePage of
@@ -216,7 +216,7 @@ update msg model =
                 TagPage (Initialized a) ->
                     let
                         newTagPage =
-                            TagPage (Initialized { a | activeTagTextViewType = selection })
+                            TagPage (Initialized { a | activeTagTextViewType = selection, csaBoxModule = NothingButTextToStore "" })
 
                         localStorage =
                             model.localStorage
@@ -346,56 +346,111 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        ToggleCSAAdderBox contentId tagId locatedAt prevLineContentId nextLineContentId ->
-                case model.activePage of
-                    TagPage (Initialized tagPage) ->
-                        let
-                            currentCSABoxModuleModel =
-                                tagPage.csaBoxModule
+        ToggleCSAAdderBox contentId tagIdOfTagPage tagIdOfTextPartThatContentBelongs locatedAt prevLineContentId nextLineContentId ->
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    let
+                        currentCSABoxModuleModel =
+                            tagPage.csaBoxModule
 
-                            newCSABoxModuleModelWithFocusMsg : (CSABoxModuleModel, Cmd Msg)
-                            newCSABoxModuleModelWithFocusMsg = case currentCSABoxModuleModel of
+                        newCSABoxModuleModelWithFocusMsg : ( CSABoxModuleModel, Cmd Msg )
+                        newCSABoxModuleModelWithFocusMsg =
+                            case currentCSABoxModuleModel of
                                 JustCSABoxModuleData boxLocation text ->
-                                    if boxLocation == CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId then
-                                        (NothingButTextToStore text, Cmd.none)
+                                    if boxLocation == CSABoxLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId then
+                                        ( NothingButTextToStore text, Cmd.none )
+
                                     else
-                                        (JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) text, Dom.focus "csaAdderBox" |> Task.attempt FocusResult)
+                                        ( JustCSABoxModuleData (CSABoxLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId) text, Dom.focus "csaAdderBox" |> Task.attempt FocusResult )
 
                                 NothingButTextToStore textToStore ->
-                                    (JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) textToStore, Dom.focus "csaAdderBox" |> Task.attempt FocusResult)
+                                    ( JustCSABoxModuleData (CSABoxLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId) textToStore, Dom.focus "csaAdderBox" |> Task.attempt FocusResult )
 
+                        newTagPage =
+                            TagPage (Initialized { tagPage | csaBoxModule = first newCSABoxModuleModelWithFocusMsg })
+                    in
+                    ( { model | activePage = newTagPage }, second newCSABoxModuleModelWithFocusMsg )
 
-                            newTagPage =
-                                TagPage (Initialized { tagPage | csaBoxModule = first newCSABoxModuleModelWithFocusMsg })
-                        in
-                        ( { model | activePage = newTagPage }, second newCSABoxModuleModelWithFocusMsg )
+                _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
 
-                    _ ->
-                        createNewModelAndCmdMsg model NotFoundPage
+        SimplyCloseCSAAdderBox ->
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore "" }) }, Cmd.none )
+
+                _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
 
         CSAAdderInputChanged text ->
-                case model.activePage of
-                    TagPage (Initialized tagPage) ->
-                        let
-                            currentCSABoxModuleModel =
-                                tagPage.csaBoxModule
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    let
+                        currentCSABoxModuleModel =
+                            tagPage.csaBoxModule
 
-                            newCSABoxModuleModel = case currentCSABoxModuleModel of
+                        newCSABoxModuleModel =
+                            case currentCSABoxModuleModel of
                                 JustCSABoxModuleData boxLocation _ ->
                                     JustCSABoxModuleData boxLocation text
 
                                 NothingButTextToStore textToStore ->
                                     NothingButTextToStore textToStore
 
+                        newTagPage =
+                            TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
 
-                            newTagPage =
-                                TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
-                        in
-                        ( { model | activePage = newTagPage }, Cmd.none )
+                _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
 
-                    _ ->
-                        createNewModelAndCmdMsg model NotFoundPage
+        KeyDown keyDownPlace keyCode ->
+            case keyDownPlace of
+                CSAAdderInput ->
+                    -- pressed enter
+                    if keyCode == 13 then
+                        case model.activePage of
+                            TagPage (Initialized tagPage) ->
+                                case tagPage.csaBoxModule of
+                                    JustCSABoxModuleData boxLocation text ->
+                                        ( model
+                                        , createContentViaCSAAdder text
+                                            boxLocation.contentLineTagId
+                                            boxLocation.tagIdOfActiveTagPage
+                                            tagPage.activeTagTextViewType
+                                            boxLocation.contentLineContentId
+                                            (case boxLocation.locatedAt of
+                                                BeforeContentLine ->
+                                                    "front"
 
+                                                AfterContentLine ->
+                                                    "back"
+                                            )
+                                        )
+
+                                    NothingButTextToStore _ ->
+                                        ( model, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
+                        -- pressed esc
+
+                    else if keyCode == 27 then
+                        case model.activePage of
+                            TagPage (Initialized tagPage) ->
+                                case tagPage.csaBoxModule of
+                                    JustCSABoxModuleData _ text ->
+                                        ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore text }) }, Cmd.none )
+
+                                    NothingButTextToStore text ->
+                                        ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore text }) }, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
+
+                    else
+                        ( model, Cmd.none )
 
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
@@ -654,7 +709,7 @@ update msg model =
         -- UNDO --
         Undo ->
             case model.activePage of
-                TagPage (Initialized a) ->
+                TagPage (Initialized _) ->
                     ( model
                     , undo
                     )
@@ -704,22 +759,29 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
-                        activeTagTextViewType =
+                        newActiveTagTextViewTypeAndCSABoxCloseDecision =
                             case a.activeTagTextViewType of
                                 DistinctGroupView ->
-                                    GroupView
+                                    ( GroupView, True )
 
                                 other ->
-                                    other
+                                    ( other, False )
+
+                        newCSABoxModuleStatus =
+                            if second newActiveTagTextViewTypeAndCSABoxCloseDecision then
+                                NothingButTextToStore ""
+
+                            else
+                                a.csaBoxModule
 
                         newTagPage =
-                            TagPage (Initialized { a | activeTagTextViewType = activeTagTextViewType })
+                            TagPage (Initialized { a | activeTagTextViewType = first newActiveTagTextViewTypeAndCSABoxCloseDecision, csaBoxModule = newCSABoxModuleStatus })
 
                         localStorage =
                             model.localStorage
 
                         newLocalStorage =
-                            { localStorage | tagTextViewType = activeTagTextViewType }
+                            { localStorage | tagTextViewType = first newActiveTagTextViewTypeAndCSABoxCloseDecision }
 
                         newModel =
                             { model | localStorage = newLocalStorage, activePage = newTagPage, contentTagIdDuoThatIsBeingDragged = contentTagDuo }

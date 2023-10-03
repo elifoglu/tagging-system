@@ -2,7 +2,6 @@ package com.philocoder.tagging_system.controller
 
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.request.*
-import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
 import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
@@ -23,18 +22,9 @@ class ContentController(
 
     @ExperimentalStdlibApi
     @CrossOrigin
-    @PostMapping("/contents-of-tag")
-    fun get(@RequestBody req: ContentsOfTagRequest): TagTextResponse {
-        return contentService.getContentsResponse(req)
-    }
-
-
-    @CrossOrigin
-    @PostMapping("/get-content")
-    fun getContent(@RequestBody req: GetContentRequest): ContentResponse {
-        return ContentResponse.createWith(
-            contentService.findEntity(req.contentID)!!
-        )
+    @PostMapping("/tag-text")
+    fun get(@RequestBody req: TagTextRequest): TagTextResponse {
+        return contentService.getTagTextResponse(req)
     }
 
     @ExperimentalStdlibApi
@@ -45,7 +35,21 @@ class ContentController(
             .run {
                 val now = now()
                 dataHolder.addContent(this, now)
-                contentViewOrderService.updateContentViewOrderForCreatedContent(this, now)
+                if (req.existingContentContentIdToAddFrontOrBackOfIt == null
+                    || req.existingContentTagIdToAddFrontOrBackOfIt == null
+                    || req.frontOrBack == null
+                ) {
+                    contentViewOrderService.updateContentViewOrderForCreatedContent(this, now)
+                } else {
+                    contentViewOrderService.updateContentViewOrderForCreatedContentViaCSABox(
+                        this,
+                        req.existingContentContentIdToAddFrontOrBackOfIt,
+                        req.existingContentTagIdToAddFrontOrBackOfIt,
+                        req.frontOrBack,
+                        now
+                    )
+                }
+
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
                 "done"
             }

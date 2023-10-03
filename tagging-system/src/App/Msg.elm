@@ -4,7 +4,7 @@ import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, Locat
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
-import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagDataResponse, TagID)
+import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagTextResponse, TagID)
 import Http
 import Tag.Model exposing (Tag)
 import Time
@@ -18,8 +18,7 @@ type Msg
     | GotSearchInput String
     | GotContentSearchResponse (Result Http.Error ContentSearchResponse)
     | FocusResult (Result Dom.Error ())
-    | GotDataOfTag Tag (Result Http.Error TagDataResponse)
-    | GotContent (Result Http.Error GotContent)
+    | GotTagTextOfTag Tag (Result Http.Error TagTextResponse)
     | CreateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | UpdateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | CreateTagModuleInputChanged TagInputType
@@ -42,12 +41,16 @@ type Msg
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
     | OpenQuickContentEditInput ContentID TagID
-    | ToggleCSAAdderBox ContentID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)
+    | ToggleCSAAdderBox ContentID TagID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)
+    | SimplyCloseCSAAdderBox
     | CSAAdderInputChanged String
+    | KeyDown KeyDownPlace Int
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
     | DoNothing
 
+type KeyDownPlace =
+    CSAAdderInput
 
 type CrudAction =
     CreateContentAct
@@ -56,6 +59,7 @@ type CrudAction =
     | CreateTagAct
     | UpdateTagAct
     | DeleteTagAct
+    | CreateContentActViaCSAAdder
 
 type WorkingOnWhichModule
     = WorkingOnCreateTagModule

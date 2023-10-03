@@ -1,5 +1,5 @@
 package com.philocoder.tagging_system.model.request
 
-data class ContentsOfTagRequest(
+data class TagTextRequest(
     val tagId: String
 )

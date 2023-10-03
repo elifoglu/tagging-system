@@ -5,7 +5,7 @@ import Tag.Model exposing (Tag)
 
 
 type alias Content =
-    { title : Maybe String, createdAt : ContentDate, lastModifiedAt: ContentDate, isDeleted: Bool, contentId : String, text : String, tags : List Tag }
+    { title : Maybe String, createdAt : ContentDate, lastModifiedAt: ContentDate, isDeleted: Bool, contentId : String, text : String, tags : List Tag, tagIdOfCurrentTextPart: String }
 
 
 type alias ContentID =
