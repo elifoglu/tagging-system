@@ -4,10 +4,12 @@ import App.Model exposing (..)
 import App.Msg exposing (KeyDownPlace(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
-import Html exposing (Attribute, Html, a, b, div, hr, img, input, span, text)
-import Html.Attributes exposing (class, href, id, placeholder, src, style, type_, value)
+import Html exposing (Attribute, Html, a, b, div, hr, img, input, span, text, textarea)
+import Html.Attributes exposing (class, cols, href, id, placeholder, size, spellcheck, src, style, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
+import Html.Parser
+import Html.Parser.Util
 import Json.Decode exposing (map)
 import List.Extra
 import Tag.Model exposing (Tag)
@@ -64,24 +66,47 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
                 viewContentLine model currentTagTextPart tagIdOfTagPage content
 
         ClosedButTextToStore _ _ ->
-           viewContentLine model currentTagTextPart tagIdOfTagPage content
+            viewContentLine model currentTagTextPart tagIdOfTagPage content
+
+
+updateContentTextWithClickableLinks : String -> Html Msg
+updateContentTextWithClickableLinks contentText =
+    let
+        wrapLinkWordWithA: String -> String
+        wrapLinkWordWithA link =
+            "<a href=\"" ++ link ++ "\">link</a>"
+
+        textWithAddedATagsToLinks =
+            (String.split " " contentText)
+                |> List.map (\word -> if List.any (\httpPrefix -> String.contains httpPrefix word) ["http://", "https://"] then wrapLinkWordWithA word else word)
+                |> String.join " "
+    in
+        span []
+            (case Html.Parser.run textWithAddedATagsToLinks of
+                Ok parsedNodes ->
+                    Html.Parser.Util.toVirtualDom parsedNodes
+
+                Err _ ->
+                    []
+            )
 
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
-    div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onMouseDoubleClick content ]
+    div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
         [ div [ class "contentLineFirstChild" ]
             [ span [ class "contentLine" ]
                 [ case model.contentTagIdDuoThatIsBeingDragged of
                     Just draggedContent ->
                         if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
-                            b [] [ text (" • " ++ content.text) ]
+                            --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
+                            updateContentTextWithClickableLinks (" • " ++ content.text)
 
                         else
-                            text (" • " ++ content.text)
+                            updateContentTextWithClickableLinks (" • " ++ content.text)
 
                     Nothing ->
-                        text (" • " ++ content.text)
+                        updateContentTextWithClickableLinks (" • " ++ content.text)
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
@@ -253,17 +278,12 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
 
 viewQuickContentAdder : String -> Html Msg
 viewQuickContentAdder inputText =
-    viewInput "quickContentAdder" "text" "add new content..." inputText QuickContentAdderInputChanged (KeyDown QuickContentAdderInput)
+    input [ type_ "text", id "quickContentAdder", placeholder "add new content...", value inputText, onInput QuickContentAdderInputChanged, onKeyDown (KeyDown QuickContentAdderInput) ] []
 
 
 viewQuickContentEditInput : String -> Html Msg
 viewQuickContentEditInput inputText =
-    viewInput "quickEditBox" "text" "" inputText QuickContentEditInputChanged (KeyDown QuickContentEditInput)
-
-
-viewInput : String -> String -> String -> String -> (String -> msg) -> (Int -> msg) -> Html msg
-viewInput i t p v toMsg keyDownMsg =
-    input [ type_ t, id i, placeholder p, value v, onInput toMsg, onKeyDown keyDownMsg ] []
+    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), cols (String.length inputText) ] []
 
 
 onKeyDown : (Int -> msg) -> Attribute msg
@@ -343,7 +363,7 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
                                 ToggleQuickContentAdderBox content.contentId tagIdOfTagPage content.tagIdOfCurrentTextPart locateAt prevLineContentId nextLineContentId
 
                             else
-                                SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId content.tagIdOfCurrentTextPart))
+                                SetContentTagIdDuoToDragAfterASecond (Just (ContentTagIdDuo content.contentId content.tagIdOfCurrentTextPart))
 
                         Nothing ->
                             DoNothing
@@ -353,8 +373,8 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
         )
 
 
-onMouseDoubleClick : Content -> Attribute Msg
-onMouseDoubleClick content =
+onRightClick : Content -> Attribute Msg
+onRightClick content =
     Mouse.onContextMenu
         (\_ ->
             OpenQuickContentEditInput content

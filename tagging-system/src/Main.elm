@@ -17,11 +17,12 @@ import Html.Events.Extra.Mouse as Mouse exposing (Event)
 import Json.Decode as Decode
 import List
 import List.Extra
+import Process
 import Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
-import Task
+import Task exposing (andThen)
 import Time
 import Tuple exposing (first, second)
 import Url
@@ -450,8 +451,12 @@ update msg model =
                                     content.text
 
                                 ClosedButTextToStore contentLineOfClosedQuickEditModule prevTextOfPreviouslyOpenedButLaterClosedQuickEditBox ->
-                                    if contentLineOfClosedQuickEditModule.contentId == content.contentId
-                                     && contentLineOfClosedQuickEditModule.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                                    if
+                                        contentLineOfClosedQuickEditModule.contentId
+                                            == content.contentId
+                                            && contentLineOfClosedQuickEditModule.tagIdOfCurrentTextPart
+                                            == content.tagIdOfCurrentTextPart
+                                    then
                                         prevTextOfPreviouslyOpenedButLaterClosedQuickEditBox
 
                                     else
@@ -531,7 +536,7 @@ update msg model =
                                         ( { model | activePage = TagPage (Initialized { tagPage | quickContentAdderModule = NothingButTextToStore text }) }, Cmd.none )
 
                                     NothingButTextToStore _ ->
-                                        ( model, Cmd.none)
+                                        ( model, Cmd.none )
 
                             _ ->
                                 ( model, Cmd.none )
@@ -569,7 +574,7 @@ update msg model =
                                         ( { model | activePage = TagPage (Initialized { tagPage | quickContentEditModule = ClosedButTextToStore content textToStore }) }, Cmd.none )
 
                                     ClosedButTextToStore _ _ ->
-                                        ( model, Cmd.none)
+                                        ( model, Cmd.none )
 
                             _ ->
                                 ( model, Cmd.none )
@@ -879,6 +884,12 @@ update msg model =
 
         SetContentWhichCursorIsOverIt contentTagDuoWhichCursorIsOverItNow ->
             ( { model | contentTagDuoWhichCursorIsOverItNow = contentTagDuoWhichCursorIsOverItNow }, Cmd.none )
+
+        SetContentTagIdDuoToDragAfterASecond contentTagDuo -> --this "a second delay" is for this: somehow, setting model.contentTagIdDuoThatIsBeingDragged to something prevents opening links on content lines (or more generally, it somehow overrides left click event and it happens on mouseDown event in TagTextView.elm. so, as a hacky solution, I give a time delay to perform "update model.contentTagIdDuoThatIsBeingDragged" task
+            ( model
+            , Process.sleep 200
+                |> Task.perform (\_ -> SetContentTagIdDuoToDrag contentTagDuo)
+            )
 
         SetContentTagIdDuoToDrag contentTagDuo ->
             case model.activePage of

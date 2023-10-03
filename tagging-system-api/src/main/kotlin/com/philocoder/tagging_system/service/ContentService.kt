@@ -5,8 +5,8 @@ import com.philocoder.tagging_system.model.ContentID
 import com.philocoder.tagging_system.model.TagID
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.entity.Tag
-import com.philocoder.tagging_system.model.request.TagTextRequest
 import com.philocoder.tagging_system.model.request.SearchContentRequest
+import com.philocoder.tagging_system.model.request.TagTextRequest
 import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
 import com.philocoder.tagging_system.model.response.TagResponse
@@ -39,6 +39,9 @@ open class ContentService(
     fun getContentsResponseByKeywordSearch(
         req: SearchContentRequest
     ): SearchContentResponse {
+        if (req.keyword.length < 3) {
+            return SearchContentResponse.empty
+        }
         val contents: List<ContentResponse> =
             dataHolder.getAllData().contents
                 .filter {
@@ -108,7 +111,7 @@ open class ContentService(
             dataHolder.getAllData().contentViewOrder
                 .filter { allTagsUnderBaseTag.contains(it.b) }
                 .distinctBy { it.a }
-                .map { ContentResponse.createWith(findEntity(it.a)!!, it.b ) }
+                .map { ContentResponse.createWith(findEntity(it.a)!!, it.b) }
 
         return Collections.singletonList(
             TagTextResponse.TagTextPart(
@@ -136,7 +139,7 @@ open class ContentService(
 
         val properOrderOfDescendantTagsOfTagTextParts =
             getProperOrderOfDescendantTags(tag)
-                .filter { tagId -> tagTextParts.any { it.tag.tagId == tagId }}
+                .filter { tagId -> tagTextParts.any { it.tag.tagId == tagId } }
 
         properOrderOfDescendantTagsOfTagTextParts
             .forEach { tagId ->

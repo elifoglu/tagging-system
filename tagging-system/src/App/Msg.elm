@@ -38,6 +38,7 @@ type Msg
     | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)
     | UndoDoneResponse (Result Http.Error String)
     | DragDoneResponse (Result Http.Error String)
+    | SetContentTagIdDuoToDragAfterASecond (Maybe ContentTagIdDuo)
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
     | ToggleQuickContentAdderBox ContentID TagID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)

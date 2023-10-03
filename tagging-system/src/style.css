@@ -113,20 +113,24 @@ hr {
 }
 
 .contentLineParent {
-    width: fit-content;
-    display: inline-block;
+    width: 600px;
+    display: flex;
 }
 
 .contentLineFirstChild {
+    display: inline-block;
+    max-width: 550px;
     float: left;
 }
 
 .contentLineSecondChild {
+    display: inline-block;
     float: left;
     opacity: 0.01;
 }
 
 .contentLineFirstChild:hover + .contentLineSecondChild {
+
     display: inline-block;
     opacity: 1;
 }
@@ -135,12 +139,19 @@ hr {
     opacity: 1;
 }
 
+.contentLine {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.contentLine a {
+    color: orange;
+}
+
 .contentLine:hover {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.05);
     border-radius: 3px;
-    padding-right: 5px;
-    padding-left: 5px;
 }
 
 .contentEditAndDeleteIcons {
@@ -429,22 +440,22 @@ input[type='checkbox'] {
 
 .separatorDiv hr {
     margin: 0;
-    width: 200px;
     background-color: rgba(255,0,0,0.7);
 }
 
 .separatorForQuickContentAdderDiv hr {
     margin: 0;
-    width: 200px;
     background-color: rgba(0,144,255,0.7);
 }
 
 .quickContentAdderDiv {
     margin: 0;
-    width: 200px;
 }
 
 .quickContentEditDiv {
     margin: 0;
-    width: 200px;
+}
+
+#quickEditBox {
+    width: 300px;
 }

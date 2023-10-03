@@ -17,7 +17,11 @@ viewSearchContentDiv searchKeyword contents =
                 (if List.length contents > 0 then
                     String.fromInt (List.length contents) ++ " items found"
 
-                 else "search better!"
+                 else if String.length searchKeyword >= 2 && List.isEmpty contents then
+                    "search better!"
+
+                 else
+                    "please enter at least 3 chars"
                 )
             ]
         , div [ style "margin-top" "20px" ]

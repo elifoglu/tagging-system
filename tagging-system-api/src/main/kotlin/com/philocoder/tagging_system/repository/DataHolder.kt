@@ -144,7 +144,7 @@ open class DataHolder {
     }
 
     /* UNDO MODULE - START */
-    private val undoLimit: Int = 10
+    private val undoLimit: Int = 20
 
     private var undoStack: ArrayList<AtomicRollbackOperationOnData> = ArrayList()
 
