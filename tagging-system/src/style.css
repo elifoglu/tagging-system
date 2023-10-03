@@ -428,8 +428,13 @@ input[type='checkbox'] {
     background-color: red;
 }
 
-.contentSAUDiv hr {
+.contentCSASeparatorDiv hr {
     margin: 0;
     width: 200px;
     background-color: #02bdf6;
+}
+
+.contentCSAAdderDiv {
+    margin: 0;
+    width: 200px;
 }
