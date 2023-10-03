@@ -19,7 +19,7 @@ viewTextPart : Model -> Tag -> TagTextPart -> Html Msg
 viewTextPart model baseTag tagTextPart =
     div []
         [ viewTagAsATitle baseTag tagTextPart
-        , viewContentsLineByLine model tagTextPart baseTag.tagId tagTextPart.tag.tagId
+        , viewContentsLineByLine model tagTextPart baseTag.tagId
         ]
 
 
@@ -32,20 +32,20 @@ viewTagAsATitle baseTag tagTextPart =
         text ""
 
 
-viewContentsLineByLine : Model -> TagTextPart -> TagID -> TagID -> Html Msg
-viewContentsLineByLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatContentBelongs =
+viewContentsLineByLine : Model -> TagTextPart -> TagID -> Html Msg
+viewContentsLineByLine model currentTagTextPart tagIdOfTagPage =
     div []
         (currentTagTextPart.contents
-            |> List.map (viewContentLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatContentBelongs)
+            |> List.map (viewContentLine model currentTagTextPart tagIdOfTagPage)
         )
 
 
-viewContentLine : Model -> TagTextPart -> TagID -> TagID -> Content -> Html Msg
-viewContentLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatContentBelongs content =
+viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
+viewContentLine model currentTagTextPart tagIdOfTagPage content =
     div [ ]
-        [ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs Top
-        , viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart Top
-        , div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content tagIdOfTextPartThatContentBelongs, onMouseLeave, onMouseDoubleClick content tagIdOfTextPartThatContentBelongs ]
+        [ viewContentSeparatorAdder model content Top
+        , viewTopDownHrLineOfContent model content currentTagTextPart Top
+        , div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onMouseDoubleClick content ]
             [ div [ class "contentLineFirstChild" ]
                 [ span [ class "contentLine" ]
                     [ case model.contentTagIdDuoThatIsBeingDragged of
@@ -69,8 +69,8 @@ viewContentLine model currentTagTextPart tagIdOfTagPage tagIdOfTextPartThatConte
                     []
                 ]
             ]
-        , viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart Down
-        , viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs Down
+        , viewTopDownHrLineOfContent model content currentTagTextPart Down
+        , viewContentSeparatorAdder model content Down
         ]
 
 
@@ -122,8 +122,8 @@ beingDraggedContentIsNotAtNear whichHrLine tagTextPart beingDraggedContent possi
     result
 
 
-viewContentSeparatorAdder : Model -> Content -> String -> WhichHrLine -> Html Msg
-viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs whichHrLine =
+viewContentSeparatorAdder : Model -> Content -> WhichHrLine -> Html Msg
+viewContentSeparatorAdder model content whichHrLine =
     case model.activePage of
         TagPage (Initialized tagPage) ->
             case tagPage.csaBoxModule of
@@ -132,7 +132,7 @@ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs whichH
                         boxLocation.contentLineContentId
                             == content.contentId
                             && boxLocation.contentLineTagId
-                            == tagIdOfTextPartThatContentBelongs
+                            == content.tagIdOfCurrentTextPart
                             && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
                     then
                         div [ class "contentCSAAdderDiv" ]
@@ -140,17 +140,17 @@ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs whichH
                             ]
 
                     else
-                        viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine (Just boxLocation)
+                        viewCSASeparator model content whichHrLine (Just boxLocation)
 
                 NothingButTextToStore _ ->
-                    viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine Nothing
+                    viewCSASeparator model content whichHrLine Nothing
 
         _ ->
             text ""
 
 
-viewCSASeparator : Model -> Content -> String -> WhichHrLine -> Maybe CSABoxLocation -> Html Msg
-viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine maybeCSABoxLocation =
+viewCSASeparator : Model -> Content -> WhichHrLine -> Maybe CSABoxLocation -> Html Msg
+viewCSASeparator model content whichHrLine maybeCSABoxLocation =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just _ ->
             text ""
@@ -160,7 +160,7 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
                 Just contentWhichCursorIsOnItNow ->
                     if
                         (contentWhichCursorIsOnItNow.contentId == content.contentId)
-                            && (contentWhichCursorIsOnItNow.tagId == tagIdOfTextPartThatContentBelongs)
+                            && (contentWhichCursorIsOnItNow.tagId == content.tagIdOfCurrentTextPart)
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
                             let
@@ -175,7 +175,7 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
                                                     True
 
                                                 Just nextLineContentIdOfOpenCSABox ->
-                                                    if nextLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == tagIdOfTextPartThatContentBelongs then
+                                                    if nextLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
                                                         if csaBoxLocation.locatedAt == AfterContentLine then
                                                             False
 
@@ -204,7 +204,7 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
                                                     True
 
                                                 Just prevLineContentIdOfOpenCSABox ->
-                                                    if prevLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == tagIdOfTextPartThatContentBelongs then
+                                                    if prevLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
                                                         if csaBoxLocation.locatedAt == BeforeContentLine then
                                                             False
 
@@ -244,15 +244,15 @@ onKeyDown tagger =
   on "keydown" (map tagger keyCode)
 
 
-viewTopDownHrLineOfContent : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
-viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
+viewTopDownHrLineOfContent : Model -> Content -> TagTextPart -> WhichHrLine -> Html Msg
+viewTopDownHrLineOfContent model content currentTagTextPart whichHrLine =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just beingDraggedContent ->
             case model.contentTagDuoWhichCursorIsOverItNow of
                 Just contentWhichCursorIsOnItNow ->
                     if
                         (contentWhichCursorIsOnItNow.contentId == content.contentId)
-                            && (contentWhichCursorIsOnItNow.tagId == tagIdOfTextPartThatContentBelongs)
+                            && (contentWhichCursorIsOnItNow.tagId == content.tagIdOfCurrentTextPart)
                             && contentWhichCursorIsOnItNowIsNotSameWithDraggedContent beingDraggedContent contentWhichCursorIsOnItNow
                             && currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart
                             && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
@@ -326,19 +326,19 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
         )
 
 
-onMouseDoubleClick : Content -> TagID -> Attribute Msg
-onMouseDoubleClick content tagIdOfTextPartThatContentBelongs =
+onMouseDoubleClick : Content -> Attribute Msg
+onMouseDoubleClick content =
     Mouse.onContextMenu
         (\_ ->
-            OpenQuickContentEditInput content.contentId tagIdOfTextPartThatContentBelongs
+            OpenQuickContentEditInput content.contentId content.tagIdOfCurrentTextPart
         )
 
 
-onMouseOver : Content -> TagID -> Attribute Msg
-onMouseOver content tagId =
+onMouseOver : Content -> Attribute Msg
+onMouseOver content =
     Mouse.onMove
         (\event ->
-            SetContentWhichCursorIsOverIt (Just (ContentTagIdDuoWithOffsetPosY content.contentId tagId (second event.offsetPos)))
+            SetContentWhichCursorIsOverIt (Just (ContentTagIdDuoWithOffsetPosY content.contentId content.tagIdOfCurrentTextPart (second event.offsetPos)))
         )
 
 
