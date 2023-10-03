@@ -80,7 +80,7 @@ updateContentTextWithClickableLinks contentText =
             String.split " " contentText
                 |> List.map
                     (\word ->
-                        if List.any (\httpPrefix -> String.contains httpPrefix word) [ "http://", "https://" ] then
+                        if wordIsALink word then
                             wrapLinkWordWithA word
 
                         else
@@ -98,13 +98,25 @@ updateContentTextWithClickableLinks contentText =
         )
 
 
+wordIsALink : String -> Bool
+wordIsALink word =
+    List.any (\httpPrefix -> String.contains httpPrefix word) [ "http://", "https://" ]
+
+
+contentHasLinkInside : String -> Bool
+contentHasLinkInside contentText =
+    String.split " " contentText
+        |> List.map (\word -> wordIsALink word)
+        |> List.any (\isALink -> isALink == True)
+
+
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
     div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
         [ div [ class "contentLineFirstChild" ]
             [ span [ class "contentLine" ]
                 [ if String.trim content.text == "" then
-                    span [ style "padding-left" "250px"] [ text "" ]
+                    span [ style "padding-left" "250px" ] [ text "" ]
 
                   else
                     case model.contentTagIdDuoThatIsBeingDragged of
@@ -121,13 +133,26 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
-            [
-            if String.trim content.text == "" then text ""
-            else img
-                [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
-                []
+            [ if String.trim content.text == "" then
+                text ""
+
+              else
+                img
+                    [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
+                    []
             , img
-                [ class "contentEditAndDeleteIcons", onClick (DeleteContent content), style "margin-left" "5px", style "margin-right" (if String.trim content.text == "" then "250px" else "0px"), src "/delete.png" ]
+                [ class "contentEditAndDeleteIcons"
+                , onClick (DeleteContent content)
+                , style "margin-left" "5px"
+                , style "margin-right"
+                    (if String.trim content.text == "" then
+                        "250px"
+
+                     else
+                        "0px"
+                    )
+                , src "/delete.png"
+                ]
                 []
             ]
         ]
@@ -375,8 +400,11 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
                                 in
                                 ToggleQuickContentAdderBox content.contentId tagIdOfTagPage content.tagIdOfCurrentTextPart locateAt prevLineContentId nextLineContentId
 
-                            else
+                            else if contentHasLinkInside content.text then
                                 SetContentTagIdDuoToDragAfterASecond (Just (ContentTagIdDuo content.contentId content.tagIdOfCurrentTextPart))
+
+                            else
+                                SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId content.tagIdOfCurrentTextPart))
 
                         Nothing ->
                             DoNothing
