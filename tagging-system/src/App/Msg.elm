@@ -40,10 +40,10 @@ type Msg
     | DragDoneResponse (Result Http.Error String)
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
-    | OpenQuickContentEditInput ContentID TagID
     | ToggleCSAAdderBox ContentID TagID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)
-    | SimplyCloseCSAAdderBox
     | CSAAdderInputChanged String
+    | OpenQuickContentEditInput Content
+    | QuickContentEditInputChanged String
     | KeyDown KeyDownPlace Int
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
@@ -51,6 +51,7 @@ type Msg
 
 type KeyDownPlace =
     CSAAdderInput
+    | QuickContentEditInput
 
 type CrudAction =
     CreateContentAct

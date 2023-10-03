@@ -17,7 +17,7 @@ import Html.Events.Extra.Mouse as Mouse exposing (Event)
 import Json.Decode as Decode
 import List
 import List.Extra
-import Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
+import Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditBox, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
@@ -228,19 +228,19 @@ update msg model =
                                                         csaBoxLocationInNextLine =
                                                             findNextLocationOfCSABox relatedTagTextPart prevCSABoxLocation model.localStorage.tagTextViewType
                                                     in
-                                                    (csaBoxLocationInNextLine, Dom.focus "csaAdderBox" |> Task.attempt FocusResult)
+                                                    ( csaBoxLocationInNextLine, Dom.focus "csaAdderBox" |> Task.attempt FocusResult )
 
                                                 Nothing ->
-                                                    (NothingButTextToStore "", Cmd.none)
+                                                    ( NothingButTextToStore "", Cmd.none )
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (first csaBoxModuleWithFocusCmd))
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (first csaBoxModuleWithFocusCmd) (ClosedButTextToStore dummyContent ""))
 
                                         newModel =
                                             { model | activePage = newPage, previousCsaBoxLocationToKeepOpenAfterEnter = Nothing }
                                     in
-                                    ( newModel, Cmd.batch [ (second csaBoxModuleWithFocusCmd), getCmdToSendByPage newModel ] )
+                                    ( newModel, Cmd.batch [ second csaBoxModuleWithFocusCmd, getCmdToSendByPage newModel ] )
 
                                 _ ->
                                     createNewModelAndCmdMsg model NotFoundPage
@@ -414,10 +414,30 @@ update msg model =
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
-        SimplyCloseCSAAdderBox ->
+        OpenQuickContentEditInput content ->
             case model.activePage of
                 TagPage (Initialized tagPage) ->
-                    ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore "" }) }, Cmd.none )
+                    let
+                        prevQuickContentEditModule =
+                            tagPage.quickContentEditModule
+
+                        textToPut =
+                            case prevQuickContentEditModule of
+                                Open _ _ ->
+                                    content.text
+
+                                ClosedButTextToStore contentLineOfClosedQuickEditModule prevTextOfPreviouslyOpenedButLaterClosedQuickEditBox ->
+                                    if contentLineOfClosedQuickEditModule.contentId == content.contentId
+                                     && contentLineOfClosedQuickEditModule.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                                        prevTextOfPreviouslyOpenedButLaterClosedQuickEditBox
+
+                                    else
+                                        content.text
+
+                        newTagPage =
+                            TagPage (Initialized { tagPage | quickContentEditModule = Open content textToPut })
+                    in
+                    ( { model | activePage = newTagPage }, Dom.focus "quickEditBox" |> Task.attempt FocusResult )
 
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
@@ -439,6 +459,29 @@ update msg model =
 
                         newTagPage =
                             TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
+
+                _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
+        QuickContentEditInputChanged text ->
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    let
+                        currentQuickContentEditModuleModel =
+                            tagPage.quickContentEditModule
+
+                        newQuickContentEditModuleModel =
+                            case currentQuickContentEditModuleModel of
+                                Open content _ ->
+                                    Open content text
+
+                                _ ->
+                                    ClosedButTextToStore dummyContent ""
+
+                        newTagPage =
+                            TagPage (Initialized { tagPage | quickContentEditModule = newQuickContentEditModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
@@ -487,14 +530,52 @@ update msg model =
                                     JustCSABoxModuleData _ text ->
                                         ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore text }) }, Cmd.none )
 
-                                    NothingButTextToStore text ->
-                                        ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore text }) }, Cmd.none )
+                                    NothingButTextToStore _ ->
+                                        ( model, Cmd.none)
 
                             _ ->
                                 ( model, Cmd.none )
 
                     else
                         ( model, Cmd.none )
+
+                QuickContentEditInput ->
+                    if keyCode == 13 then
+                        case model.activePage of
+                            TagPage (Initialized tagPage) ->
+                                case tagPage.quickContentEditModule of
+                                    Open content updatedText ->
+                                        ( model
+                                        , if updatedText == "" then
+                                            Cmd.none
+
+                                          else
+                                            updateContentViaQuickContentEditBox content updatedText
+                                        )
+
+                                    ClosedButTextToStore _ _ ->
+                                        ( model, Cmd.none )
+
+                            _ ->
+                                ( model, Cmd.none )
+                        -- pressed esc
+
+                    else if keyCode == 27 then
+                        case model.activePage of
+                            TagPage (Initialized tagPage) ->
+                                case tagPage.quickContentEditModule of
+                                    Open content textToStore ->
+                                        ( { model | activePage = TagPage (Initialized { tagPage | quickContentEditModule = ClosedButTextToStore content textToStore }) }, Cmd.none )
+
+                                    ClosedButTextToStore _ _ ->
+                                        ( model, Cmd.none)
+
+                            _ ->
+                                ( model, Cmd.none )
+
+                    else
+                        ( model, Cmd.none )
+
 
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
@@ -905,44 +986,47 @@ findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
                     List.head (List.filter (\ttp -> ttp.tag.tagId == prevCSABoxLocation.contentLineTagId) tagTextParts)
 
         result : CSABoxModuleModel
-        result = case maybeRelatedTagTextPart of
-            Nothing -> -- not-existing path
-                NothingButTextToStore ""
+        result =
+            case maybeRelatedTagTextPart of
+                Nothing ->
+                    -- not-existing path
+                    NothingButTextToStore ""
 
-            Just relatedTextPart ->
-                let
-                    relatedContents = relatedTextPart.contents
+                Just relatedTextPart ->
+                    let
+                        relatedContents =
+                            relatedTextPart.contents
 
-                    contentIdEquivalentOfRelatedTextPart : List String
-                    contentIdEquivalentOfRelatedTextPart =
-                        List.map (\c -> c.contentId ) relatedContents
+                        contentIdEquivalentOfRelatedTextPart : List String
+                        contentIdEquivalentOfRelatedTextPart =
+                            List.map (\c -> c.contentId) relatedContents
 
+                        indexOfContentOnItsTagTextPart : Int
+                        indexOfContentOnItsTagTextPart =
+                            Maybe.withDefault -1 (List.Extra.elemIndex prevCSABoxLocation.contentLineContentId contentIdEquivalentOfRelatedTextPart)
 
-                    indexOfContentOnItsTagTextPart : Int
-                    indexOfContentOnItsTagTextPart =
-                         Maybe.withDefault -1 (List.Extra.elemIndex prevCSABoxLocation.contentLineContentId contentIdEquivalentOfRelatedTextPart)
+                        idToUse =
+                            case prevCSABoxLocation.locatedAt of
+                                BeforeContentLine ->
+                                    indexOfContentOnItsTagTextPart - 1
 
-                    idToUse = case prevCSABoxLocation.locatedAt of
-                                            BeforeContentLine ->
-                                                indexOfContentOnItsTagTextPart - 1
+                                AfterContentLine ->
+                                    indexOfContentOnItsTagTextPart
 
-                                            AfterContentLine ->
-                                                indexOfContentOnItsTagTextPart
+                        newPrevLineContent : Maybe Content
+                        newPrevLineContent =
+                            List.Extra.getAt idToUse relatedContents
 
-                    newPrevLineContent : Maybe Content
-                    newPrevLineContent =
-                        List.Extra.getAt (idToUse) relatedContents
+                        newCurrentLineContent : Content
+                        newCurrentLineContent =
+                            Maybe.withDefault dummyContent (List.Extra.getAt (idToUse + 1) relatedContents)
 
-                    newCurrentLineContent : Content
-                    newCurrentLineContent =
-                        Maybe.withDefault dummyContent (List.Extra.getAt (idToUse + 1) relatedContents)
+                        newNextLineContent : Maybe Content
+                        newNextLineContent =
+                            List.Extra.getAt (idToUse + 2) relatedContents
 
-                    newNextLineContent : Maybe Content
-                    newNextLineContent =
-                        List.Extra.getAt (idToUse + 2) relatedContents
-
-                    newCsaBoxLocation: CSABoxLocation
-                    newCsaBoxLocation =
+                        newCsaBoxLocation : CSABoxLocation
+                        newCsaBoxLocation =
                             { contentLineContentId = newCurrentLineContent.contentId
                             , contentLineTagId = newCurrentLineContent.tagIdOfCurrentTextPart
                             , tagIdOfActiveTagPage = prevCSABoxLocation.tagIdOfActiveTagPage
@@ -950,11 +1034,10 @@ findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
                             , prevLineContentId = Maybe.map (\a -> a.contentId) newPrevLineContent
                             , nextLineContentId = Maybe.map (\a -> a.contentId) newNextLineContent
                             }
-                in
+                    in
                     JustCSABoxModuleData newCsaBoxLocation ""
-
     in
-        result
+    result
 
 
 subscriptions : Model -> Sub Msg

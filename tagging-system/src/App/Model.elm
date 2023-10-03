@@ -1,4 +1,4 @@
-module App.Model exposing (CSABoxLocation, ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder, CSABoxModuleModel(..), dummyContent)
+module App.Model exposing (CSABoxLocation, ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder, CSABoxModuleModel(..), dummyContent, QuickContentEditModel(..), requestEncoderForContentUpdateViaQuickContentEditBox)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -98,8 +98,12 @@ type alias InitializedTagPageModel =
     , oneOfContentModuleIsVisible : ContentModuleVisibility
     , oneOfTagModuleIsVisible : TagModuleVisibility
     , csaBoxModule : CSABoxModuleModel
+    , quickContentEditModule : QuickContentEditModel
     }
 
+type QuickContentEditModel
+    = Open Content String
+    | ClosedButTextToStore Content String
 
 type CSABoxModuleModel
     = JustCSABoxModuleData CSABoxLocation String
@@ -310,6 +314,14 @@ updateContentRequestEncoder model =
         [ ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
         , ( "tags", Encode.list Encode.string (model.tagPickerModelForTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
+        ]
+
+requestEncoderForContentUpdateViaQuickContentEditBox : Content -> String -> Encode.Value
+requestEncoderForContentUpdateViaQuickContentEditBox content updatedText =
+    Encode.object
+        [ ( "title", Encode.string (Maybe.withDefault "" content.title) )
+        , ( "text", Encode.string updatedText )
+        , ( "tags", Encode.list Encode.string (content.tags |> List.map (\t -> t.tagId)) )
         ]
 
 

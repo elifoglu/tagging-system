@@ -15,11 +15,11 @@ import TagTextPart.Model exposing (TagTextPart)
 import Tuple exposing (second)
 
 
-viewTextPart : Model -> Tag -> TagTextPart -> Html Msg
-viewTextPart model baseTag tagTextPart =
+viewTextPart : Model -> Tag -> QuickContentEditModel -> TagTextPart -> Html Msg
+viewTextPart model baseTag quickContentEditModel tagTextPart =
     div []
         [ viewTagAsATitle baseTag tagTextPart
-        , viewContentsLineByLine model tagTextPart baseTag.tagId
+        , viewContentsLineByLine model tagTextPart baseTag.tagId quickContentEditModel
         ]
 
 
@@ -32,45 +32,66 @@ viewTagAsATitle baseTag tagTextPart =
         text ""
 
 
-viewContentsLineByLine : Model -> TagTextPart -> TagID -> Html Msg
-viewContentsLineByLine model currentTagTextPart tagIdOfTagPage =
+viewContentsLineByLine : Model -> TagTextPart -> TagID -> QuickContentEditModel -> Html Msg
+viewContentsLineByLine model currentTagTextPart tagIdOfTagPage quickContentEditModel =
     div []
         (currentTagTextPart.contents
-            |> List.map (viewContentLine model currentTagTextPart tagIdOfTagPage)
+            |> List.map (viewContentLineWithAllStuff model currentTagTextPart tagIdOfTagPage quickContentEditModel)
         )
+
+
+viewContentLineWithAllStuff : Model -> TagTextPart -> TagID -> QuickContentEditModel -> Content -> Html Msg
+viewContentLineWithAllStuff model currentTagTextPart tagIdOfTagPage quickContentEditModel content =
+    div []
+        [ viewContentSeparatorAdder model content Top
+        , viewTopDownHrLineOfContent model content currentTagTextPart Top
+        , viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage quickContentEditModel content
+        , viewTopDownHrLineOfContent model content currentTagTextPart Down
+        , viewContentSeparatorAdder model content Down
+        ]
+
+
+viewContentLineOrQuickContentEditBox : Model -> TagTextPart -> TagID -> QuickContentEditModel -> Content -> Html Msg
+viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage quickContentEditModel content =
+    case quickContentEditModel of
+        Open opened txt ->
+            if opened.contentId == content.contentId && opened.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                div [ class "quickContentEditDiv" ]
+                    [ viewQuickContentEditInput txt
+                    ]
+
+            else
+                viewContentLine model currentTagTextPart tagIdOfTagPage content
+
+        ClosedButTextToStore _ _ ->
+           viewContentLine model currentTagTextPart tagIdOfTagPage content
 
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
-    div [ ]
-        [ viewContentSeparatorAdder model content Top
-        , viewTopDownHrLineOfContent model content currentTagTextPart Top
-        , div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onMouseDoubleClick content ]
-            [ div [ class "contentLineFirstChild" ]
-                [ span [ class "contentLine" ]
-                    [ case model.contentTagIdDuoThatIsBeingDragged of
-                        Just draggedContent ->
-                            if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
-                                b [] [ text (" • " ++ content.text) ]
+    div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onMouseDoubleClick content ]
+        [ div [ class "contentLineFirstChild" ]
+            [ span [ class "contentLine" ]
+                [ case model.contentTagIdDuoThatIsBeingDragged of
+                    Just draggedContent ->
+                        if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
+                            b [] [ text (" • " ++ content.text) ]
 
-                            else
-                                text (" • " ++ content.text)
-
-                        Nothing ->
+                        else
                             text (" • " ++ content.text)
-                    ]
-                ]
-            , div [ class "contentLineSecondChild" ]
-                [ img
-                    [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
-                    []
-                , img
-                    [ class "contentEditAndDeleteIcons", onClick (DeleteContent content), style "margin-left" "5px", src "/delete.png" ]
-                    []
+
+                    Nothing ->
+                        text (" • " ++ content.text)
                 ]
             ]
-        , viewTopDownHrLineOfContent model content currentTagTextPart Down
-        , viewContentSeparatorAdder model content Down
+        , div [ class "contentLineSecondChild" ]
+            [ img
+                [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
+                []
+            , img
+                [ class "contentEditAndDeleteIcons", onClick (DeleteContent content), style "margin-left" "5px", src "/delete.png" ]
+                []
+            ]
         ]
 
 
@@ -235,13 +256,19 @@ viewCSAAdder inputText =
     viewInput "csaAdderBox" "text" "add new content..." inputText CSAAdderInputChanged (KeyDown CSAAdderInput)
 
 
+viewQuickContentEditInput : String -> Html Msg
+viewQuickContentEditInput inputText =
+    viewInput "quickEditBox" "text" "" inputText QuickContentEditInputChanged (KeyDown QuickContentEditInput)
+
+
 viewInput : String -> String -> String -> String -> (String -> msg) -> (Int -> msg) -> Html msg
 viewInput i t p v toMsg keyDownMsg =
     input [ type_ t, id i, placeholder p, value v, onInput toMsg, onKeyDown keyDownMsg ] []
 
+
 onKeyDown : (Int -> msg) -> Attribute msg
 onKeyDown tagger =
-  on "keydown" (map tagger keyCode)
+    on "keydown" (map tagger keyCode)
 
 
 viewTopDownHrLineOfContent : Model -> Content -> TagTextPart -> WhichHrLine -> Html Msg
@@ -330,7 +357,7 @@ onMouseDoubleClick : Content -> Attribute Msg
 onMouseDoubleClick content =
     Mouse.onContextMenu
         (\_ ->
-            OpenQuickContentEditInput content.contentId content.tagIdOfCurrentTextPart
+            OpenQuickContentEditInput content
         )
 
 

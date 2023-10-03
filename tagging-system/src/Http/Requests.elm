@@ -1,7 +1,8 @@
-module Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag)
+module Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditBox)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, updateContentRequestEncoder, updateTagRequestEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, requestEncoderForContentUpdateViaQuickContentEditBox, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
+import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder)
 import Http
 import Json.Encode as Encode
@@ -86,6 +87,14 @@ updateContent model =
     Http.post
         { url = apiURL ++ "contents/" ++ model.content.contentId
         , body = Http.jsonBody (updateContentRequestEncoder model)
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
+        }
+
+updateContentViaQuickContentEditBox : Content -> String -> Cmd Msg
+updateContentViaQuickContentEditBox content updatedText =
+    Http.post
+        { url = apiURL ++ "contents/" ++ content.contentId
+        , body = Http.jsonBody (requestEncoderForContentUpdateViaQuickContentEditBox content updatedText)
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
         }
 

@@ -88,6 +88,7 @@ viewMidFrame model initialized =
             initialized.textPartsForLineView
             initialized.textPartsForDistinctGroupView
             initialized.activeTagTextViewType
+            initialized.quickContentEditModule
         ]
 
 
