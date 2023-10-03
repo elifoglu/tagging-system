@@ -1,6 +1,6 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, TagDeleteStrategyChoice, TagOption, TagTextViewType)
+import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, LocatedAt, TagDeleteStrategyChoice, TagOption, TagTextViewType)
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
@@ -41,15 +41,11 @@ type Msg
     | DragDoneResponse (Result Http.Error String)
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
-    | OpenQuickEditInput ContentID TagID
-    | OpenSAUBox ContentID TagID LocatedAt
+    | OpenQuickContentEditInput ContentID TagID
+    | OpenCSABox ContentID TagID LocatedAt
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
     | DoNothing
-
-type LocatedAt
-    = BeforeContentLine
-    | AfterContentLine
 
 
 type CrudAction =

@@ -1,10 +1,10 @@
 module TagTextPart.View exposing (viewTextPart)
 
 import App.Model exposing (..)
-import App.Msg exposing (LocatedAt(..), Msg(..))
+import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
-import Html exposing (Attribute, Html, a, b, div, hr, img, span, text)
+import Html exposing (Attribute, Html, a, b, button, div, hr, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
@@ -42,7 +42,7 @@ viewContentsLineByLine model currentTagTextPart tagId =
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagId content =
     div [ onMouseDown model content tagId, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
-        [ viewContentSAU model content tagId currentTagTextPart Top
+        [ viewContentSeparatorAdder model content tagId currentTagTextPart Top
         , viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
         , div [ class "contentLineParent" ]
             [ div [ class "contentLineFirstChild" ]
@@ -69,7 +69,7 @@ viewContentLine model currentTagTextPart tagId content =
                 ]
             ]
         , viewTopDownHrLineOfContent model content tagId currentTagTextPart Down
-        , viewContentSAU model content tagId currentTagTextPart Down
+        , viewContentSeparatorAdder model content tagId currentTagTextPart Down
         ]
 
 
@@ -121,8 +121,40 @@ beingDraggedContentIsNotAtNear whichHrLine tagTextPart beingDraggedContent possi
     result
 
 
-viewContentSAU : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
-viewContentSAU model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
+viewContentSeparatorAdder : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
+viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
+    case model.activePage of
+        TagPage (Initialized tagPage) ->
+            case tagPage.csaBoxModule of
+                Just csaBoxModuleModel ->
+                    let
+                        boxLocation =
+                            csaBoxModuleModel.location
+                    in
+                    if
+                        boxLocation.contentLineContentId
+                            == content.contentId
+                            && boxLocation.contentLineTagId
+                            == tagIdOfTextPartThatContentBelongs
+                            && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
+                    then
+                        div []
+                            [ viewCSASeparator model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine
+                            , viewCSAAdder model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine
+                            ]
+
+                    else
+                        text ""
+
+                Nothing ->
+                    viewCSASeparator model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine
+
+        _ ->
+            text ""
+
+
+viewCSASeparator : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
+viewCSASeparator model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just _ ->
             text ""
@@ -148,6 +180,11 @@ viewContentSAU model content tagIdOfTextPartThatContentBelongs currentTagTextPar
 
                 Nothing ->
                     text ""
+
+
+viewCSAAdder : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
+viewCSAAdder model content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
+    button [] [ text "deneme" ]
 
 
 viewTopDownHrLineOfContent : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
@@ -191,10 +228,10 @@ onMouseDown model content tagIdOfTextPartThatContentBelongs =
                     case model.contentTagDuoWhichCursorIsOverItNow of
                         Just c ->
                             if c.offsetPosY < topOffsetForContentLine then
-                                OpenSAUBox content.contentId tagIdOfTextPartThatContentBelongs BeforeContentLine
+                                OpenCSABox content.contentId tagIdOfTextPartThatContentBelongs BeforeContentLine
 
                             else if c.offsetPosY > downOffsetForContentLine then
-                                OpenSAUBox content.contentId tagIdOfTextPartThatContentBelongs AfterContentLine
+                                OpenCSABox content.contentId tagIdOfTextPartThatContentBelongs AfterContentLine
 
                             else
                                 SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagIdOfTextPartThatContentBelongs))
@@ -211,7 +248,7 @@ onMouseDoubleClick : Content -> TagID -> Attribute Msg
 onMouseDoubleClick content tagIdOfTextPartThatContentBelongs =
     Mouse.onContextMenu
         (\_ ->
-            OpenQuickEditInput content.contentId tagIdOfTextPartThatContentBelongs
+            OpenQuickContentEditInput content.contentId tagIdOfTextPartThatContentBelongs
         )
 
 

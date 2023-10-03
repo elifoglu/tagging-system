@@ -195,7 +195,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible)
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible Nothing)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -345,6 +345,33 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+        OpenCSABox contentId tagId locatedAt ->
+                case model.activePage of
+                    TagPage (Initialized tagPage) ->
+                        let
+                            currentCSABoxModuleModel =
+                                tagPage.csaBoxModule
+
+                            newCSABoxModuleModel = case currentCSABoxModuleModel of
+                                Just boxModuleModel ->
+                                    if boxModuleModel.location == CSABoxLocation contentId tagId locatedAt then
+                                        Nothing
+                                    else
+                                        Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt) "")
+
+                                Nothing ->
+                                    Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt) "")
+
+
+                            newTagPage =
+                                TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
+                        in
+                        ( { model | activePage = newTagPage }, Cmd.none )
+
+                    _ ->
+                        createNewModelAndCmdMsg model NotFoundPage
+
 
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
