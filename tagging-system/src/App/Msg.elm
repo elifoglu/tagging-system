@@ -40,8 +40,8 @@ type Msg
     | DragDoneResponse (Result Http.Error String)
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
-    | ToggleCSAAdderBox ContentID TagID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)
-    | CSAAdderInputChanged String
+    | ToggleQuickContentAdderBox ContentID TagID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)
+    | QuickContentAdderInputChanged String
     | OpenQuickContentEditInput Content
     | QuickContentEditInputChanged String
     | KeyDown KeyDownPlace Int
@@ -50,7 +50,7 @@ type Msg
     | DoNothing
 
 type KeyDownPlace =
-    CSAAdderInput
+    QuickContentAdderInput
     | QuickContentEditInput
 
 type CrudAction =
@@ -60,7 +60,8 @@ type CrudAction =
     | CreateTagAct
     | UpdateTagAct
     | DeleteTagAct
-    | CreateContentActViaCSAAdder
+    | CreateContentActViaQuickContentAdder
+    | UpdateContentActViaQuickContentEditor
 
 type WorkingOnWhichModule
     = WorkingOnCreateTagModule

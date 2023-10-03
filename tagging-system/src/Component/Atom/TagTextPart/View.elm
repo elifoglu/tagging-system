@@ -147,8 +147,8 @@ viewContentSeparatorAdder : Model -> Content -> WhichHrLine -> Html Msg
 viewContentSeparatorAdder model content whichHrLine =
     case model.activePage of
         TagPage (Initialized tagPage) ->
-            case tagPage.csaBoxModule of
-                JustCSABoxModuleData boxLocation text ->
+            case tagPage.quickContentAdderModule of
+                JustQuickContentAdderData boxLocation text ->
                     if
                         boxLocation.contentLineContentId
                             == content.contentId
@@ -156,22 +156,22 @@ viewContentSeparatorAdder model content whichHrLine =
                             == content.tagIdOfCurrentTextPart
                             && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
                     then
-                        div [ class "contentCSAAdderDiv" ]
-                            [ viewCSAAdder text
+                        div [ class "quickContentAdderDiv" ]
+                            [ viewQuickContentAdder text
                             ]
 
                     else
-                        viewCSASeparator model content whichHrLine (Just boxLocation)
+                        viewSeparatorForQuickContentAdder model content whichHrLine (Just boxLocation)
 
                 NothingButTextToStore _ ->
-                    viewCSASeparator model content whichHrLine Nothing
+                    viewSeparatorForQuickContentAdder model content whichHrLine Nothing
 
         _ ->
             text ""
 
 
-viewCSASeparator : Model -> Content -> WhichHrLine -> Maybe CSABoxLocation -> Html Msg
-viewCSASeparator model content whichHrLine maybeCSABoxLocation =
+viewSeparatorForQuickContentAdder : Model -> Content -> WhichHrLine -> Maybe QuickContentAdderLocation -> Html Msg
+viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdderLocation =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just _ ->
             text ""
@@ -185,19 +185,19 @@ viewCSASeparator model content whichHrLine maybeCSABoxLocation =
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
                             let
-                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator =
-                                    case maybeCSABoxLocation of
+                                showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator =
+                                    case maybeQuickContentAdderLocation of
                                         Nothing ->
                                             True
 
-                                        Just csaBoxLocation ->
-                                            case csaBoxLocation.nextLineContentId of
+                                        Just quickContentAdderLocation ->
+                                            case quickContentAdderLocation.nextLineContentId of
                                                 Nothing ->
                                                     True
 
-                                                Just nextLineContentIdOfOpenCSABox ->
-                                                    if nextLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
-                                                        if csaBoxLocation.locatedAt == AfterContentLine then
+                                                Just nextLineContentIdOfOpenQuickContentAdder ->
+                                                    if nextLineContentIdOfOpenQuickContentAdder == content.contentId && quickContentAdderLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
+                                                        if quickContentAdderLocation.locatedAt == AfterContentLine then
                                                             False
 
                                                         else
@@ -206,27 +206,27 @@ viewCSASeparator model content whichHrLine maybeCSABoxLocation =
                                                     else
                                                         True
                             in
-                            if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
-                                div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+                            if showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator then
+                                div [ class "separatorForQuickContentAdderDiv" ] [ hr [] [] ]
 
                             else
                                 text ""
 
                         else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
                             let
-                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator =
-                                    case maybeCSABoxLocation of
+                                showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator =
+                                    case maybeQuickContentAdderLocation of
                                         Nothing ->
                                             True
 
-                                        Just csaBoxLocation ->
-                                            case csaBoxLocation.prevLineContentId of
+                                        Just quickContentAdderLocation ->
+                                            case quickContentAdderLocation.prevLineContentId of
                                                 Nothing ->
                                                     True
 
-                                                Just prevLineContentIdOfOpenCSABox ->
-                                                    if prevLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
-                                                        if csaBoxLocation.locatedAt == BeforeContentLine then
+                                                Just prevLineContentIdOfOpenQuickContentAdder ->
+                                                    if prevLineContentIdOfOpenQuickContentAdder == content.contentId && quickContentAdderLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
+                                                        if quickContentAdderLocation.locatedAt == BeforeContentLine then
                                                             False
 
                                                         else
@@ -235,8 +235,8 @@ viewCSASeparator model content whichHrLine maybeCSABoxLocation =
                                                     else
                                                         True
                             in
-                            if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
-                                div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+                            if showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator then
+                                div [ class "separatorForQuickContentAdderDiv" ] [ hr [] [] ]
 
                             else
                                 text ""
@@ -251,9 +251,9 @@ viewCSASeparator model content whichHrLine maybeCSABoxLocation =
                     text ""
 
 
-viewCSAAdder : String -> Html Msg
-viewCSAAdder inputText =
-    viewInput "csaAdderBox" "text" "add new content..." inputText CSAAdderInputChanged (KeyDown CSAAdderInput)
+viewQuickContentAdder : String -> Html Msg
+viewQuickContentAdder inputText =
+    viewInput "quickContentAdder" "text" "add new content..." inputText QuickContentAdderInputChanged (KeyDown QuickContentAdderInput)
 
 
 viewQuickContentEditInput : String -> Html Msg
@@ -340,7 +340,7 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
                                     nextLineContentId =
                                         Maybe.map (\a -> a.contentId) nextLineContent
                                 in
-                                ToggleCSAAdderBox content.contentId tagIdOfTagPage content.tagIdOfCurrentTextPart locateAt prevLineContentId nextLineContentId
+                                ToggleQuickContentAdderBox content.contentId tagIdOfTagPage content.tagIdOfCurrentTextPart locateAt prevLineContentId nextLineContentId
 
                             else
                                 SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId content.tagIdOfCurrentTextPart))

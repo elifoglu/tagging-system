@@ -1,4 +1,4 @@
-module Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditBox)
+module Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditor)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, requestEncoderForContentUpdateViaQuickContentEditBox, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
@@ -51,8 +51,8 @@ createContent model =
         }
 
 
-createContentViaCSAAdder : String -> String -> String -> TagTextViewType -> String -> String -> Cmd Msg
-createContentViaCSAAdder text tagIdOfTagTextPart tagIdOfActiveTagPage activeTagTextViewType existingContentToAddFrontOrBackOfIt frontOrBack =
+createContentViaQuickContentAdder : String -> String -> String -> TagTextViewType -> String -> String -> Cmd Msg
+createContentViaQuickContentAdder text tagIdOfTagTextPart tagIdOfActiveTagPage activeTagTextViewType existingContentToAddFrontOrBackOfIt frontOrBack =
     Http.post
         { url = apiURL ++ "contents"
         , body =
@@ -78,7 +78,7 @@ createContentViaCSAAdder text tagIdOfTagTextPart tagIdOfActiveTagPage activeTagT
                     , ( "frontOrBack", Encode.string frontOrBack )
                     ]
                 )
-        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse CreateContentActViaCSAAdder)
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse CreateContentActViaQuickContentAdder)
         }
 
 
@@ -90,12 +90,12 @@ updateContent model =
         , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
         }
 
-updateContentViaQuickContentEditBox : Content -> String -> Cmd Msg
-updateContentViaQuickContentEditBox content updatedText =
+updateContentViaQuickContentEditor : Content -> String -> Cmd Msg
+updateContentViaQuickContentEditor content updatedText =
     Http.post
         { url = apiURL ++ "contents/" ++ content.contentId
         , body = Http.jsonBody (requestEncoderForContentUpdateViaQuickContentEditBox content updatedText)
-        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentActViaQuickContentEditor)
         }
 
 

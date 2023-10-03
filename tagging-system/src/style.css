@@ -429,13 +429,13 @@ input[type='checkbox'] {
     background-color: red;
 }
 
-.contentCSASeparatorDiv hr {
+.separatorForQuickContentAdderDiv hr {
     margin: 0;
     width: 200px;
     background-color: #02bdf6;
 }
 
-.contentCSAAdderDiv {
+.quickContentAdderDiv {
     margin: 0;
     width: 200px;
 }

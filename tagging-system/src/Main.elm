@@ -17,7 +17,7 @@ import Html.Events.Extra.Mouse as Mouse exposing (Event)
 import Json.Decode as Decode
 import List
 import List.Extra
-import Requests exposing (createContent, createContentViaCSAAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditBox, updateTag)
+import Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
@@ -160,18 +160,18 @@ update msg model =
                                     DeleteTagAct ->
                                         ( model, Nav.pushUrl model.key "/" )
 
-                                    CreateContentActViaCSAAdder ->
+                                    CreateContentActViaQuickContentAdder ->
                                         let
-                                            csaBoxModule =
-                                                case a.csaBoxModule of
-                                                    JustCSABoxModuleData csaBoxLocation _ ->
-                                                        Just csaBoxLocation
+                                            quickContentAdderData =
+                                                case a.quickContentAdderModule of
+                                                    JustQuickContentAdderData quickContentAdderLocation _ ->
+                                                        Just quickContentAdderLocation
 
                                                     NothingButTextToStore _ ->
                                                         Nothing
 
                                             newModel =
-                                                { model | previousCsaBoxLocationToKeepOpenAfterEnter = csaBoxModule, allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                                                { model | previousQuickContentAdderLocationToKeepOpenAfterEnter = quickContentAdderData, allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
                                         in
                                         ( newModel, getCmdToSendByPage newModel )
 
@@ -210,9 +210,9 @@ update msg model =
                                         tagTextPartsForDistinctGroupView =
                                             List.map (toGotTagTextPartToTagTextPart model) tagDataResponse.textPartsForDistinctGroupView
 
-                                        csaBoxModuleWithFocusCmd =
-                                            case model.previousCsaBoxLocationToKeepOpenAfterEnter of
-                                                Just prevCSABoxLocation ->
+                                        quickContentAdderModuleWithFocusCmd =
+                                            case model.previousQuickContentAdderLocationToKeepOpenAfterEnter of
+                                                Just prevQuickContentAdderLocation ->
                                                     let
                                                         relatedTagTextPart =
                                                             case model.localStorage.tagTextViewType of
@@ -225,22 +225,22 @@ update msg model =
                                                                 DistinctGroupView ->
                                                                     tagTextPartsForDistinctGroupView
 
-                                                        csaBoxLocationInNextLine =
-                                                            findNextLocationOfCSABox relatedTagTextPart prevCSABoxLocation model.localStorage.tagTextViewType
+                                                        quickContentAdderLocationInNextLine =
+                                                            findNextLocationOfQuickContentAdder relatedTagTextPart prevQuickContentAdderLocation model.localStorage.tagTextViewType
                                                     in
-                                                    ( csaBoxLocationInNextLine, Dom.focus "csaAdderBox" |> Task.attempt FocusResult )
+                                                    ( quickContentAdderLocationInNextLine, Dom.focus "quickContentAdder" |> Task.attempt FocusResult )
 
                                                 Nothing ->
                                                     ( NothingButTextToStore "", Cmd.none )
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (first csaBoxModuleWithFocusCmd) (ClosedButTextToStore dummyContent ""))
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (first quickContentAdderModuleWithFocusCmd) (ClosedButTextToStore dummyContent ""))
 
                                         newModel =
-                                            { model | activePage = newPage, previousCsaBoxLocationToKeepOpenAfterEnter = Nothing }
+                                            { model | activePage = newPage, previousQuickContentAdderLocationToKeepOpenAfterEnter = Nothing }
                                     in
-                                    ( newModel, Cmd.batch [ second csaBoxModuleWithFocusCmd, getCmdToSendByPage newModel ] )
+                                    ( newModel, Cmd.batch [ second quickContentAdderModuleWithFocusCmd, getCmdToSendByPage newModel ] )
 
                                 _ ->
                                     createNewModelAndCmdMsg model NotFoundPage
@@ -256,7 +256,7 @@ update msg model =
                 TagPage (Initialized a) ->
                     let
                         newTagPage =
-                            TagPage (Initialized { a | activeTagTextViewType = selection, csaBoxModule = NothingButTextToStore "" })
+                            TagPage (Initialized { a | activeTagTextViewType = selection, quickContentAdderModule = NothingButTextToStore "" })
 
                         localStorage =
                             model.localStorage
@@ -386,30 +386,30 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        ToggleCSAAdderBox contentId tagIdOfTagPage tagIdOfTextPartThatContentBelongs locatedAt prevLineContentId nextLineContentId ->
+        ToggleQuickContentAdderBox contentId tagIdOfTagPage tagIdOfTextPartThatContentBelongs locatedAt prevLineContentId nextLineContentId ->
             case model.activePage of
                 TagPage (Initialized tagPage) ->
                     let
-                        currentCSABoxModuleModel =
-                            tagPage.csaBoxModule
+                        quickContentAdderModule =
+                            tagPage.quickContentAdderModule
 
-                        newCSABoxModuleModelWithFocusMsg : ( CSABoxModuleModel, Cmd Msg )
-                        newCSABoxModuleModelWithFocusMsg =
-                            case currentCSABoxModuleModel of
-                                JustCSABoxModuleData boxLocation text ->
-                                    if boxLocation == CSABoxLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId then
+                        newQuickContentAdderModelWithFocusMsg : ( QuickContentAdderModel, Cmd Msg )
+                        newQuickContentAdderModelWithFocusMsg =
+                            case quickContentAdderModule of
+                                JustQuickContentAdderData boxLocation text ->
+                                    if boxLocation == QuickContentAdderLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId then
                                         ( NothingButTextToStore text, Cmd.none )
 
                                     else
-                                        ( JustCSABoxModuleData (CSABoxLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId) text, Dom.focus "csaAdderBox" |> Task.attempt FocusResult )
+                                        ( JustQuickContentAdderData (QuickContentAdderLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId) text, Dom.focus "quickContentAdder" |> Task.attempt FocusResult )
 
                                 NothingButTextToStore textToStore ->
-                                    ( JustCSABoxModuleData (CSABoxLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId) textToStore, Dom.focus "csaAdderBox" |> Task.attempt FocusResult )
+                                    ( JustQuickContentAdderData (QuickContentAdderLocation contentId tagIdOfTextPartThatContentBelongs tagIdOfTagPage locatedAt prevLineContentId nextLineContentId) textToStore, Dom.focus "quickContentAdder" |> Task.attempt FocusResult )
 
                         newTagPage =
-                            TagPage (Initialized { tagPage | csaBoxModule = first newCSABoxModuleModelWithFocusMsg })
+                            TagPage (Initialized { tagPage | quickContentAdderModule = first newQuickContentAdderModelWithFocusMsg })
                     in
-                    ( { model | activePage = newTagPage }, second newCSABoxModuleModelWithFocusMsg )
+                    ( { model | activePage = newTagPage }, second newQuickContentAdderModelWithFocusMsg )
 
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
@@ -442,23 +442,23 @@ update msg model =
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
-        CSAAdderInputChanged text ->
+        QuickContentAdderInputChanged text ->
             case model.activePage of
                 TagPage (Initialized tagPage) ->
                     let
-                        currentCSABoxModuleModel =
-                            tagPage.csaBoxModule
+                        currentQuickContentAdderModuleModel =
+                            tagPage.quickContentAdderModule
 
-                        newCSABoxModuleModel =
-                            case currentCSABoxModuleModel of
-                                JustCSABoxModuleData boxLocation _ ->
-                                    JustCSABoxModuleData boxLocation text
+                        newQuickContentAdderModuleModel =
+                            case currentQuickContentAdderModuleModel of
+                                JustQuickContentAdderData boxLocation _ ->
+                                    JustQuickContentAdderData boxLocation text
 
                                 NothingButTextToStore textToStore ->
                                     NothingButTextToStore textToStore
 
                         newTagPage =
-                            TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
+                            TagPage (Initialized { tagPage | quickContentAdderModule = newQuickContentAdderModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
@@ -490,19 +490,19 @@ update msg model =
 
         KeyDown keyDownPlace keyCode ->
             case keyDownPlace of
-                CSAAdderInput ->
+                QuickContentAdderInput ->
                     -- pressed enter
                     if keyCode == 13 then
                         case model.activePage of
                             TagPage (Initialized tagPage) ->
-                                case tagPage.csaBoxModule of
-                                    JustCSABoxModuleData boxLocation text ->
+                                case tagPage.quickContentAdderModule of
+                                    JustQuickContentAdderData boxLocation text ->
                                         ( model
                                         , if text == "" then
                                             Cmd.none
 
                                           else
-                                            createContentViaCSAAdder text
+                                            createContentViaQuickContentAdder text
                                                 boxLocation.contentLineTagId
                                                 boxLocation.tagIdOfActiveTagPage
                                                 tagPage.activeTagTextViewType
@@ -526,9 +526,9 @@ update msg model =
                     else if keyCode == 27 then
                         case model.activePage of
                             TagPage (Initialized tagPage) ->
-                                case tagPage.csaBoxModule of
-                                    JustCSABoxModuleData _ text ->
-                                        ( { model | activePage = TagPage (Initialized { tagPage | csaBoxModule = NothingButTextToStore text }) }, Cmd.none )
+                                case tagPage.quickContentAdderModule of
+                                    JustQuickContentAdderData _ text ->
+                                        ( { model | activePage = TagPage (Initialized { tagPage | quickContentAdderModule = NothingButTextToStore text }) }, Cmd.none )
 
                                     NothingButTextToStore _ ->
                                         ( model, Cmd.none)
@@ -550,7 +550,7 @@ update msg model =
                                             Cmd.none
 
                                           else
-                                            updateContentViaQuickContentEditBox content updatedText
+                                            updateContentViaQuickContentEditor content updatedText
                                         )
 
                                     ClosedButTextToStore _ _ ->
@@ -884,7 +884,7 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
-                        newActiveTagTextViewTypeAndCSABoxCloseDecision =
+                        newActiveTagTextViewTypeAndQuickContentAdderCloseDecision =
                             case a.activeTagTextViewType of
                                 DistinctGroupView ->
                                     ( GroupView, True )
@@ -892,21 +892,21 @@ update msg model =
                                 other ->
                                     ( other, False )
 
-                        newCSABoxModuleStatus =
-                            if second newActiveTagTextViewTypeAndCSABoxCloseDecision then
+                        newQuickContentAdderBoxStatus =
+                            if second newActiveTagTextViewTypeAndQuickContentAdderCloseDecision then
                                 NothingButTextToStore ""
 
                             else
-                                a.csaBoxModule
+                                a.quickContentAdderModule
 
                         newTagPage =
-                            TagPage (Initialized { a | activeTagTextViewType = first newActiveTagTextViewTypeAndCSABoxCloseDecision, csaBoxModule = newCSABoxModuleStatus })
+                            TagPage (Initialized { a | activeTagTextViewType = first newActiveTagTextViewTypeAndQuickContentAdderCloseDecision, quickContentAdderModule = newQuickContentAdderBoxStatus })
 
                         localStorage =
                             model.localStorage
 
                         newLocalStorage =
-                            { localStorage | tagTextViewType = first newActiveTagTextViewTypeAndCSABoxCloseDecision }
+                            { localStorage | tagTextViewType = first newActiveTagTextViewTypeAndQuickContentAdderCloseDecision }
 
                         newModel =
                             { model | localStorage = newLocalStorage, activePage = newTagPage, contentTagIdDuoThatIsBeingDragged = contentTagDuo }
@@ -973,8 +973,8 @@ droppedOnWhichSection float =
         Middle
 
 
-findNextLocationOfCSABox : List TagTextPart -> CSABoxLocation -> TagTextViewType -> CSABoxModuleModel
-findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
+findNextLocationOfQuickContentAdder : List TagTextPart -> QuickContentAdderLocation -> TagTextViewType -> QuickContentAdderModel
+findNextLocationOfQuickContentAdder tagTextParts prevQuickContentAdderLocation activeTagTextViewType =
     let
         maybeRelatedTagTextPart : Maybe TagTextPart
         maybeRelatedTagTextPart =
@@ -983,9 +983,9 @@ findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
                     List.head tagTextParts
 
                 _ ->
-                    List.head (List.filter (\ttp -> ttp.tag.tagId == prevCSABoxLocation.contentLineTagId) tagTextParts)
+                    List.head (List.filter (\ttp -> ttp.tag.tagId == prevQuickContentAdderLocation.contentLineTagId) tagTextParts)
 
-        result : CSABoxModuleModel
+        result : QuickContentAdderModel
         result =
             case maybeRelatedTagTextPart of
                 Nothing ->
@@ -1003,10 +1003,10 @@ findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
 
                         indexOfContentOnItsTagTextPart : Int
                         indexOfContentOnItsTagTextPart =
-                            Maybe.withDefault -1 (List.Extra.elemIndex prevCSABoxLocation.contentLineContentId contentIdEquivalentOfRelatedTextPart)
+                            Maybe.withDefault -1 (List.Extra.elemIndex prevQuickContentAdderLocation.contentLineContentId contentIdEquivalentOfRelatedTextPart)
 
                         idToUse =
-                            case prevCSABoxLocation.locatedAt of
+                            case prevQuickContentAdderLocation.locatedAt of
                                 BeforeContentLine ->
                                     indexOfContentOnItsTagTextPart - 1
 
@@ -1025,17 +1025,17 @@ findNextLocationOfCSABox tagTextParts prevCSABoxLocation activeTagTextViewType =
                         newNextLineContent =
                             List.Extra.getAt (idToUse + 2) relatedContents
 
-                        newCsaBoxLocation : CSABoxLocation
-                        newCsaBoxLocation =
+                        newQuickContentAdderLocation : QuickContentAdderLocation
+                        newQuickContentAdderLocation =
                             { contentLineContentId = newCurrentLineContent.contentId
                             , contentLineTagId = newCurrentLineContent.tagIdOfCurrentTextPart
-                            , tagIdOfActiveTagPage = prevCSABoxLocation.tagIdOfActiveTagPage
-                            , locatedAt = prevCSABoxLocation.locatedAt
+                            , tagIdOfActiveTagPage = prevQuickContentAdderLocation.tagIdOfActiveTagPage
+                            , locatedAt = prevQuickContentAdderLocation.locatedAt
                             , prevLineContentId = Maybe.map (\a -> a.contentId) newPrevLineContent
                             , nextLineContentId = Maybe.map (\a -> a.contentId) newNextLineContent
                             }
                     in
-                    JustCSABoxModuleData newCsaBoxLocation ""
+                    JustQuickContentAdderData newQuickContentAdderLocation ""
     in
     result
 
