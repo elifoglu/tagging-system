@@ -106,8 +106,8 @@ open class ContentService(
 
         val currentContentViewOrderForLineView: List<ContentResponse> =
             dataHolder.getAllData().contentViewOrder
-                .distinctBy { it.a }
                 .filter { allTagsUnderBaseTag.contains(it.b) }
+                .distinctBy { it.a }
                 .map { ContentResponse.createWith(findEntity(it.a)!!, it.b ) }
 
         return Collections.singletonList(
