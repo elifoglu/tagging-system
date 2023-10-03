@@ -128,9 +128,9 @@ downOffsetForContentLine =
     14
 
 
-defaultCreateContentModule : List Tag -> CreateContentModuleModel
-defaultCreateContentModule allTags =
-    CreateContentModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [] Nothing)
+defaultCreateContentModule : Tag -> List Tag -> CreateContentModuleModel
+defaultCreateContentModule currentTag allTags =
+    CreateContentModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [ (tagToTagOption currentTag) ] Nothing)
 
 
 defaultUpdateContentModule : UpdateContentModuleModel
