@@ -42,7 +42,7 @@ type Msg
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)
     | SetContentWhichCursorIsOverIt (Maybe ContentTagIdDuoWithOffsetPosY)
     | OpenQuickContentEditInput ContentID TagID
-    | OpenCSAAdderBox ContentID TagID LocatedAt
+    | OpenCSAAdderBox ContentID TagID LocatedAt (Maybe ContentID) (Maybe ContentID)
     | CSAAdderInputChanged String
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone

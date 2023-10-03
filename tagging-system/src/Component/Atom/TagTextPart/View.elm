@@ -41,7 +41,7 @@ viewContentsLineByLine model currentTagTextPart tagId =
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagId content =
-    div [ onMouseDown model content tagId, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
+    div [ onMouseDown model content tagId currentTagTextPart.contents, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
         [ viewContentSeparatorAdder model content tagId currentTagTextPart Top
         , viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
         , div [ class "contentLineParent" ]
@@ -168,11 +168,20 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
                             let
+                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator = True
                             in
-                            div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
-
+                                if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
+                                    div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+                                else
+                                    text ""
                         else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
-                            div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+                            let
+                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator = True
+                            in
+                                if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
+                                    div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+                                else
+                                    text ""
 
                         else
                             text ""
@@ -226,19 +235,36 @@ viewTopDownHrLineOfContent model content tagIdOfTextPartThatContentBelongs curre
             text ""
 
 
-onMouseDown : Model -> Content -> TagID -> Attribute Msg
-onMouseDown model content tagIdOfTextPartThatContentBelongs =
+onMouseDown : Model -> Content -> TagID -> List Content -> Attribute Msg
+onMouseDown model content tagIdOfTextPartThatContentBelongs contentsOfCurrentTextPart =
     Mouse.onDown
         (\event ->
             case event.button of
                 MainButton ->
                     case model.contentTagDuoWhichCursorIsOverItNow of
                         Just c ->
-                            if c.offsetPosY < topOffsetForContentLine then
-                                OpenCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs BeforeContentLine
+                            if c.offsetPosY < topOffsetForContentLine || c.offsetPosY > downOffsetForContentLine then
+                                let
+                                    locateAt = if c.offsetPosY < topOffsetForContentLine then BeforeContentLine else AfterContentLine
 
-                            else if c.offsetPosY > downOffsetForContentLine then
-                                OpenCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs AfterContentLine
+                                    indexOfContentOnItsTagTextPart: Int
+                                    indexOfContentOnItsTagTextPart =
+                                        Maybe.withDefault -1 (List.Extra.elemIndex content contentsOfCurrentTextPart)
+
+                                    prevLineContent : Maybe Content
+                                    prevLineContent = List.Extra.getAt (indexOfContentOnItsTagTextPart - 1) contentsOfCurrentTextPart
+
+                                    prevLineContentId : Maybe String
+                                    prevLineContentId = Maybe.map (\a -> a.contentId) prevLineContent
+
+                                    nextLineContent : Maybe Content
+                                    nextLineContent = List.Extra.getAt (indexOfContentOnItsTagTextPart + 1) contentsOfCurrentTextPart
+
+                                    nextLineContentId : Maybe String
+                                    nextLineContentId = Maybe.map (\a -> a.contentId) nextLineContent
+
+                                in
+                                    OpenCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs locateAt prevLineContentId nextLineContentId
 
                             else
                                 SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagIdOfTextPartThatContentBelongs))

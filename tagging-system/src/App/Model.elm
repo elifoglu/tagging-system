@@ -111,6 +111,8 @@ type alias CSABoxLocation =
     { contentLineContentId : String
     , contentLineTagId : String
     , locatedAt : LocatedAt
+    , prevLineContentId: Maybe String
+    , nextLineContentId: Maybe String
     }
 
 type LocatedAt

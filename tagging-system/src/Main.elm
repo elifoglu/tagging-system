@@ -346,7 +346,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        OpenCSAAdderBox contentId tagId locatedAt ->
+        OpenCSAAdderBox contentId tagId locatedAt prevLineContentId nextLineContentId ->
                 case model.activePage of
                     TagPage (Initialized tagPage) ->
                         let
@@ -355,13 +355,13 @@ update msg model =
 
                             newCSABoxModuleModel = case currentCSABoxModuleModel of
                                 Just boxModuleModel ->
-                                    if boxModuleModel.location == CSABoxLocation contentId tagId locatedAt then
+                                    if boxModuleModel.location == CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId then
                                         Nothing
                                     else
-                                        Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt) boxModuleModel.text)
+                                        Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) boxModuleModel.text)
 
                                 Nothing ->
-                                    Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt) "")
+                                    Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) "")
 
 
                             newTagPage =
