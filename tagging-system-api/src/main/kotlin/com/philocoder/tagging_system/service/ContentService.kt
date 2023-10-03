@@ -101,9 +101,13 @@ open class ContentService(
     fun getTagTextPartsForLineView(tag: Tag): List<TagTextResponse.TagTextPart> {
         val baseTag: TagResponse = TagResponse.create(tag, tagService, this)
 
+        val allTagsUnderBaseTag = getTagTextPartsForDistinctGroupView(tag)
+            .map { it.tag.tagId }
+
         val currentContentViewOrderForLineView: List<ContentResponse> =
             dataHolder.getAllData().contentViewOrder
                 .distinctBy { it.a }
+                .filter { allTagsUnderBaseTag.contains(it.b) }
                 .map { ContentResponse.createWith(findEntity(it.a)!!, it.b ) }
 
         return Collections.singletonList(
