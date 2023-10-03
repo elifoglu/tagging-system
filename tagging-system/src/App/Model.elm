@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder, CSABoxLocation, CSABoxModuleModel, LocatedAt(..))
+module App.Model exposing (CSABoxLocation, ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetContentRequestModel, GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder, CSABoxModuleModel(..))
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -97,23 +97,23 @@ type alias InitializedTagPageModel =
     , updateTagModule : UpdateTagModuleModel
     , oneOfContentModuleIsVisible : ContentModuleVisibility
     , oneOfTagModuleIsVisible : TagModuleVisibility
-    , csaBoxModule : Maybe CSABoxModuleModel
+    , csaBoxModule : CSABoxModuleModel
     }
 
 
-type alias CSABoxModuleModel =
-    { location : CSABoxLocation
-    , text : String
-    }
+type CSABoxModuleModel
+    = JustCSABoxModuleData CSABoxLocation String
+    | NothingButTextToStore String
 
 
 type alias CSABoxLocation =
     { contentLineContentId : String
     , contentLineTagId : String
     , locatedAt : LocatedAt
-    , prevLineContentId: Maybe String
-    , nextLineContentId: Maybe String
+    , prevLineContentId : Maybe String
+    , nextLineContentId : Maybe String
     }
+
 
 type LocatedAt
     = BeforeContentLine

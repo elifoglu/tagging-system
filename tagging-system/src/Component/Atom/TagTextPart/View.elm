@@ -41,10 +41,10 @@ viewContentsLineByLine model currentTagTextPart tagId =
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagId content =
-    div [ onMouseDown model content tagId currentTagTextPart.contents, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
+    div [ ]
         [ viewContentSeparatorAdder model content tagId currentTagTextPart Top
         , viewTopDownHrLineOfContent model content tagId currentTagTextPart Top
-        , div [ class "contentLineParent" ]
+        , div [ class "contentLineParent", onMouseDown model content tagId currentTagTextPart.contents, onMouseOver content tagId, onMouseLeave, onMouseDoubleClick content tagId ]
             [ div [ class "contentLineFirstChild" ]
                 [ span [ class "contentLine" ]
                     [ case model.contentTagIdDuoThatIsBeingDragged of
@@ -126,11 +126,7 @@ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs curren
     case model.activePage of
         TagPage (Initialized tagPage) ->
             case tagPage.csaBoxModule of
-                Just csaBoxModuleModel ->
-                    let
-                        boxLocation =
-                            csaBoxModuleModel.location
-                    in
+                JustCSABoxModuleData boxLocation text ->
                     if
                         boxLocation.contentLineContentId
                             == content.contentId
@@ -138,22 +134,21 @@ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs curren
                             == tagIdOfTextPartThatContentBelongs
                             && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
                     then
-                        div [ class "contentCSAAdderDiv" ] [
-                          viewCSAAdder csaBoxModuleModel.text content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine
-                         ]
-
+                        div [ class "contentCSAAdderDiv" ]
+                            [ viewCSAAdder text content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine
+                            ]
 
                     else
                         viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine (Just boxLocation)
 
-                Nothing ->
+                NothingButTextToStore _ ->
                     viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine Nothing
 
         _ ->
             text ""
 
 
-viewCSASeparator : Model -> Content -> String-> WhichHrLine -> Maybe CSABoxLocation -> Html Msg
+viewCSASeparator : Model -> Content -> String -> WhichHrLine -> Maybe CSABoxLocation -> Html Msg
 viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine maybeCSABoxLocation =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just _ ->
@@ -168,20 +163,61 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
                             let
-                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator = True
+                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator =
+                                    case maybeCSABoxLocation of
+                                        Nothing ->
+                                            True
+
+                                        Just csaBoxLocation ->
+                                            case csaBoxLocation.nextLineContentId of
+                                                Nothing ->
+                                                    True
+
+                                                Just nextLineContentIdOfOpenCSABox ->
+                                                    if nextLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == tagIdOfTextPartThatContentBelongs then
+                                                        if csaBoxLocation.locatedAt == AfterContentLine then
+                                                            False
+
+                                                        else
+                                                            True
+
+                                                    else
+                                                        True
                             in
-                                if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
-                                    div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
-                                else
-                                    text ""
+                            if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
+                                div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+
+                            else
+                                text ""
+
                         else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
                             let
-                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator = True
+                                showOnlyIfCSAAdderIsNotOnAroundThisSeparator =
+                                    case maybeCSABoxLocation of
+                                        Nothing ->
+                                            True
+
+                                        Just csaBoxLocation ->
+                                            case csaBoxLocation.prevLineContentId of
+                                                Nothing ->
+                                                    True
+
+                                                Just prevLineContentIdOfOpenCSABox ->
+                                                    if prevLineContentIdOfOpenCSABox == content.contentId && csaBoxLocation.contentLineTagId == tagIdOfTextPartThatContentBelongs then
+                                                        if csaBoxLocation.locatedAt == BeforeContentLine then
+                                                            False
+
+                                                        else
+                                                            True
+
+                                                    else
+                                                        True
                             in
-                                if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
-                                    div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
-                                else
-                                    text ""
+                            if showOnlyIfCSAAdderIsNotOnAroundThisSeparator then
+                                div [ class "contentCSASeparatorDiv" ] [ hr [] [] ]
+
+                            else
+                                text ""
 
                         else
                             text ""
@@ -245,26 +281,34 @@ onMouseDown model content tagIdOfTextPartThatContentBelongs contentsOfCurrentTex
                         Just c ->
                             if c.offsetPosY < topOffsetForContentLine || c.offsetPosY > downOffsetForContentLine then
                                 let
-                                    locateAt = if c.offsetPosY < topOffsetForContentLine then BeforeContentLine else AfterContentLine
+                                    locateAt =
+                                        if c.offsetPosY < topOffsetForContentLine then
+                                            BeforeContentLine
 
-                                    indexOfContentOnItsTagTextPart: Int
+                                        else
+                                            AfterContentLine
+
+                                    indexOfContentOnItsTagTextPart : Int
                                     indexOfContentOnItsTagTextPart =
                                         Maybe.withDefault -1 (List.Extra.elemIndex content contentsOfCurrentTextPart)
 
                                     prevLineContent : Maybe Content
-                                    prevLineContent = List.Extra.getAt (indexOfContentOnItsTagTextPart - 1) contentsOfCurrentTextPart
+                                    prevLineContent =
+                                        List.Extra.getAt (indexOfContentOnItsTagTextPart - 1) contentsOfCurrentTextPart
 
                                     prevLineContentId : Maybe String
-                                    prevLineContentId = Maybe.map (\a -> a.contentId) prevLineContent
+                                    prevLineContentId =
+                                        Maybe.map (\a -> a.contentId) prevLineContent
 
                                     nextLineContent : Maybe Content
-                                    nextLineContent = List.Extra.getAt (indexOfContentOnItsTagTextPart + 1) contentsOfCurrentTextPart
+                                    nextLineContent =
+                                        List.Extra.getAt (indexOfContentOnItsTagTextPart + 1) contentsOfCurrentTextPart
 
                                     nextLineContentId : Maybe String
-                                    nextLineContentId = Maybe.map (\a -> a.contentId) nextLineContent
-
+                                    nextLineContentId =
+                                        Maybe.map (\a -> a.contentId) nextLineContent
                                 in
-                                    OpenCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs locateAt prevLineContentId nextLineContentId
+                                OpenCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs locateAt prevLineContentId nextLineContentId
 
                             else
                                 SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagIdOfTextPartThatContentBelongs))

@@ -195,7 +195,7 @@ update msg model =
 
                                         newPage =
                                             TagPage <|
-                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible Nothing)
+                                                Initialized (InitializedTagPageModel tag tagTextPartsForLineView tagTextPartsForGroupView tagTextPartsForDistinctGroupView model.localStorage.tagTextViewType (defaultCreateContentModule tag model.allTags) defaultUpdateContentModule (defaultCreateTagModule model.allTags) (defaultUpdateTagModule tag model.allTags) CreateContentModuleIsVisible CreateTagModuleIsVisible (NothingButTextToStore ""))
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -354,14 +354,37 @@ update msg model =
                                 tagPage.csaBoxModule
 
                             newCSABoxModuleModel = case currentCSABoxModuleModel of
-                                Just boxModuleModel ->
-                                    if boxModuleModel.location == CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId then
-                                        Nothing
+                                JustCSABoxModuleData boxLocation text ->
+                                    if boxLocation == CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId then
+                                        NothingButTextToStore text
                                     else
-                                        Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) boxModuleModel.text)
+                                        JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) text
 
-                                Nothing ->
-                                    Just (CSABoxModuleModel (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) "")
+                                NothingButTextToStore textToStore ->
+                                    JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) textToStore
+
+
+                            newTagPage =
+                                TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
+                        in
+                        ( { model | activePage = newTagPage }, Cmd.none )
+
+                    _ ->
+                        createNewModelAndCmdMsg model NotFoundPage
+
+        CSAAdderInputChanged text ->
+                case model.activePage of
+                    TagPage (Initialized tagPage) ->
+                        let
+                            currentCSABoxModuleModel =
+                                tagPage.csaBoxModule
+
+                            newCSABoxModuleModel = case currentCSABoxModuleModel of
+                                JustCSABoxModuleData boxLocation _ ->
+                                    JustCSABoxModuleData boxLocation text
+
+                                NothingButTextToStore textToStore ->
+                                    NothingButTextToStore textToStore
 
 
                             newTagPage =
