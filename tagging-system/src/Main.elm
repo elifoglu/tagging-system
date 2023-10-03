@@ -415,18 +415,22 @@ update msg model =
                                 case tagPage.csaBoxModule of
                                     JustCSABoxModuleData boxLocation text ->
                                         ( model
-                                        , createContentViaCSAAdder text
-                                            boxLocation.contentLineTagId
-                                            boxLocation.tagIdOfActiveTagPage
-                                            tagPage.activeTagTextViewType
-                                            boxLocation.contentLineContentId
-                                            (case boxLocation.locatedAt of
-                                                BeforeContentLine ->
-                                                    "front"
+                                        , if text == "" then
+                                            Cmd.none
 
-                                                AfterContentLine ->
-                                                    "back"
-                                            )
+                                          else
+                                            createContentViaCSAAdder text
+                                                boxLocation.contentLineTagId
+                                                boxLocation.tagIdOfActiveTagPage
+                                                tagPage.activeTagTextViewType
+                                                boxLocation.contentLineContentId
+                                                (case boxLocation.locatedAt of
+                                                    BeforeContentLine ->
+                                                        "front"
+
+                                                    AfterContentLine ->
+                                                        "back"
+                                                )
                                         )
 
                                     NothingButTextToStore _ ->
