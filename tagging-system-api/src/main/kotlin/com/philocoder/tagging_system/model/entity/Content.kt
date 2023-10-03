@@ -29,9 +29,6 @@ data class Content(
                 uniqueContentId = RandomStringUtils.randomAlphanumeric(4).lowercase()
             } while (service.findEntity(uniqueContentId) != null)
 
-            if (req.text == "")
-                return null
-
             return Content(
                 title = if (req.title.isNullOrEmpty()) null else req.title,
                 contentId = uniqueContentId,

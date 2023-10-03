@@ -336,7 +336,7 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     ( model
-                    , if a.createContentModule.text == "" then
+                    , if String.trim a.createContentModule.text == "" then
                         Cmd.none
 
                       else
@@ -350,7 +350,7 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     ( model
-                    , if a.updateContentModule.text == "" then
+                    , if String.trim a.updateContentModule.text == "" then
                         Cmd.none
 
                       else
@@ -503,7 +503,7 @@ update msg model =
                                 case tagPage.quickContentAdderModule of
                                     JustQuickContentAdderData boxLocation text ->
                                         ( model
-                                        , if text == "" then
+                                        , if tagPage.activeTagTextViewType /= GroupView && String.trim text == "" then
                                             Cmd.none
 
                                           else
@@ -552,7 +552,7 @@ update msg model =
                                 case tagPage.quickContentEditModule of
                                     Open content updatedText ->
                                         ( model
-                                        , if updatedText == "" then
+                                        , if tagPage.activeTagTextViewType /= GroupView && String.trim updatedText == "" then
                                             Cmd.none
 
                                           else
@@ -885,7 +885,8 @@ update msg model =
         SetContentWhichCursorIsOverIt contentTagDuoWhichCursorIsOverItNow ->
             ( { model | contentTagDuoWhichCursorIsOverItNow = contentTagDuoWhichCursorIsOverItNow }, Cmd.none )
 
-        SetContentTagIdDuoToDragAfterASecond contentTagDuo -> --this "a second delay" is for this: somehow, setting model.contentTagIdDuoThatIsBeingDragged to something prevents opening links on content lines (or more generally, it somehow overrides left click event and it happens on mouseDown event in TagTextView.elm. so, as a hacky solution, I give a time delay to perform "update model.contentTagIdDuoThatIsBeingDragged" task
+        SetContentTagIdDuoToDragAfterASecond contentTagDuo ->
+            --this "a second delay" is for this: somehow, setting model.contentTagIdDuoThatIsBeingDragged to something prevents opening links on content lines (or more generally, it somehow overrides left click event and it happens on mouseDown event in TagTextView.elm. so, as a hacky solution, I give a time delay to perform "update model.contentTagIdDuoThatIsBeingDragged" task
             ( model
             , Process.sleep 200
                 |> Task.perform (\_ -> SetContentTagIdDuoToDrag contentTagDuo)

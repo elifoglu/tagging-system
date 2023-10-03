@@ -5,7 +5,7 @@ import App.Msg exposing (KeyDownPlace(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, input, span, text, textarea)
-import Html.Attributes exposing (class, cols, href, id, placeholder, size, spellcheck, src, style, type_, value)
+import Html.Attributes exposing (class, cols, href, id, placeholder, rows, size, spellcheck, src, style, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
 import Html.Parser
@@ -72,23 +72,30 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
 updateContentTextWithClickableLinks : String -> Html Msg
 updateContentTextWithClickableLinks contentText =
     let
-        wrapLinkWordWithA: String -> String
+        wrapLinkWordWithA : String -> String
         wrapLinkWordWithA link =
             "<a href=\"" ++ link ++ "\">link</a>"
 
         textWithAddedATagsToLinks =
-            (String.split " " contentText)
-                |> List.map (\word -> if List.any (\httpPrefix -> String.contains httpPrefix word) ["http://", "https://"] then wrapLinkWordWithA word else word)
+            String.split " " contentText
+                |> List.map
+                    (\word ->
+                        if List.any (\httpPrefix -> String.contains httpPrefix word) [ "http://", "https://" ] then
+                            wrapLinkWordWithA word
+
+                        else
+                            word
+                    )
                 |> String.join " "
     in
-        span []
-            (case Html.Parser.run textWithAddedATagsToLinks of
-                Ok parsedNodes ->
-                    Html.Parser.Util.toVirtualDom parsedNodes
+    span []
+        (case Html.Parser.run textWithAddedATagsToLinks of
+            Ok parsedNodes ->
+                Html.Parser.Util.toVirtualDom parsedNodes
 
-                Err _ ->
-                    []
-            )
+            Err _ ->
+                []
+        )
 
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
@@ -96,25 +103,31 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
     div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
         [ div [ class "contentLineFirstChild" ]
             [ span [ class "contentLine" ]
-                [ case model.contentTagIdDuoThatIsBeingDragged of
-                    Just draggedContent ->
-                        if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
-                            --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
-                            updateContentTextWithClickableLinks (" • " ++ content.text)
+                [ if String.trim content.text == "" then
+                    span [ style "padding-left" "250px"] [ text "" ]
 
-                        else
-                            updateContentTextWithClickableLinks (" • " ++ content.text)
+                  else
+                    case model.contentTagIdDuoThatIsBeingDragged of
+                        Just draggedContent ->
+                            if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
+                                --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
+                                updateContentTextWithClickableLinks (" • " ++ content.text)
 
-                    Nothing ->
-                        updateContentTextWithClickableLinks (" • " ++ content.text)
+                            else
+                                updateContentTextWithClickableLinks (" • " ++ content.text)
+
+                        Nothing ->
+                            updateContentTextWithClickableLinks (" • " ++ content.text)
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
-            [ img
+            [
+            if String.trim content.text == "" then text ""
+            else img
                 [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
                 []
             , img
-                [ class "contentEditAndDeleteIcons", onClick (DeleteContent content), style "margin-left" "5px", src "/delete.png" ]
+                [ class "contentEditAndDeleteIcons", onClick (DeleteContent content), style "margin-left" "5px", style "margin-right" (if String.trim content.text == "" then "250px" else "0px"), src "/delete.png" ]
                 []
             ]
         ]
@@ -283,7 +296,7 @@ viewQuickContentAdder inputText =
 
 viewQuickContentEditInput : String -> Html Msg
 viewQuickContentEditInput inputText =
-    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), cols (String.length inputText) ] []
+    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows 1, cols (String.length inputText) ] []
 
 
 onKeyDown : (Int -> msg) -> Attribute msg

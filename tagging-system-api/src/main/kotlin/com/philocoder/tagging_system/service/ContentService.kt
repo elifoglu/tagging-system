@@ -95,7 +95,12 @@ open class ContentService(
 
         val tagTextPartsWithDistinctContentsForDistinctGroupView = ArrayList<TagTextResponse.TagTextPart>()
         tagTextPartsForDistinctGroupView.forEach { (a: TagResponse, b: ArrayList<ContentResponse>) ->
-            tagTextPartsWithDistinctContentsForDistinctGroupView.add(TagTextResponse.TagTextPart(a, b))
+            tagTextPartsWithDistinctContentsForDistinctGroupView.add(
+                TagTextResponse.TagTextPart(
+                    a,
+                    ArrayList(b.filter { it.content != null && it.content != "" })
+                )
+            )
         }
         return tagTextPartsWithDistinctContentsForDistinctGroupView
     }
@@ -112,6 +117,7 @@ open class ContentService(
                 .filter { allTagsUnderBaseTag.contains(it.b) }
                 .distinctBy { it.a }
                 .map { ContentResponse.createWith(findEntity(it.a)!!, it.b) }
+                .filter { it.content != null && it.content != "" }
 
         return Collections.singletonList(
             TagTextResponse.TagTextPart(
