@@ -346,28 +346,29 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        OpenCSAAdderBox contentId tagId locatedAt prevLineContentId nextLineContentId ->
+        ToggleCSAAdderBox contentId tagId locatedAt prevLineContentId nextLineContentId ->
                 case model.activePage of
                     TagPage (Initialized tagPage) ->
                         let
                             currentCSABoxModuleModel =
                                 tagPage.csaBoxModule
 
-                            newCSABoxModuleModel = case currentCSABoxModuleModel of
+                            newCSABoxModuleModelWithFocusMsg : (CSABoxModuleModel, Cmd Msg)
+                            newCSABoxModuleModelWithFocusMsg = case currentCSABoxModuleModel of
                                 JustCSABoxModuleData boxLocation text ->
                                     if boxLocation == CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId then
-                                        NothingButTextToStore text
+                                        (NothingButTextToStore text, Cmd.none)
                                     else
-                                        JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) text
+                                        (JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) text, Dom.focus "csaAdderBox" |> Task.attempt FocusResult)
 
                                 NothingButTextToStore textToStore ->
-                                    JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) textToStore
+                                    (JustCSABoxModuleData (CSABoxLocation contentId tagId locatedAt prevLineContentId nextLineContentId) textToStore, Dom.focus "csaAdderBox" |> Task.attempt FocusResult)
 
 
                             newTagPage =
-                                TagPage (Initialized { tagPage | csaBoxModule = newCSABoxModuleModel })
+                                TagPage (Initialized { tagPage | csaBoxModule = first newCSABoxModuleModelWithFocusMsg })
                         in
-                        ( { model | activePage = newTagPage }, Cmd.none )
+                        ( { model | activePage = newTagPage }, second newCSABoxModuleModelWithFocusMsg )
 
                     _ ->
                         createNewModelAndCmdMsg model NotFoundPage

@@ -5,7 +5,7 @@ import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, button, div, hr, img, input, span, text)
-import Html.Attributes exposing (class, href, placeholder, src, style, type_, value)
+import Html.Attributes exposing (class, href, id, placeholder, src, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
 import List.Extra
@@ -135,7 +135,7 @@ viewContentSeparatorAdder model content tagIdOfTextPartThatContentBelongs curren
                             && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
                     then
                         div [ class "contentCSAAdderDiv" ]
-                            [ viewCSAAdder text content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine
+                            [ viewCSAAdder text
                             ]
 
                     else
@@ -229,14 +229,14 @@ viewCSASeparator model content tagIdOfTextPartThatContentBelongs whichHrLine may
                     text ""
 
 
-viewCSAAdder : String -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
-viewCSAAdder inputText content tagIdOfTextPartThatContentBelongs currentTagTextPart whichHrLine =
-    viewInput "text" "add new content..." inputText CSAAdderInputChanged
+viewCSAAdder : String -> Html Msg
+viewCSAAdder inputText =
+    viewInput "csaAdderBox" "text" "add new content..." inputText CSAAdderInputChanged
 
 
-viewInput : String -> String -> String -> (String -> msg) -> Html msg
-viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, onInput toMsg, style "width" "200px" ] []
+viewInput : String -> String -> String -> String -> (String -> msg) -> Html msg
+viewInput i t p v toMsg =
+    input [ type_ t, id i, placeholder p, value v, onInput toMsg, style "width" "200px" ] []
 
 
 viewTopDownHrLineOfContent : Model -> Content -> String -> TagTextPart -> WhichHrLine -> Html Msg
@@ -308,7 +308,7 @@ onMouseDown model content tagIdOfTextPartThatContentBelongs contentsOfCurrentTex
                                     nextLineContentId =
                                         Maybe.map (\a -> a.contentId) nextLineContent
                                 in
-                                OpenCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs locateAt prevLineContentId nextLineContentId
+                                ToggleCSAAdderBox content.contentId tagIdOfTextPartThatContentBelongs locateAt prevLineContentId nextLineContentId
 
                             else
                                 SetContentTagIdDuoToDrag (Just (ContentTagIdDuo content.contentId tagIdOfTextPartThatContentBelongs))
