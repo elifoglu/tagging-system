@@ -577,7 +577,6 @@ update msg model =
                     else
                         ( model, Cmd.none )
 
-
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
             case model.activePage of
