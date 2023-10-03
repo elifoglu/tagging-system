@@ -414,6 +414,29 @@ update msg model =
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
+        QuickContentAdderInputChanged text ->
+            case model.activePage of
+                TagPage (Initialized tagPage) ->
+                    let
+                        currentQuickContentAdderModuleModel =
+                            tagPage.quickContentAdderModule
+
+                        newQuickContentAdderModuleModel =
+                            case currentQuickContentAdderModuleModel of
+                                JustQuickContentAdderData boxLocation _ ->
+                                    JustQuickContentAdderData boxLocation text
+
+                                NothingButTextToStore textToStore ->
+                                    NothingButTextToStore textToStore
+
+                        newTagPage =
+                            TagPage (Initialized { tagPage | quickContentAdderModule = newQuickContentAdderModuleModel })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
+
+                _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
         OpenQuickContentEditInput content ->
             case model.activePage of
                 TagPage (Initialized tagPage) ->
@@ -438,29 +461,6 @@ update msg model =
                             TagPage (Initialized { tagPage | quickContentEditModule = Open content textToPut })
                     in
                     ( { model | activePage = newTagPage }, Dom.focus "quickEditBox" |> Task.attempt FocusResult )
-
-                _ ->
-                    createNewModelAndCmdMsg model NotFoundPage
-
-        QuickContentAdderInputChanged text ->
-            case model.activePage of
-                TagPage (Initialized tagPage) ->
-                    let
-                        currentQuickContentAdderModuleModel =
-                            tagPage.quickContentAdderModule
-
-                        newQuickContentAdderModuleModel =
-                            case currentQuickContentAdderModuleModel of
-                                JustQuickContentAdderData boxLocation _ ->
-                                    JustQuickContentAdderData boxLocation text
-
-                                NothingButTextToStore textToStore ->
-                                    NothingButTextToStore textToStore
-
-                        newTagPage =
-                            TagPage (Initialized { tagPage | quickContentAdderModule = newQuickContentAdderModuleModel })
-                    in
-                    ( { model | activePage = newTagPage }, Cmd.none )
 
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
@@ -540,6 +540,7 @@ update msg model =
                         ( model, Cmd.none )
 
                 QuickContentEditInput ->
+                    -- pressed enter
                     if keyCode == 13 then
                         case model.activePage of
                             TagPage (Initialized tagPage) ->

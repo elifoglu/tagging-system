@@ -137,6 +137,10 @@ hr {
 
 .contentLine:hover {
     cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 .contentEditAndDeleteIcons {
@@ -312,7 +316,7 @@ input[type='checkbox'] {
 }
 
 .tagTextView a:hover {
-    color: red;
+    color: rgba(255,0,0,0.3);
     font-size: 13.5px;
 }
 
@@ -426,13 +430,13 @@ input[type='checkbox'] {
 .separatorDiv hr {
     margin: 0;
     width: 200px;
-    background-color: red;
+    background-color: rgba(255,0,0,0.7);
 }
 
 .separatorForQuickContentAdderDiv hr {
     margin: 0;
     width: 200px;
-    background-color: #02bdf6;
+    background-color: rgba(0,144,255,0.7);
 }
 
 .quickContentAdderDiv {
