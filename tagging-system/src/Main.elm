@@ -508,94 +508,98 @@ update msg model =
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
-        KeyDown keyDownPlace keyCode ->
+        KeyDown keyDownPlace keyDownType ->
             case keyDownPlace of
                 QuickContentAdderInput ->
-                    -- pressed enter
-                    if keyCode == 13 then
-                        case model.activePage of
-                            TagPage (Initialized tagPage) ->
-                                case tagPage.quickContentAdderModule of
-                                    JustQuickContentAdderData boxLocation text ->
-                                        ( model
-                                        , if tagPage.activeTagTextViewType /= GroupView && String.trim text == "" then
-                                            Cmd.none
+                    case keyDownType of
+                        App.Msg.Enter ->
+                            case model.activePage of
+                                TagPage (Initialized tagPage) ->
+                                    case tagPage.quickContentAdderModule of
+                                        JustQuickContentAdderData boxLocation text ->
+                                            ( model
+                                            , if tagPage.activeTagTextViewType /= GroupView && String.trim text == "" then
+                                                Cmd.none
 
-                                          else
-                                            createContentViaQuickContentAdder text
-                                                boxLocation.contentLineTagId
-                                                boxLocation.tagIdOfActiveTagPage
-                                                tagPage.activeTagTextViewType
-                                                boxLocation.contentLineContentId
-                                                (case boxLocation.locatedAt of
-                                                    BeforeContentLine ->
-                                                        "front"
+                                              else
+                                                createContentViaQuickContentAdder text
+                                                    boxLocation.contentLineTagId
+                                                    boxLocation.tagIdOfActiveTagPage
+                                                    tagPage.activeTagTextViewType
+                                                    boxLocation.contentLineContentId
+                                                    (case boxLocation.locatedAt of
+                                                        BeforeContentLine ->
+                                                            "front"
 
-                                                    AfterContentLine ->
-                                                        "back"
-                                                )
-                                        )
+                                                        AfterContentLine ->
+                                                            "back"
+                                                    )
+                                            )
 
-                                    NothingButTextToStore _ ->
-                                        ( model, Cmd.none )
+                                        NothingButTextToStore _ ->
+                                            ( model, Cmd.none )
 
-                            _ ->
-                                ( model, Cmd.none )
-                        -- pressed esc
+                                _ ->
+                                    ( model, Cmd.none )
 
-                    else if keyCode == 27 then
-                        case model.activePage of
-                            TagPage (Initialized tagPage) ->
-                                case tagPage.quickContentAdderModule of
-                                    JustQuickContentAdderData _ text ->
-                                        ( { model | activePage = TagPage (Initialized { tagPage | quickContentAdderModule = NothingButTextToStore text }) }, Cmd.none )
+                        App.Msg.ShiftEnter ->
+                            ( model, Cmd.none )
 
-                                    NothingButTextToStore _ ->
-                                        ( model, Cmd.none )
+                        App.Msg.Escape ->
+                            case model.activePage of
+                                TagPage (Initialized tagPage) ->
+                                    case tagPage.quickContentAdderModule of
+                                        JustQuickContentAdderData _ text ->
+                                            ( { model | activePage = TagPage (Initialized { tagPage | quickContentAdderModule = NothingButTextToStore text }) }, Cmd.none )
 
-                            _ ->
-                                ( model, Cmd.none )
+                                        NothingButTextToStore _ ->
+                                            ( model, Cmd.none )
 
-                    else
-                        ( model, Cmd.none )
+                                _ ->
+                                    ( model, Cmd.none )
+
+                        App.Msg.OtherSoNoOp ->
+                            ( model, Cmd.none )
 
                 QuickContentEditInput ->
-                    -- pressed enter
-                    if keyCode == 13 then
-                        case model.activePage of
-                            TagPage (Initialized tagPage) ->
-                                case tagPage.quickContentEditModule of
-                                    Open content updatedText ->
-                                        ( model
-                                        , if tagPage.activeTagTextViewType /= GroupView && String.trim updatedText == "" then
-                                            Cmd.none
+                    case keyDownType of
+                        App.Msg.Enter ->
+                            case model.activePage of
+                                TagPage (Initialized tagPage) ->
+                                    case tagPage.quickContentEditModule of
+                                        Open content updatedText ->
+                                            ( model
+                                            , if tagPage.activeTagTextViewType /= GroupView && String.trim updatedText == "" then
+                                                Cmd.none
 
-                                          else
-                                            updateContentViaQuickContentEditor content updatedText
-                                        )
+                                              else
+                                                updateContentViaQuickContentEditor content updatedText
+                                            )
 
-                                    ClosedButTextToStore _ _ ->
-                                        ( model, Cmd.none )
+                                        ClosedButTextToStore _ _ ->
+                                            ( model, Cmd.none )
 
-                            _ ->
-                                ( model, Cmd.none )
-                        -- pressed esc
+                                _ ->
+                                    ( model, Cmd.none )
 
-                    else if keyCode == 27 then
-                        case model.activePage of
-                            TagPage (Initialized tagPage) ->
-                                case tagPage.quickContentEditModule of
-                                    Open content textToStore ->
-                                        ( { model | activePage = TagPage (Initialized { tagPage | quickContentEditModule = ClosedButTextToStore content textToStore }) }, Cmd.none )
+                        App.Msg.ShiftEnter ->
+                            ( model, Cmd.none )
 
-                                    ClosedButTextToStore _ _ ->
-                                        ( model, Cmd.none )
+                        App.Msg.Escape ->
+                            case model.activePage of
+                                TagPage (Initialized tagPage) ->
+                                    case tagPage.quickContentEditModule of
+                                        Open content textToStore ->
+                                            ( { model | activePage = TagPage (Initialized { tagPage | quickContentEditModule = ClosedButTextToStore content textToStore }) }, Cmd.none )
 
-                            _ ->
-                                ( model, Cmd.none )
+                                        ClosedButTextToStore _ _ ->
+                                            ( model, Cmd.none )
 
-                    else
-                        ( model, Cmd.none )
+                                _ ->
+                                    ( model, Cmd.none )
+
+                        App.Msg.OtherSoNoOp ->
+                            ( model, Cmd.none )
 
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->

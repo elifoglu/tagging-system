@@ -1,16 +1,16 @@
 module TagTextPart.View exposing (viewTextPart)
 
 import App.Model exposing (..)
-import App.Msg exposing (KeyDownPlace(..), Msg(..))
+import App.Msg exposing (KeyDownPlace(..), KeyDownType(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
-import Html exposing (Attribute, Html, a, b, div, hr, img, input, p, span, text, textarea)
+import Html exposing (Attribute, Html, a, b, div, hr, img, span, text, textarea)
 import Html.Attributes exposing (class, cols, href, id, placeholder, rows, spellcheck, src, style, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
 import Html.Parser
 import Html.Parser.Util
-import Json.Decode exposing (map)
+import Json.Decode exposing (bool, field, int, map, map2)
 import List.Extra
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
@@ -58,7 +58,7 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
     case quickContentEditModel of
         Open opened txt ->
             if opened.contentId == content.contentId && opened.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
-                div [ ]
+                div []
                     [ viewQuickContentEditInput txt
                     ]
 
@@ -243,7 +243,7 @@ viewContentSeparatorAdder model content whichHrLine =
                             == content.tagIdOfCurrentTextPart
                             && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
                     then
-                        div [ ]
+                        div []
                             [ viewQuickContentAdder text
                             ]
 
@@ -344,31 +344,71 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
 
 viewQuickContentAdder : String -> Html Msg
 viewQuickContentAdder inputText =
-    input [ type_ "text", id "quickContentAdder", placeholder "add new content...", value inputText, onInput QuickContentAdderInputChanged, onKeyDown (KeyDown QuickContentAdderInput) ] []
+    textarea [ id "quickContentAdder", placeholder "add new content...", value inputText, onInput QuickContentAdderInputChanged, onKeyDown (KeyDown QuickContentAdderInput), rows (calculateRowForContentAdderInput inputText), cols (calculateColForContentAdderInput inputText) ] []
+
+
+calculateRowForContentAdderInput : String -> Int
+calculateRowForContentAdderInput inputText =
+    let
+        row = (toFloat (recalculatedTextLengthBasedOnNewLineCounts inputText) / 70) |> ceiling
+    in
+        if row == 0 then 1 else row
+
+
+calculateColForContentAdderInput : String -> Int
+calculateColForContentAdderInput inputText =
+    if recalculatedTextLengthBasedOnNewLineCounts inputText + 5 < 25 then
+        25
+
+    else
+        recalculatedTextLengthBasedOnNewLineCounts inputText + 5
 
 
 viewQuickContentEditInput : String -> Html Msg
 viewQuickContentEditInput inputText =
-    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows (calculateRow inputText), cols (calculateCol inputText) ] []
+    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows (calculateRowForContentEditInput inputText), cols (calculateColForContentEditInput inputText) ] []
 
 
-calculateRow : String -> Int
-calculateRow inputText =
+calculateRowForContentEditInput : String -> Int
+calculateRowForContentEditInput inputText =
     let
-        newLineSlashNCountInText =
-            (List.length (String.split "\n" inputText) - 1) * 70
+        row = (toFloat (recalculatedTextLengthBasedOnNewLineCounts inputText) / 70) |> ceiling
     in
-    (toFloat (String.length inputText + newLineSlashNCountInText) / 70) |> ceiling
+        if row == 0 then 1 else row
+
+calculateColForContentEditInput : String -> Int
+calculateColForContentEditInput inputText =
+    recalculatedTextLengthBasedOnNewLineCounts inputText + 5
 
 
-calculateCol : String -> Int
-calculateCol inputText =
-    String.length inputText + 5
+recalculatedTextLengthBasedOnNewLineCounts : String -> Int
+recalculatedTextLengthBasedOnNewLineCounts text =
+    String.length text + ((List.length (String.split "\n" text) - 1) * 70)
 
 
-onKeyDown : (Int -> msg) -> Attribute msg
-onKeyDown tagger =
-    on "keydown" (map tagger keyCode)
+onKeyDown : (KeyDownType -> msg) -> Attribute msg
+onKeyDown msgFn =
+    let
+        tagger : ( number, Bool ) -> msg
+        tagger ( code, shift ) =
+            if code == 27 then
+                msgFn Escape
+
+            else if code == 13 && shift then
+                msgFn ShiftEnter
+
+            else if code == 13 then
+                msgFn Enter
+
+            else
+                msgFn OtherSoNoOp
+
+        keyExtractor =
+            map2 Tuple.pair
+                (field "keyCode" int)
+                (field "shiftKey" bool)
+    in
+    on "keydown" <| map tagger keyExtractor
 
 
 viewDragDropSeparator : Model -> Content -> TagTextPart -> WhichHrLine -> Html Msg

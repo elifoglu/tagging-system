@@ -1,6 +1,6 @@
 module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagTextResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder, TagID)
 
-import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map7, map8, maybe, string)
+import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map8, maybe, string)
 
 
 type alias InitialDataResponse =

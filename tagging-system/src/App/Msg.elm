@@ -45,7 +45,7 @@ type Msg
     | QuickContentAdderInputChanged String
     | OpenQuickContentEditInput Content
     | QuickContentEditInputChanged String
-    | KeyDown KeyDownPlace Int
+    | KeyDown KeyDownPlace KeyDownType
     | GotContentLineElementToGetItsHeight (Result Dom.Error Dom.Element)
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
@@ -54,6 +54,12 @@ type Msg
 type KeyDownPlace =
     QuickContentAdderInput
     | QuickContentEditInput
+
+type KeyDownType
+    = Enter
+    | ShiftEnter
+    | Escape
+    | OtherSoNoOp
 
 type CrudAction =
     CreateContentAct

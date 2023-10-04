@@ -397,6 +397,13 @@ hr {
     background-color: rgba(0,144,255,0.7);
 }
 
+#quickContentAdder {
+    background-color: var(--input-background);
+    border: 1px solid #202020;
+    border-radius: 3px;
+    max-width: 570px;
+}
+
 #quickEditBox {
     background-color: var(--input-background);
     border: 1px solid #202020;
