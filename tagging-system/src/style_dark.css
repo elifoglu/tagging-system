@@ -24,7 +24,7 @@
     --content-separator-hr-color: rgba(255,255,255,0.3);
 
     --home-navigator-background-hover: #343434;
-    --undo-icon-background-hover: #2d2d2d;
+    --undo-icon-background-hover: #262626;
     --tag-edit-icon-background-hover: rgba(255, 163, 0, 0.5);
     --content-edit-delete-icons-background-hover: rgba(255, 163, 0, 0.5);
 
@@ -73,7 +73,7 @@ html, body {
 }
 
 .undoIcon {
-    width: 22px;
+    width: 15px;
     height: auto;
     align-content: center;
     align-self: center;
@@ -81,8 +81,8 @@ html, body {
 
 .undoIcon:hover {
     background-color: var(--undo-icon-background-hover);
-    border-radius: 3px;
-    padding: 1px;
+    border-radius: 2px;
+    padding: 3px;
     cursor: pointer;
 }
 

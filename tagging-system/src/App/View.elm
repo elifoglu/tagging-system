@@ -48,7 +48,7 @@ viewUndoDiv model =
     else case model.activePage of
         TagPage _ ->
             div [ class "undoDivInHeader" ]
-                [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.png" ]
+                [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.svg" ]
                     []
                 ]
         _ -> text ""
