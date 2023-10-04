@@ -5,7 +5,7 @@ import App.Msg exposing (KeyDownPlace(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, input, span, text, textarea)
-import Html.Attributes exposing (class, cols, href, id, placeholder, rows, size, spellcheck, src, style, type_, value)
+import Html.Attributes exposing (class, href, id, placeholder, rows, spellcheck, src, style, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
 import Html.Parser
@@ -58,7 +58,7 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
     case quickContentEditModel of
         Open opened txt ->
             if opened.contentId == content.contentId && opened.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
-                div [ class "quickContentEditDiv" ]
+                div [ class "quickContentEditDiv", id "contents" ]
                     [ viewQuickContentEditInput txt
                     ]
 
@@ -112,7 +112,7 @@ contentHasLinkInside contentText =
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
-    div [ class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
+    div [ id (content.contentId ++ content.tagIdOfCurrentTextPart), class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
         [ div [ class "contentLineFirstChild" ]
             [ span [ class "contentLine" ]
                 [ if String.trim content.text == "" then
@@ -246,7 +246,7 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
                         (contentWhichCursorIsOnItNow.contentId == content.contentId)
                             && (contentWhichCursorIsOnItNow.tagId == content.tagIdOfCurrentTextPart)
                     then
-                        if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
+                        if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Top then
                             let
                                 showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator =
                                     case maybeQuickContentAdderLocation of
@@ -275,7 +275,7 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
                             else
                                 text ""
 
-                        else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
+                        else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Down then
                             let
                                 showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator =
                                     case maybeQuickContentAdderLocation of
@@ -321,7 +321,7 @@ viewQuickContentAdder inputText =
 
 viewQuickContentEditInput : String -> Html Msg
 viewQuickContentEditInput inputText =
-    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows 1, cols (String.length inputText) ] []
+    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows ((toFloat (String.length inputText) / 70) |> ceiling) ] []
 
 
 onKeyDown : (Int -> msg) -> Attribute msg
@@ -342,10 +342,10 @@ viewTopDownHrLineOfContent model content currentTagTextPart whichHrLine =
                             && currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart
                             && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
                     then
-                        if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine && whichHrLine == Top then
+                        if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Top then
                             div [ class "separatorDiv" ] [ hr [] [] ]
 
-                        else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine && whichHrLine == Down then
+                        else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Down then
                             div [ class "separatorDiv" ] [ hr [] [] ]
 
                         else
@@ -369,10 +369,10 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
                 MainButton ->
                     case model.contentTagDuoWhichCursorIsOverItNow of
                         Just c ->
-                            if c.offsetPosY < topOffsetForContentLine || c.offsetPosY > downOffsetForContentLine then
+                            if c.offsetPosY < topOffsetForContentLine c.contentLineHeight || c.offsetPosY > downOffsetForContentLine c.contentLineHeight then
                                 let
                                     locateAt =
-                                        if c.offsetPosY < topOffsetForContentLine then
+                                        if c.offsetPosY < topOffsetForContentLine c.contentLineHeight then
                                             BeforeContentLine
 
                                         else
@@ -426,7 +426,7 @@ onMouseOver : Content -> Attribute Msg
 onMouseOver content =
     Mouse.onMove
         (\event ->
-            SetContentWhichCursorIsOverIt (Just (ContentTagIdDuoWithOffsetPosY content.contentId content.tagIdOfCurrentTextPart (second event.offsetPos)))
+            SetContentWhichCursorIsOverIt (Just (ContentTagIdDuoWithOffsetPosY content.contentId content.tagIdOfCurrentTextPart (second event.offsetPos) 0))
         )
 
 

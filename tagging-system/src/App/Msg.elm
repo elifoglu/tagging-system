@@ -46,6 +46,7 @@ type Msg
     | OpenQuickContentEditInput Content
     | QuickContentEditInputChanged String
     | KeyDown KeyDownPlace Int
+    | GotContentLineElementToGetItsHeight (Result Dom.Error Dom.Element)
     | DragEnd ( Float, Float )
     | GotTimeZone Time.Zone
     | DoNothing

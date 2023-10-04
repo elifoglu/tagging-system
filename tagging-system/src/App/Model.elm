@@ -1,4 +1,4 @@
-module App.Model exposing (QuickContentAdderLocation, ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, homepage, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder, QuickContentAdderModel(..), dummyContent, QuickContentEditModel(..), requestEncoderForContentUpdateViaQuickContentEditBox)
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), QuickContentAdderLocation, QuickContentAdderModel(..), QuickContentEditModel(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, dummyContent, getDataOfTagRequestModelEncoder, homepage, requestEncoderForContentUpdateViaQuickContentEditBox, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -27,10 +27,12 @@ type alias Model =
     , previousQuickContentAdderLocationToKeepOpenAfterEnter : Maybe QuickContentAdderLocation
     }
 
+
 type alias ContentTagIdDuoWithOffsetPosY =
     { contentId : ContentID
     , tagId : TagID
     , offsetPosY : Float
+    , contentLineHeight : Float
     }
 
 
@@ -101,9 +103,11 @@ type alias InitializedTagPageModel =
     , quickContentEditModule : QuickContentEditModel
     }
 
+
 type QuickContentEditModel
     = Open Content String
     | ClosedButTextToStore Content String
+
 
 type QuickContentAdderModel
     = JustQuickContentAdderData QuickContentAdderLocation String
@@ -145,12 +149,14 @@ type ContentModuleVisibility
     | UpdateContentModuleIsVisible
 
 
-topOffsetForContentLine =
-    3
+topOffsetForContentLine : Float -> Float
+topOffsetForContentLine contentLineHeight =
+    contentLineHeight / 100 * 17
 
 
-downOffsetForContentLine =
-    14
+downOffsetForContentLine : Float -> Float
+downOffsetForContentLine contentLineHeight =
+    contentLineHeight - topOffsetForContentLine contentLineHeight
 
 
 defaultCreateContentModule : Tag -> List Tag -> CreateContentModuleModel
@@ -315,6 +321,7 @@ updateContentRequestEncoder model =
         , ( "text", Encode.string model.text )
         , ( "tags", Encode.list Encode.string (model.tagPickerModelForTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
+
 
 requestEncoderForContentUpdateViaQuickContentEditBox : Content -> String -> Encode.Value
 requestEncoderForContentUpdateViaQuickContentEditBox content updatedText =

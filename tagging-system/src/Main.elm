@@ -22,7 +22,7 @@ import Requests exposing (createContent, createContentViaQuickContentAdder, crea
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
-import Task exposing (andThen)
+import Task
 import Time
 import Tuple exposing (first, second)
 import Url
@@ -465,10 +465,25 @@ update msg model =
                         newTagPage =
                             TagPage (Initialized { tagPage | quickContentEditModule = Open content textToPut })
                     in
-                    ( { model | activePage = newTagPage }, Dom.focus "quickEditBox" |> Task.attempt FocusResult )
+                    ( { model | activePage = newTagPage }, Cmd.batch [ Dom.focus "quickEditBox" |> Task.attempt FocusResult ] )
 
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
+
+        GotContentLineElementToGetItsHeight (Ok element) ->
+            let
+                height =
+                    element.element.height
+
+                new =
+                    case model.contentTagDuoWhichCursorIsOverItNow of
+                        Just a ->
+                            Just { a | contentLineHeight = height }
+
+                        Nothing ->
+                            Nothing
+            in
+            ( { model | contentTagDuoWhichCursorIsOverItNow = new }, Cmd.none )
 
         QuickContentEditInputChanged text ->
             case model.activePage of
@@ -883,7 +898,16 @@ update msg model =
                     createNewModelAndCmdMsg model NotFoundPage
 
         SetContentWhichCursorIsOverIt contentTagDuoWhichCursorIsOverItNow ->
-            ( { model | contentTagDuoWhichCursorIsOverItNow = contentTagDuoWhichCursorIsOverItNow }, Cmd.none )
+            let
+                idOfContentLine =
+                    case contentTagDuoWhichCursorIsOverItNow of
+                        Nothing ->
+                            "this-will-never-happen"
+
+                        Just contentTagIdDuoWithOffsetPosY ->
+                            contentTagIdDuoWithOffsetPosY.contentId ++ contentTagIdDuoWithOffsetPosY.tagId
+            in
+            ( { model | contentTagDuoWhichCursorIsOverItNow = contentTagDuoWhichCursorIsOverItNow }, Task.attempt GotContentLineElementToGetItsHeight (Dom.getElement idOfContentLine) )
 
         SetContentTagIdDuoToDragAfterASecond contentTagDuo ->
             --this "a second delay" is for this: somehow, setting model.contentTagIdDuoThatIsBeingDragged to something prevents opening links on content lines (or more generally, it somehow overrides left click event and it happens on mouseDown event in TagTextView.elm. so, as a hacky solution, I give a time delay to perform "update model.contentTagIdDuoThatIsBeingDragged" task
@@ -928,7 +952,7 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        DragEnd xy ->
+        DragEnd _ ->
             case model.activePage of
                 TagPage (Initialized tagPage) ->
                     case model.contentTagIdDuoThatIsBeingDragged of
@@ -941,10 +965,10 @@ update msg model =
 
                                     else
                                         let
-                                            abc =
-                                                droppedOnWhichSection toDropOn.offsetPosY
+                                            droppedOnWhichSectionData =
+                                                droppedOnWhichSection toDropOn.offsetPosY toDropOn.contentLineHeight
                                         in
-                                        case abc of
+                                        case droppedOnWhichSectionData of
                                             Middle ->
                                                 ( { model | contentTagIdDuoThatIsBeingDragged = Nothing }, Cmd.none )
 
@@ -973,12 +997,12 @@ update msg model =
             ( model, Cmd.none )
 
 
-droppedOnWhichSection : Float -> DropSection
-droppedOnWhichSection float =
-    if float < topOffsetForContentLine then
+droppedOnWhichSection : Float -> Float -> DropSection
+droppedOnWhichSection float contentLineHeight =
+    if float < topOffsetForContentLine contentLineHeight then
         Top
 
-    else if float > downOffsetForContentLine then
+    else if float > downOffsetForContentLine contentLineHeight then
         Down
 
     else
