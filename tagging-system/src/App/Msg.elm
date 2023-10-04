@@ -54,6 +54,7 @@ type Msg
 type KeyDownPlace =
     QuickContentAdderInput
     | QuickContentEditInput
+    | SearchInputOnSearchPage
 
 type KeyDownType
     = Enter

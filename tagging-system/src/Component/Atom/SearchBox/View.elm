@@ -9,7 +9,7 @@ import Html.Events exposing (onInput)
 viewSearchBoxDiv : Page -> Html Msg
 viewSearchBoxDiv activePage =
     case activePage of
-        ContentSearchPage _ _ ->
+        ContentSearchPage _ _ _ ->
             text ""
 
         _ ->

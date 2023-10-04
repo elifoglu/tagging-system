@@ -17,7 +17,7 @@ sendTitle model =
                 Initialized initialized ->
                     title (initialized.tag.name ++ " - tagging system")
 
-        ContentSearchPage _ _ ->
+        ContentSearchPage _ _ _ ->
             title "search - tagging system"
 
         NotFoundPage ->

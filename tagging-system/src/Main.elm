@@ -601,6 +601,23 @@ update msg model =
                         App.Msg.OtherSoNoOp ->
                             ( model, Cmd.none )
 
+                SearchInputOnSearchPage ->
+                    case keyDownType of
+                        App.Msg.Escape ->
+                            case model.activePage of
+                                ContentSearchPage _ _ tagIdToReturnItsPage ->
+                                        let
+                                            newModel =
+                                                { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagIdToReturnItsPage))) }
+                                        in
+                                        ( newModel, getCmdToSendByPage newModel )
+                                _ ->
+                                    ( model, Cmd.none )
+
+                        _ ->
+                            ( model, Cmd.none )
+
+
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
             case model.activePage of
@@ -816,11 +833,11 @@ update msg model =
             let
                 newPage =
                     case model.activePage of
-                        TagPage _ ->
-                            ContentSearchPage searchKeyword []
+                        TagPage (Initialized tagPage) ->
+                            ContentSearchPage searchKeyword [] tagPage.tag.tagId
 
-                        ContentSearchPage _ contentList ->
-                            ContentSearchPage searchKeyword contentList
+                        ContentSearchPage _ contentList tagIdToReturnItsPage ->
+                            ContentSearchPage searchKeyword contentList tagIdToReturnItsPage
 
                         _ ->
                             model.activePage
@@ -836,7 +853,7 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-            ( newModel, Cmd.batch [ sendTitle newModel, getAllTagsCmdMsg, getSearchResult searchKeyword, Dom.focus "contentSearchInput" |> Task.attempt FocusResult ] )
+            ( newModel, Cmd.batch [ sendTitle newModel, getAllTagsCmdMsg, getSearchResult searchKeyword, Dom.focus "contentSearchInputInSearchPage" |> Task.attempt FocusResult ] )
 
         GotContentSearchResponse res ->
             case res of
@@ -844,8 +861,8 @@ update msg model =
                     let
                         newPage =
                             case model.activePage of
-                                ContentSearchPage searchKeyword _ ->
-                                    ContentSearchPage searchKeyword (List.map (gotContentToContent model) gotContentSearchResponse.contents)
+                                ContentSearchPage searchKeyword _ tagIdToReturnItsPage ->
+                                    ContentSearchPage searchKeyword (List.map (gotContentToContent model) gotContentSearchResponse.contents) tagIdToReturnItsPage
 
                                 _ ->
                                     model.activePage

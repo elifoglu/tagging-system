@@ -7,14 +7,13 @@ import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, span, text, textarea)
 import Html.Attributes exposing (class, cols, href, id, placeholder, rows, spellcheck, src, style, value)
-import Html.Events exposing (on, onClick, onInput)
+import Html.Events exposing ( onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
-import Json.Decode exposing (bool, field, int, map, map2)
 import List.Extra
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
 import Tuple exposing (second)
-
+import Component.KeydownHandler exposing (onKeyDown)
 
 viewTextPart : Model -> Tag -> QuickContentEditModel -> TagTextPart -> Html Msg
 viewTextPart model baseTag quickContentEditModel tagTextPart =
@@ -322,31 +321,6 @@ calculateColForContentEditInput inputText =
 recalculatedTextLengthBasedOnNewLineCounts : String -> Int
 recalculatedTextLengthBasedOnNewLineCounts text =
     String.length text + ((List.length (String.split "\n" text) - 1) * 70)
-
-
-onKeyDown : (KeyDownType -> msg) -> Attribute msg
-onKeyDown msgFn =
-    let
-        tagger : ( number, Bool ) -> msg
-        tagger ( code, shift ) =
-            if code == 27 then
-                msgFn Escape
-
-            else if code == 13 && shift then
-                msgFn ShiftEnter
-
-            else if code == 13 then
-                msgFn Enter
-
-            else
-                msgFn OtherSoNoOp
-
-        keyExtractor =
-            map2 Tuple.pair
-                (field "keyCode" int)
-                (field "shiftKey" bool)
-    in
-    on "keydown" <| map tagger keyExtractor
 
 
 viewDragDropSeparator : Model -> Content -> TagTextPart -> WhichHrLine -> Html Msg

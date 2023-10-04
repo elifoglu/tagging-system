@@ -53,9 +53,10 @@ homepage =
 
 type Page
     = TagPage (Initializable NonInitializedYetTagPageModel InitializedTagPageModel)
-    | ContentSearchPage String (List Content)
+    | ContentSearchPage String (List Content) TagIDToReturnItsPage
     | NotFoundPage
 
+type alias TagIDToReturnItsPage = TagID
 
 type alias ContentToAddToBottom =
     Maybe GotContent

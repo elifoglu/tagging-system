@@ -29,7 +29,7 @@ view model =
                             _ ->
                                 []
 
-                    ContentSearchPage searchKeyword contents ->
+                    ContentSearchPage searchKeyword contents tagIdToReturnItsPage ->
                         [ viewSearchContentDiv searchKeyword contents ]
 
                     NotFoundPage ->
