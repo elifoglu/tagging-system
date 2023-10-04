@@ -45,7 +45,7 @@ viewContentsLineByLine model currentTagTextPart tagIdOfTagPage quickContentEditM
 viewContentLineWithAllStuff : Model -> TagTextPart -> TagID -> QuickContentEditModel -> Content -> Html Msg
 viewContentLineWithAllStuff model currentTagTextPart tagIdOfTagPage quickContentEditModel content =
     div []
-        [viewContentSeparatorAdder model content Top
+        [ viewContentSeparatorAdder model content Top
         , viewTopDownHrLineOfContent model content currentTagTextPart Top
         , viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage quickContentEditModel content
         , viewTopDownHrLineOfContent model content currentTagTextPart Down
@@ -132,9 +132,9 @@ contentHasLinkInside contentText =
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
-    div [  class "contentLineParent" ]
+    div [ class "contentLineParent" ]
         [ div [ class "contentLineFirstChild" ]
-            [ span [ class "contentLine", id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
+            [ span [ class "contentLine", id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver model content, onMouseLeave, onRightClick content ]
                 [ if String.trim content.text == "" then
                     span [ style "padding-left" "250px" ] [ text "" ]
 
@@ -458,11 +458,24 @@ onRightClick content =
         )
 
 
-onMouseOver : Content -> Attribute Msg
-onMouseOver content =
+onMouseOver : Model -> Content -> Attribute Msg
+onMouseOver model content =
     Mouse.onMove
         (\event ->
-            SetContentWhichCursorIsOverIt (Just (ContentTagIdDuoWithOffsetPosY content.contentId content.tagIdOfCurrentTextPart (second event.offsetPos) 0))
+            SetContentWhichCursorIsOverIt
+                (Just
+                    (ContentTagIdDuoWithOffsetPosY content.contentId
+                        content.tagIdOfCurrentTextPart
+                        (second event.offsetPos)
+                        (case model.contentTagDuoWhichCursorIsOverItNow of
+                            Nothing ->
+                                0
+
+                            Just c ->
+                                c.contentLineHeight
+                        )
+                    )
+                )
         )
 
 
