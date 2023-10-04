@@ -159,12 +159,12 @@ hr {
     height: auto;
     align-content: center;
     align-self: center;
+    padding: 2px;
 }
 
 .contentEditAndDeleteIcons:hover {
     background-color: #d5d5d5;
     border-radius: 3px;
-    padding: 2px;
     cursor: pointer;
 }
 
@@ -243,22 +243,6 @@ input:focus {
     background-color: yellow;
 }
 
-.navToTagDesc {
-    width: 13px;
-    vertical-align: middle;
-    margin-bottom: 2px;
-}
-
-.navToTagDesc:hover {
-    width: 15px;
-}
-
-.upAndDownIcons {
-    width: 13px;
-    vertical-align: middle;
-    margin-bottom: 2px;
-}
-
 .searchContentInfoText {
     padding-top: -5px;
     padding-left: 5px;
@@ -277,43 +261,6 @@ input:focus {
     letter-spacing: 0.5px;
     word-spacing: 0.2px;
     line-height: 20px;
-}
-
-.logoutButton:hover {
-    background-color: #202020;
-    color: #ffffff;
-}
-
-.loginRegisterButton {
-    padding: 0px 4px 0px 4px;
-    border: 1px solid #202020;
-    border-radius: 3px;
-    color: #ffffff;
-    cursor: pointer;
-    background-color: #202020;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.2px;
-    line-height: 20px;
-    width: 50px;
-    margin: 2px;
-}
-
-.loginRegisterButton:hover {
-    background-color: #474747;
-    color: #ffffff;
-}
-
-input[type='checkbox'] {
-    accent-color: #202020;
-}
-
-.updateContentLink {
-    text-underline: none;
-    font-size: 14px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.2px;
-    margin: 2px;
 }
 
 /* Tag Page */
@@ -340,12 +287,12 @@ input[type='checkbox'] {
     height: auto;
     align-content: center;
     align-self: center;
+    padding: 3px;
 }
 
 .tagEditIcon:hover {
     background-color: #d5d5d5;
     border-radius: 3px;
-    padding: 2px;
     cursor: pointer;
 }
 
@@ -354,12 +301,12 @@ input[type='checkbox'] {
     height: auto;
     align-content: center;
     align-self: center;
+    border-radius: 3px;
+    margin: 3px;
 }
 
 .deleteTagIcon:hover {
     background-color: #d5d5d5;
-    border-radius: 3px;
-    padding: 1px;
     cursor: pointer;
 }
 
