@@ -2,7 +2,7 @@ module UpdateTag.View exposing (viewUpdateTagDiv)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, Model, TagDeleteStrategyChoice, TagModuleVisibility(..), UpdateTagModuleModel)
 import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..), TagInputType(..), WorkingOnWhichModule(..))
-import Html exposing (Html, b, br, button, div, i, img, input, text)
+import Html exposing (Html, b, br, button, div, hr, i, img, input, span, text)
 import Html.Attributes exposing (class, placeholder, selected, src, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import TagPicker.View exposing (viewTagPickerDiv)
@@ -31,8 +31,8 @@ viewDeleteBox homeTagId updateTagModuleModel =
 
     else
         div
-            []
-            [ text "delete:"
+            [ style "margin-top" "20px"]
+            [ b [] [ text "delete," ]
             , viewDeleteTagStrategySelectionBoxDiv updateTagModuleModel.tagDeleteStrategy
             , viewDeleteTagButton DeleteTag
             ]
@@ -46,7 +46,7 @@ viewInput t p v toMsg =
 viewUpdateTagButton : msg -> Html msg
 viewUpdateTagButton msg =
     div [ class "updateOrDeleteTagButtonDiv" ]
-        [ button [ onClick msg ] [ text "✓" ]
+        [ button [ class "createUpdateContentTagButtons", onClick msg ] [ text "✓" ]
         ]
 
 

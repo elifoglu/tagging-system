@@ -5,7 +5,7 @@ import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..)
 import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
 import Html exposing (Html, b, br, button, div, input, text, textarea)
-import Html.Attributes exposing (class, placeholder, style, type_, value)
+import Html.Attributes exposing (class, placeholder, spellcheck, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import TagPicker.View exposing (viewTagPickerDiv)
 
@@ -19,7 +19,7 @@ viewUpdateContentDiv updateContentModuleModel =
             , viewInput "text" "title" updateContentModuleModel.title (UpdateContentModuleInputChanged Title)
             , viewContentTextArea "content*" updateContentModuleModel.text (UpdateContentModuleInputChanged Text)
             , viewTagPickerDiv updateContentModuleModel.tagPickerModelForTags WorkingOnUpdateContentModule
-            , viewUpdateContentButton <| UpdateContent
+            , viewUpdateContentButton UpdateContent
             ]
 
 
@@ -41,9 +41,9 @@ viewInput t p v toMsg =
 
 viewContentTextArea : String -> String -> (String -> msg) -> Html msg
 viewContentTextArea p v toMsg =
-    textarea [ placeholder p, value v, onInput toMsg, style "width" "300px", style "height" "100px" ] []
+    textarea [ spellcheck False, placeholder p, value v, onInput toMsg, style "width" "300px", style "height" "100px" ] []
 
 
 viewUpdateContentButton : msg -> Html msg
 viewUpdateContentButton msg =
-    button [ onClick msg ] [ text "✓" ]
+    button [ class "createUpdateContentTagButtons", onClick msg ] [ text "✓" ]

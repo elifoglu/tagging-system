@@ -4,7 +4,7 @@ import App.Model exposing (TagDeleteStrategyChoice(..))
 import App.Msg exposing (Msg(..))
 import Dict
 import Html exposing (Html, div, option, text)
-import Html.Attributes exposing (selected, value)
+import Html.Attributes exposing (selected, style, value)
 import Html.Events exposing (on, targetValue)
 import Html.Keyed as Keyed
 import Json.Decode as Json
@@ -53,11 +53,11 @@ selectTag cfg =
                     )
                 |> Json.map cfg.onSelect
     in
-    Keyed.node "select" [ on "change" decoder ] (addEmpty options)
+    Keyed.node "select" [ on "change" decoder, style "width" "108px" ] (addEmpty options)
 
 
-customToString : TagDeleteStrategyChoice -> String
-customToString val =
+selectionToString : TagDeleteStrategyChoice -> String
+selectionToString val =
     case val of
         DeleteTheTagOnly ->
             "the tag only"
@@ -79,7 +79,7 @@ viewDeleteTagStrategySelectionBoxDiv deleteStrategy =
     div []
         [ selectTag
             { onSelect = ChangeTagDeleteStrategySelection
-            , toString = customToString
+            , toString = selectionToString
             , selected = deleteStrategy
             , tags = allCustomTags
             }

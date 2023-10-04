@@ -26,7 +26,7 @@ viewTagPageDiv model initialized =
 
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
-    div [ class "rightFrameOnTagPage" ]
+    div [ class "rightFrameOnTagPage rightFrameFont" ]
         [ case initialized.oneOfContentModuleIsVisible of
             CreateContentModuleIsVisible ->
                 viewCreateContentDiv initialized.createContentModule
@@ -38,7 +38,7 @@ viewRightFrame initialized =
 
 viewLeftFrame : String -> InitializedTagPageModel -> List Tag -> Html Msg
 viewLeftFrame homeTagId initialized allTags =
-    div [ class "leftFrameOnTagPage leftFrameTagsFont" ]
+    div [ class "leftFrameOnTagPage leftFrameFont" ]
         [ viewTagsDiv initialized.tag.parentTags allTags Parent
         , div
             [ style "font-size" "14px"
@@ -54,6 +54,7 @@ viewLeftFrame homeTagId initialized allTags =
             , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, style "margin-left" "5px", src "/edit.png" ] []
             ]
         , viewTagsDiv initialized.tag.childTags allTags Child
+        , viewTagTextTypeSelectionBoxDiv initialized.activeTagTextViewType
         , case initialized.oneOfTagModuleIsVisible of
             CreateTagModuleIsVisible ->
                 viewCreateTagDiv initialized.createTagModule
@@ -81,8 +82,7 @@ viewTagsDiv tagIds allTags tagType =
 viewMidFrame : Model -> InitializedTagPageModel -> Html Msg
 viewMidFrame model initialized =
     div [ class "midFrameOnTagPage" ]
-        [ viewTagTextTypeSelectionBoxDiv initialized.activeTagTextViewType
-        , viewTagText model
+        [ viewTagText model
             initialized.tag
             initialized.textPartsForGroupView
             initialized.textPartsForLineView

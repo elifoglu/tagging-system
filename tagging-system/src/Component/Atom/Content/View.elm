@@ -15,7 +15,7 @@ viewContentDiv : MaybeTextToHighlight -> Content -> Html Msg
 viewContentDiv textToHighlight content =
     p []
         [ div []
-            [ div [ class "title" ] [ viewContentTitle content.title ]
+            [ div [ class "contentTitleOnSearchContentPage" ] [ viewContentTitle content.title ]
             , viewTextOfContent content textToHighlight
             ]
         , viewContentInfoDiv content
@@ -39,7 +39,6 @@ viewContentInfoDiv content =
             ++ [ if List.length content.tags > 0 then br [] [] else text ""]
             ++ [ text ("created at: " ++ createdDateOf content) ]
             ++ [ text (", modified at: " ++ lastModifiedDateOf content) ]
-            ++ [ text " ", viewContentLinkWithLinkIcon content ]
         )
 
 
@@ -53,19 +52,6 @@ viewTagLinks tags =
 viewTagLink : Tag -> Html Msg
 viewTagLink tag =
     a [ href ("/tags/" ++ tag.tagId), class "tagLink" ] [ text ("#" ++ tag.name) ]
-
-
-viewContentLink : Html msg -> String -> Html msg
-viewContentLink htmlToClick contentId =
-    a [ href ("/contents/" ++ contentId) ]
-        [ htmlToClick
-        ]
-
-
-viewContentLinkWithLinkIcon : Content -> Html msg
-viewContentLinkWithLinkIcon content =
-    viewContentLink (img [ class "navToContent", src "/link.svg" ] []) content.contentId
-
 
 viewTextOfContent : Content -> MaybeTextToHighlight -> Html msg
 viewTextOfContent content maybeTextToHighlight =

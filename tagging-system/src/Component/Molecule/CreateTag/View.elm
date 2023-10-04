@@ -32,4 +32,4 @@ createTagInputMessage a b =
 
 viewCreateTagButton : msg -> Html msg
 viewCreateTagButton msg =
-    button [ onClick msg ] [ b [] [ text "+" ] ]
+    button [ class "createUpdateContentTagButtons", onClick msg ] [ b [] [ text "+" ] ]
