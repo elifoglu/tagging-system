@@ -3,7 +3,7 @@ module Tag.TagTextTypeSelectionBox exposing (viewTagTextTypeSelectionBoxDiv)
 import App.Model exposing (TagTextViewType(..))
 import App.Msg exposing (Msg(..))
 import Dict
-import Html exposing (Html, div, option, text)
+import Html exposing (Html, b, div, option, text)
 import Html.Attributes exposing (selected, style, value)
 import Html.Events exposing (on, targetValue)
 import Html.Keyed as Keyed
@@ -20,14 +20,15 @@ type alias SelectTagConfig a msg =
 
 viewTagTextTypeSelectionBoxDiv : TagTextViewType -> Html Msg
 viewTagTextTypeSelectionBoxDiv deleteStrategy =
-    div [ style "margin-bottom" "20px" ]
-        [ selectTag
+    div [ style "margin-top" "20px" ]
+        [ b [] [ text "view type" ], selectTag
             { onSelect = ChangeTagTextViewTypeSelection
             , toString = tagTextViewTypeToTextToShow
             , selected = deleteStrategy
             , tags = allViewTypes
             }
         ]
+
 
 selectTag : SelectTagConfig a msg -> Html msg
 selectTag cfg =
@@ -72,13 +73,16 @@ tagTextViewTypeToTextToShow val =
     case val of
         GroupView ->
             "group"
-        LineView ->
-            "line"
 
         DistinctGroupView ->
-            "group with distinct contents"
+            "distinct"
+
+        LineView ->
+            "condensed"
+
+
 
 
 allViewTypes : List TagTextViewType
 allViewTypes =
-    [ GroupView, LineView, DistinctGroupView ]
+    [ GroupView, DistinctGroupView, LineView ]

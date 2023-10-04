@@ -1,74 +1,30 @@
-html, body {
-    margin: 0;
-    padding: 0;
+:root {
+    --input-background: #f5f0f0;
+}
+
+body {
+    background: rgb(250, 248, 248);
+    color: #202020;
+    padding-bottom: 70px;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     text-decoration: none;
     font-style: normal;
     font-variant: normal;
     text-transform: none;
-    background: rgba(255, 255, 255, 0.25);
-    color: #202020;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.2px;
+    line-height: 20px;
+    max-width: 1000px;
+    display: block;
 }
 
 .header {
-    margin-top: 3px;
-    margin-left: 3px;
+    margin-left: 10px;
 }
 
 .body {
-    margin-left: 20px;
-    margin-right: 20px;
-    max-width: 1000px;
-    width: auto;
-}
-
-input {
-    border: 1px solid #202020;
-    border-radius: 3px;
-}
-
-textarea {
-    border: 1px solid #202020;
-    border-radius: 3px;
-}
-
-.title {
-    font-size: 15px;
-    letter-spacing: 0.3px;
-    word-spacing: 0.1px;
-    font-weight: bold;
-}
-
-.contentFont {
-    font-size: 13px;
-    letter-spacing: 0.7px;
-    word-spacing: 0.2px;
-}
-
-.contentCountOfTag {
-    font-size: 11.6px;
-}
-
-.contentInfoDivOnSearchPage {
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.1px;
-    margin-bottom: 20px;
-    margin-top: 10px;
-}
-
-
-.contentInfoDivOnUpdateContentModule {
-    font-size: 12px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.1px;
-}
-
-hr {
-    border: none;
-    height: 1px;
-    margin: 35px 0 35px 0;
-    background: rgba(0, 0, 0, 0.15);
+    margin-left: 10px;
 }
 
 .searchBoxInHeader {
@@ -79,6 +35,7 @@ hr {
 .undoDivInHeader {
     padding: 5px;
     display: inline-block;
+    margin: 0;
 }
 
 .undoIcon {
@@ -91,10 +48,76 @@ hr {
 .undoIcon:hover {
     background-color: #d5d5d5;
     border-radius: 3px;
-    padding: 2px;
+    padding: 1px;
     cursor: pointer;
 }
 
+button, input[type="submit"], input[type="reset"] {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+input, textarea {
+    border: 1px dashed #202020;
+    border-radius: 3px;
+    color: #202020;
+    background-color: var(--input-background);
+}
+
+input:focus, textarea:focus {
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+    color: #202020;
+}
+
+
+select {
+    border: 1px solid #202020;
+    padding-left: 3px;
+    padding-right: 3px;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    border-radius: 3px;
+    background-color: var(--input-background);
+    width: 105px;
+}
+
+select:hover {
+    background-color: #faf6f6;
+}
+
+.contentTitleOnSearchContentPage {
+    font-weight: bold;
+}
+
+.contentInfoDivOnSearchPage {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+    margin-top: 10px;
+}
+
+.contentInfoDivOnUpdateContentModule {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    margin: 20px 0 20px 0;
+    background: rgba(0, 0, 0, 0.15);
+}
 
 .homeNavigator {
     padding: 10px;
@@ -128,7 +151,6 @@ hr {
 }
 
 .contentLineFirstChild {
-    display: inline-block;
     max-width: 550px;
     float: left;
 }
@@ -148,8 +170,8 @@ hr {
     transform: translateY(-50%);
     width: 50px;
 }
-.contentLineFirstChild:hover + .contentLineSecondChild {
 
+.contentLineFirstChild:hover + .contentLineSecondChild {
     display: inline-block;
     opacity: 1;
 }
@@ -161,16 +183,27 @@ hr {
 .contentLine {
     padding-right: 5px;
     padding-left: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .contentLine a {
+    color: #ffcc71;
+}
+
+.contentLine a:hover {
     color: orange;
+    text-decoration: underline #7d7979;
 }
 
 .contentLine:hover {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
+    border-radius: 5px;
+}
+
+.emptyContentLine {
+    padding-left: 250px;
 }
 
 .contentLineFirstChild span {
@@ -187,7 +220,7 @@ hr {
 }
 
 .contentEditAndDeleteIcons:hover {
-    background-color: #d5d5d5;
+    background-color: rgba(255, 163, 0, 0.5);
     border-radius: 3px;
     cursor: pointer;
 }
@@ -197,11 +230,17 @@ hr {
     float: left;
 }
 
-.leftFrameTagsFont {
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.2px;
-    line-height: 20px;
+.createUpdateContentTagButtons {
+    padding: 3px 10px 3px 10px;
+    background-color: var(--input-background);
+    border: 1px solid #b1a37a;
+    border-radius: 3px;
+    color: #202020;
+    width: 33px;
+}
+
+.createUpdateContentTagButtons:hover {
+    background-color: #e7d3d3;
 }
 
 .tagPageTagA {
@@ -212,82 +251,35 @@ hr {
     font-size: 14px;
 }
 
-a {
-    color: #202020;
-}
-
-.tagLink {
-    text-decoration: none;
-    color: #202020;
-}
-
 .tagLink:hover {
     color: #505050;
 }
 
-.navToContent {
-    width: 15px;
-    height: auto;
-    align-content: center;
-    align-self: center;
-}
+/* Content Search Page */
 
-.contentPageToggleChecked {
-    width: 15px;
-    margin-left: 4px;
-    height: auto;
-    align-content: center;
-    align-self: center;
-    cursor: pointer;
+.contentSearchPageDiv {
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
 .contentSearchInput {
-    margin-top: 10px;
     border: 1px solid #202020;
-    border-radius: 2px;
-    padding-top: 4px;
+    border-radius: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
     width: 55px;
     font-size: 13px;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
-input:focus {
-    outline: none;
-}
-
-.contentTextDiv p {
-    margin-block-start: 25px;
 }
 
 .textToHighlight {
-    background-color: yellow;
+    background-color: rgb(255, 238, 157);
 }
 
 .searchContentInfoText {
-    padding-top: -5px;
-    padding-left: 5px;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    font-size: 13px;
-}
-
-.logoutButton {
-    padding: 0px 4px 0px 4px;
-    border: 1px solid #202020;
-    border-radius: 3px;
-    color: #202020;
-    cursor: pointer;
-    background-color: #ffffff;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    word-spacing: 0.2px;
-    line-height: 20px;
+    padding-left: 10px;
 }
 
 /* Tag Page */
-
-.tagTextView p {
-    margin-block-start: 25px;
-}
 
 .tagTextView a {
     text-decoration: none;
@@ -304,9 +296,6 @@ input:focus {
 
 .tagEditIcon {
     width: 13px;
-    height: auto;
-    align-content: center;
-    align-self: center;
     padding: 3px;
 }
 
@@ -316,32 +305,25 @@ input:focus {
     cursor: pointer;
 }
 
-.deleteTagIcon {
-    width: 25px;
-    height: auto;
-    align-content: center;
-    align-self: center;
-    border-radius: 3px;
-    margin: 3px;
-}
-
-.deleteTagIcon:hover {
-    background-color: #d5d5d5;
-    cursor: pointer;
-}
-
-.updateOrDeleteTagButtonDiv {
-    float: left;
-}
-
-.updateOrDeleteTagButtonParentDiv {
-    display: inline-block;
-}
-
 /* "Create Tag" and "Update Tag" modules */
 
 .createOrUpdateTagDiv {
-    margin-top: 50px;
+    margin-top: 25px;
+}
+
+.deleteTagIcon {
+    padding: 6px 8px 6px 8px;
+    background: var(--input-background);
+    border: 1px solid #b1a37a;
+    color: #202020;
+    width: 15px;
+    border-radius: 3px;
+    margin-top: 10px;
+}
+
+.deleteTagIcon:hover {
+    background-color: #e7d3d3;
+    cursor: pointer;
 }
 
 .dropdown-content1 {
@@ -405,9 +387,9 @@ input:focus {
     display: none;
 }
 
-.separatorDiv hr {
+.dragDropSeparatorDiv hr {
     margin: 0;
-    background-color: rgba(255,0,0,0.7);
+    background-color: rgb(255, 163, 0);
 }
 
 .separatorForQuickContentAdderDiv hr {
@@ -415,19 +397,9 @@ input:focus {
     background-color: rgba(0,144,255,0.7);
 }
 
-.quickContentAdderDiv {
-    margin: 0;
-}
-
-.quickContentEditDiv {
-    margin: 0;
-}
-
 #quickEditBox {
-    max-width: 570px;
-}
-
-#quickEditBox:focus {
-    border: 0px #202020;
+    background-color: var(--input-background);
+    border: 1px solid #202020;
     border-radius: 3px;
+    max-width: 570px;
 }

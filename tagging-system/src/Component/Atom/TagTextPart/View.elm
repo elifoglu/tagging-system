@@ -46,9 +46,9 @@ viewContentLineWithAllStuff : Model -> TagTextPart -> TagID -> QuickContentEditM
 viewContentLineWithAllStuff model currentTagTextPart tagIdOfTagPage quickContentEditModel content =
     div []
         [ viewContentSeparatorAdder model content Top
-        , viewTopDownHrLineOfContent model content currentTagTextPart Top
+        , viewDragDropSeparator model content currentTagTextPart Top
         , viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage quickContentEditModel content
-        , viewTopDownHrLineOfContent model content currentTagTextPart Down
+        , viewDragDropSeparator model content currentTagTextPart Down
         , viewContentSeparatorAdder model content Down
         ]
 
@@ -58,7 +58,7 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
     case quickContentEditModel of
         Open opened txt ->
             if opened.contentId == content.contentId && opened.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
-                div [ class "quickContentEditDiv", id "contents" ]
+                div [ ]
                     [ viewQuickContentEditInput txt
                     ]
 
@@ -134,22 +134,24 @@ viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
     div [ class "contentLineParent" ]
         [ div [ class "contentLineFirstChild" ]
-            [ span [ class "contentLine", id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver model content, onMouseLeave, onRightClick content ]
+            [ span [ id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver model content, onMouseLeave, onRightClick content ]
                 [ if String.trim content.text == "" then
-                    span [ style "padding-left" "250px" ] [ text "" ]
+                    span [ class "emptyContentLine" ] [ createBeautifiedContentText "<br>" ]
 
                   else
-                    case model.contentTagIdDuoThatIsBeingDragged of
-                        Just draggedContent ->
-                            if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
-                                --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
-                                createBeautifiedContentText (" • " ++ content.text)
+                    span [ class "contentLine" ]
+                        [ case model.contentTagIdDuoThatIsBeingDragged of
+                            Just draggedContent ->
+                                if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
+                                    --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
+                                    createBeautifiedContentText (" • " ++ content.text)
 
-                            else
-                                createBeautifiedContentText (" • " ++ content.text)
+                                else
+                                    createBeautifiedContentText (" • " ++ content.text)
 
-                        Nothing ->
-                            createBeautifiedContentText (" • " ++ content.text)
+                            Nothing ->
+                                createBeautifiedContentText (" • " ++ content.text)
+                        ]
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
@@ -241,7 +243,7 @@ viewContentSeparatorAdder model content whichHrLine =
                             == content.tagIdOfCurrentTextPart
                             && ((whichHrLine == Top && boxLocation.locatedAt == BeforeContentLine) || (whichHrLine == Down && boxLocation.locatedAt == AfterContentLine))
                     then
-                        div [ class "quickContentAdderDiv" ]
+                        div [ ]
                             [ viewQuickContentAdder text
                             ]
 
@@ -264,7 +266,11 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
         Nothing ->
             case model.contentTagDuoWhichCursorIsOverItNow of
                 Just contentWhichCursorIsOnItNow ->
-                    if
+                    --wait to get contentLineHeight info to decide to show (or not show) quickContentAdderSeparator. if contentLiteHeight value is 0, it is not gotten yet
+                    if contentWhichCursorIsOnItNow.contentLineHeight == 0 then
+                        text ""
+
+                    else if
                         (contentWhichCursorIsOnItNow.contentId == content.contentId)
                             && (contentWhichCursorIsOnItNow.tagId == content.tagIdOfCurrentTextPart)
                     then
@@ -365,8 +371,8 @@ onKeyDown tagger =
     on "keydown" (map tagger keyCode)
 
 
-viewTopDownHrLineOfContent : Model -> Content -> TagTextPart -> WhichHrLine -> Html Msg
-viewTopDownHrLineOfContent model content currentTagTextPart whichHrLine =
+viewDragDropSeparator : Model -> Content -> TagTextPart -> WhichHrLine -> Html Msg
+viewDragDropSeparator model content currentTagTextPart whichHrLine =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just beingDraggedContent ->
             case model.contentTagDuoWhichCursorIsOverItNow of
@@ -379,10 +385,10 @@ viewTopDownHrLineOfContent model content currentTagTextPart whichHrLine =
                             && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Top then
-                            div [ class "separatorDiv" ] [ hr [] [] ]
+                            div [ class "dragDropSeparatorDiv" ] [ hr [] [] ]
 
                         else if contentWhichCursorIsOnItNow.offsetPosY > downOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Down then
-                            div [ class "separatorDiv" ] [ hr [] [] ]
+                            div [ class "dragDropSeparatorDiv" ] [ hr [] [] ]
 
                         else
                             text ""

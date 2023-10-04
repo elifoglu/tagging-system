@@ -23,7 +23,7 @@ viewTagText model tag tagTextPartsForGroupView tagTextPartsForLineView tagTextPa
                 DistinctGroupView ->
                     tagTextPartsForDistinctGroupView
     in
-    div [ class "tagTextView contentFont" ]
+    div [ class "tagTextView" ]
         (tagTextParts
             |> List.filter (\ttp -> not (List.isEmpty ttp.contents))
             |> List.map (viewTextPart model tag quickContentEditModel)

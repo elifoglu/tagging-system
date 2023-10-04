@@ -17,7 +17,7 @@ view : Model -> Document Msg
 view model =
     { title = "tagging system"
     , body =
-        [ div []
+        [ div [ ]
             [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewUndoDiv model ]
             , div [ class "body" ]
                 (case model.activePage of

@@ -10,7 +10,7 @@ import Html.Events exposing (onInput)
 
 viewSearchContentDiv : String -> List Content -> Html Msg
 viewSearchContentDiv searchKeyword contents =
-    div []
+    div [ class "contentSearchPageDiv"]
         [ input [ type_ "text", id "contentSearchInput", class "contentSearchInput", placeholder "write sth to search", value searchKeyword, onInput GotSearchInput, style "width" "130px" ] []
         , span [ class "searchContentInfoText" ]
             [ text
