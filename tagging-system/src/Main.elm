@@ -372,7 +372,7 @@ update msg model =
                             { content = c
                             , title = Maybe.withDefault "" c.title
                             , text = c.text
-                            , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) (selectedTagOptionsForContent c model.allTags) Nothing
+                            , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) False (selectedTagOptionsForContent c model.allTags) Nothing
                             }
 
                         newUpdateContentModuleModel : UpdateContentModuleModel
@@ -606,17 +606,91 @@ update msg model =
                         App.Msg.Escape ->
                             case model.activePage of
                                 ContentSearchPage _ _ tagIdToReturnItsPage ->
-                                        let
-                                            newModel =
-                                                { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagIdToReturnItsPage))) }
-                                        in
-                                        ( newModel, getCmdToSendByPage newModel )
+                                    let
+                                        newModel =
+                                            { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagIdToReturnItsPage))) }
+                                    in
+                                    ( newModel, getCmdToSendByPage newModel )
+
                                 _ ->
                                     ( model, Cmd.none )
 
                         _ ->
                             ( model, Cmd.none )
 
+                TagPickerModuleInput workingOnWhichModule ->
+                    case keyDownType of
+                        App.Msg.Escape ->
+                            case model.activePage of
+                                TagPage (Initialized a) ->
+                                    let
+                                        currentTagPickerModuleModel : TagPickerModuleModel
+                                        currentTagPickerModuleModel =
+                                            case workingOnWhichModule of
+                                                WorkingOnCreateTagModule ->
+                                                    a.createTagModule.tagPickerModelForParentTags
+
+                                                WorkingOnUpdateTagModule ->
+                                                    a.updateTagModule.tagPickerModelForParentTags
+
+                                                WorkingOnCreateContentModule ->
+                                                    a.createContentModule.tagPickerModelForTags
+
+                                                WorkingOnUpdateContentModule ->
+                                                    a.updateContentModule.tagPickerModelForTags
+
+                                        newTagPickerModuleModel =
+                                            { currentTagPickerModuleModel | showTagOptionList = False, input = "" }
+
+                                        newTagPage =
+                                            case workingOnWhichModule of
+                                                WorkingOnCreateTagModule ->
+                                                    let
+                                                        currentCreateTagModuleModel =
+                                                            a.createTagModule
+
+                                                        newCreateTagModuleModel =
+                                                            { currentCreateTagModuleModel | tagPickerModelForParentTags = newTagPickerModuleModel }
+                                                    in
+                                                    TagPage (Initialized { a | createTagModule = newCreateTagModuleModel })
+
+                                                WorkingOnUpdateTagModule ->
+                                                    let
+                                                        currentUpdateTagPageModel =
+                                                            a.updateTagModule
+
+                                                        newUpdateTagModuleModel =
+                                                            { currentUpdateTagPageModel | tagPickerModelForParentTags = newTagPickerModuleModel }
+                                                    in
+                                                    TagPage (Initialized { a | updateTagModule = newUpdateTagModuleModel })
+
+                                                WorkingOnCreateContentModule ->
+                                                    let
+                                                        currentCreateContentModuleModel =
+                                                            a.createContentModule
+
+                                                        newCreateContentModuleModel =
+                                                            { currentCreateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
+                                                    in
+                                                    TagPage (Initialized { a | createContentModule = newCreateContentModuleModel })
+
+                                                WorkingOnUpdateContentModule ->
+                                                    let
+                                                        currentUpdateContentModuleModel =
+                                                            a.updateContentModule
+
+                                                        newUpdateContentModuleModel =
+                                                            { currentUpdateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
+                                                    in
+                                                    TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
+                                    in
+                                    ( { model | activePage = newTagPage }, Cmd.none )
+
+                                _ ->
+                                    ( model, Cmd.none )
+
+                        _ ->
+                            ( model, Cmd.none )
 
         -- CREATE/UPDATE TAG MODULES --
         CreateTagModuleInputChanged inputType ->
@@ -690,6 +764,7 @@ update msg model =
             case model.activePage of
                 TagPage (Initialized a) ->
                     let
+                        currentTagPickerModuleModel : TagPickerModuleModel
                         currentTagPickerModuleModel =
                             case workingOnWhichModule of
                                 WorkingOnCreateTagModule ->
@@ -707,7 +782,7 @@ update msg model =
                         newTagPickerModuleModel =
                             case inputType of
                                 SearchInput text ->
-                                    { currentTagPickerModuleModel | input = text }
+                                    { currentTagPickerModuleModel | input = text, showTagOptionList = True }
 
                                 OptionClicked tagOption ->
                                     let
@@ -723,6 +798,9 @@ update msg model =
                                                 |> List.filter (\t -> t.tagId /= tagOption.tagId)
                                     in
                                     { currentTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
+
+                                ToggleSelectionList ->
+                                    { currentTagPickerModuleModel | showTagOptionList = not currentTagPickerModuleModel.showTagOptionList }
 
                         newTagPage =
                             case workingOnWhichModule of

@@ -1,24 +1,21 @@
 module TagPicker.View exposing (viewTagPickerDiv)
 
 import App.Model exposing (TagModuleVisibility(..), TagOption, TagPickerModuleModel)
-import App.Msg exposing (WorkingOnWhichModule, Msg(..), TagInputType(..), TagPickerInputType(..))
+import App.Msg exposing (KeyDownPlace(..), KeyDownType, Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule)
+import Component.KeydownHandler exposing (onKeyDown)
 import Html exposing (Html, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, selected, style, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onFocus, onInput)
+import TypedSvg.Events exposing (onFocusOut)
 
 
 getTagOptionsToShow : TagPickerModuleModel -> List TagOption
 getTagOptionsToShow model =
-    if model.input == "?" then
-        --this branch is just for me to see all existing tags by entering "?" as search input
-        model.allAvailableTagOptions
-            |> List.filter (removeFilteredThingFirst model.tagIdToFilterOut)
-            |> List.filter (\a -> not (List.member a model.selectedTagOptions))
-
+    if model.showTagOptionList == False then []
     else
         model.allAvailableTagOptions
             |> List.filter (removeFilteredThingFirst model.tagIdToFilterOut)
-            |> List.filter (\a -> String.contains model.input a.tagName)
+            |> List.filter (\a -> if model.input == "" then True else String.contains model.input a.tagName)
             |> List.filter (\a -> not (List.member a model.selectedTagOptions))
 
 
@@ -35,7 +32,7 @@ removeFilteredThingFirst tagIdToFilterOut tagOption =
 viewTagPickerDiv : TagPickerModuleModel -> WorkingOnWhichModule -> Html Msg
 viewTagPickerDiv tagPickerModel workingOnWhichModule =
     div [] <|
-        [ viewInput "text" "search tags..." tagPickerModel.input (tagCreateOrUpdateInputMessage workingOnWhichModule SearchInput)
+        [ viewInput "text" "search tags..." tagPickerModel.input (TagPickerModuleInputChanged workingOnWhichModule ToggleSelectionList) (tagCreateOrUpdateInputMessage workingOnWhichModule SearchInput) (KeyDown (TagPickerModuleInput workingOnWhichModule))
         , viewSelecteds tagPickerModel (tagCreateOrUpdateInputMessage workingOnWhichModule OptionRemoved)
         , viewSelectInput tagPickerModel (tagCreateOrUpdateInputMessage workingOnWhichModule OptionClicked)
         ]
@@ -46,9 +43,9 @@ tagCreateOrUpdateInputMessage workingOnWhichModule a b =
     TagPickerModuleInputChanged workingOnWhichModule (a b)
 
 
-viewInput : String -> String -> String -> (String -> msg) -> Html msg
-viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, selected True, onInput toMsg, style "width" "100px" ] []
+viewInput : String -> String -> String -> msg -> (String -> msg) -> (KeyDownType -> msg) -> Html msg
+viewInput t p v focusMsg inputMsg keydownMsg =
+    input [ type_ t, placeholder p, value v, selected True, onInput inputMsg, onClick focusMsg, onKeyDown keydownMsg,  style "width" "100px" ] []
 
 
 viewSelecteds : TagPickerModuleModel -> (TagOption -> msg) -> Html msg
@@ -77,10 +74,7 @@ selectedTagOptionDiv toMsg tagOption =
 
 viewSelectInput : TagPickerModuleModel -> (TagOption -> msg) -> Html msg
 viewSelectInput model toMsg =
-    if String.length model.input < 1 then
-        text ""
-
-    else if List.isEmpty (getTagOptionsToShow model) then
+    if List.isEmpty (getTagOptionsToShow model) then
         text ""
 
     else

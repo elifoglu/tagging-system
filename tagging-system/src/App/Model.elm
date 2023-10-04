@@ -162,12 +162,12 @@ downOffsetForContentLine contentLineHeight =
 
 defaultCreateContentModule : Tag -> List Tag -> CreateContentModuleModel
 defaultCreateContentModule currentTag allTags =
-    CreateContentModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [ tagToTagOption currentTag ] Nothing)
+    CreateContentModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) False [ tagToTagOption currentTag ] Nothing)
 
 
 defaultUpdateContentModule : UpdateContentModuleModel
 defaultUpdateContentModule =
-    UpdateContentModuleModel dummyContent "" "" (TagPickerModuleModel "" [] [] Nothing)
+    UpdateContentModuleModel dummyContent "" "" (TagPickerModuleModel "" [] False [] Nothing)
 
 
 dummyContent : Content
@@ -177,12 +177,13 @@ dummyContent =
 
 defaultCreateTagModule : List Tag -> CreateTagModuleModel
 defaultCreateTagModule allTags =
-    CreateTagModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) [] Nothing)
+    CreateTagModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) False [] Nothing)
 
 
 type alias TagPickerModuleModel =
     { input : String
     , allAvailableTagOptions : List TagOption
+    , showTagOptionList : Bool
     , selectedTagOptions : List TagOption
     , tagIdToFilterOut : Maybe String
     }
@@ -207,7 +208,7 @@ tagToTagOption tag =
 
 defaultUpdateTagModule : Tag -> List Tag -> UpdateTagModuleModel
 defaultUpdateTagModule tagToUpdate allTags =
-    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId)) DeleteTheTagOnly
+    UpdateTagModuleModel tagToUpdate.tagId tagToUpdate.name tagToUpdate.description (TagPickerModuleModel "" (allTagOptions allTags) False (selectedTagOptionsForTag tagToUpdate allTags) (Just tagToUpdate.tagId)) DeleteTheTagOnly
 
 
 selectedTagOptionsForTag : Tag -> List Tag -> List TagOption

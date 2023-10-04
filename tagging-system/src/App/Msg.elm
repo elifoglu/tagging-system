@@ -55,6 +55,7 @@ type KeyDownPlace =
     QuickContentAdderInput
     | QuickContentEditInput
     | SearchInputOnSearchPage
+    | TagPickerModuleInput WorkingOnWhichModule
 
 type KeyDownType
     = Enter
@@ -89,6 +90,7 @@ type TagInputType
 
 
 type TagPickerInputType
-    = SearchInput String
+    = ToggleSelectionList
+    | SearchInput String
     | OptionClicked TagOption
     | OptionRemoved TagOption
