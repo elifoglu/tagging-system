@@ -173,6 +173,10 @@ hr {
     border-radius: 3px;
 }
 
+.contentLineFirstChild span {
+    display: block;
+}
+
 .contentEditAndDeleteIcons {
     width: 13px;
     height: auto;
