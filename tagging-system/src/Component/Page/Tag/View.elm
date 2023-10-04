@@ -17,7 +17,7 @@ import UpdateTag.View exposing (viewUpdateTagDiv)
 
 viewTagPageDiv : Model -> InitializedTagPageModel -> Html Msg
 viewTagPageDiv model initialized =
-    div [ style "margin-top" "27px" ]
+    div [ style "margin-top" "25px" ]
         [ viewLeftFrame model.homeTagId initialized model.allTags
         , viewMidFrame model initialized
         , viewRightFrame initialized
@@ -26,7 +26,7 @@ viewTagPageDiv model initialized =
 
 viewRightFrame : InitializedTagPageModel -> Html Msg
 viewRightFrame initialized =
-    div [ class "rightFrameOnTagPage rightFrameFont" ]
+    div [ class "rightFrameOnTagPage" ]
         [ case initialized.oneOfContentModuleIsVisible of
             CreateContentModuleIsVisible ->
                 viewCreateContentDiv initialized.createContentModule
@@ -38,7 +38,7 @@ viewRightFrame initialized =
 
 viewLeftFrame : String -> InitializedTagPageModel -> List Tag -> Html Msg
 viewLeftFrame homeTagId initialized allTags =
-    div [ class "leftFrameOnTagPage leftFrameFont" ]
+    div [ class "leftFrameOnTagPage" ]
         [ viewTagsDiv initialized.tag.parentTags allTags Parent
         , div
             [ style "font-size" "14px"
@@ -51,7 +51,7 @@ viewLeftFrame homeTagId initialized allTags =
                 )
             ]
             [ b [] [ text ("#" ++ initialized.tag.name) ]
-            , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, style "margin-left" "5px", src "/edit.png" ] []
+            , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, src "/edit.png" ] []
             ]
         , viewTagsDiv initialized.tag.childTags allTags Child
         , viewTagTextTypeSelectionBoxDiv initialized.activeTagTextViewType

@@ -2,14 +2,13 @@ module TagTextPart.View exposing (viewTextPart)
 
 import App.Model exposing (..)
 import App.Msg exposing (KeyDownPlace(..), KeyDownType(..), Msg(..))
+import Component.ContentTextUtil exposing (contentHasLinkInside, createBeautifiedContentText)
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, span, text, textarea)
-import Html.Attributes exposing (class, cols, href, id, placeholder, rows, spellcheck, src, style, type_, value)
-import Html.Events exposing (keyCode, on, onClick, onInput)
+import Html.Attributes exposing (class, cols, href, id, placeholder, rows, spellcheck, src, style, value)
+import Html.Events exposing (on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
-import Html.Parser
-import Html.Parser.Util
 import Json.Decode exposing (bool, field, int, map, map2)
 import List.Extra
 import Tag.Model exposing (Tag)
@@ -67,67 +66,6 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
 
         ClosedButTextToStore _ _ ->
             viewContentLine model currentTagTextPart tagIdOfTagPage content
-
-
-createBeautifiedContentText : String -> Html Msg
-createBeautifiedContentText contentText =
-    let
-        beautified =
-            contentText
-                |> replaceNewLineIdentifiersWithBrTags
-                |> updateContentTextWithClickableLinks
-    in
-    span []
-        (case Html.Parser.run beautified of
-            Ok parsedNodes ->
-                Html.Parser.Util.toVirtualDom parsedNodes
-
-            Err _ ->
-                []
-        )
-
-
-
---[ text beautified]
-
-
-updateContentTextWithClickableLinks : String -> String
-updateContentTextWithClickableLinks contentText =
-    let
-        wrapLinkWordWithA : String -> String
-        wrapLinkWordWithA link =
-            "<a href=\"" ++ link ++ "\">link</a>"
-
-        textWithAddedATagsToLinks =
-            String.split " " contentText
-                |> List.map
-                    (\word ->
-                        if wordIsALink word then
-                            wrapLinkWordWithA word
-
-                        else
-                            word
-                    )
-                |> String.join " "
-    in
-    textWithAddedATagsToLinks
-
-
-replaceNewLineIdentifiersWithBrTags : String -> String
-replaceNewLineIdentifiersWithBrTags contentText =
-    String.replace "\n" " <br> " contentText
-
-
-wordIsALink : String -> Bool
-wordIsALink word =
-    List.any (\httpPrefix -> String.contains httpPrefix word) [ "http://", "https://" ]
-
-
-contentHasLinkInside : String -> Bool
-contentHasLinkInside contentText =
-    String.split " " contentText
-        |> List.map (\word -> wordIsALink word)
-        |> List.any (\isALink -> isALink == True)
 
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg

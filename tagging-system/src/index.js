@@ -1,5 +1,6 @@
 import './style.css';
-//import './style_dark.css'; -- add this line to enable dark mode
+import './style_dark.css';
+
 import {Elm} from './Main.elm';
 
 var tagTextViewType = localStorage.getItem('ts-tagTextViewType');

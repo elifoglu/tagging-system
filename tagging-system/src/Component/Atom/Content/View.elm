@@ -1,18 +1,17 @@
-module Content.View exposing (viewContentDiv, viewContentInfoDiv)
+module Content.View exposing (viewContentDivOnSearchPage, viewContentInfoDiv)
 
 import App.Model exposing (MaybeTextToHighlight)
 import App.Msg exposing (Msg(..))
+import Component.ContentTextUtil exposing (createBeautifiedContentText)
 import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
-import Html exposing (Html, a, br, div, img, p, text)
-import Html.Attributes exposing (class, href, src, title)
-import Html.Parser
-import Html.Parser.Util
+import Html exposing (Html, a, br, div, p, text)
+import Html.Attributes exposing (class, href, title)
 import Tag.Model exposing (Tag)
 
 
-viewContentDiv : MaybeTextToHighlight -> Content -> Html Msg
-viewContentDiv textToHighlight content =
+viewContentDivOnSearchPage : MaybeTextToHighlight -> Content -> Html Msg
+viewContentDivOnSearchPage textToHighlight content =
     p []
         [ div []
             [ div [ class "contentTitleOnSearchContentPage" ] [ viewContentTitle content.title ]
@@ -36,7 +35,12 @@ viewContentInfoDiv : Content -> Html Msg
 viewContentInfoDiv content =
     div [ class "contentInfoDivOnSearchPage" ]
         (viewTagLinks content.tags
-            ++ [ if List.length content.tags > 0 then br [] [] else text ""]
+            ++ [ if List.length content.tags > 0 then
+                    br [] []
+
+                 else
+                    text ""
+               ]
             ++ [ text ("created at: " ++ createdDateOf content) ]
             ++ [ text (", modified at: " ++ lastModifiedDateOf content) ]
         )
@@ -51,7 +55,8 @@ viewTagLinks tags =
 
 viewTagLink : Tag -> Html Msg
 viewTagLink tag =
-    a [ href ("/tags/" ++ tag.tagId), class "tagLink" ] [ text ("#" ++ tag.name) ]
+    a [ href ("/tags/" ++ tag.tagId), class "tagLinkOnSearchPage" ] [ text ("#" ++ tag.name) ]
+
 
 viewTextOfContent : Content -> MaybeTextToHighlight -> Html msg
 viewTextOfContent content maybeTextToHighlight =
@@ -67,11 +72,6 @@ viewTextOfContent content maybeTextToHighlight =
                     content.text
 
         nodes =
-            case Html.Parser.run htmlText of
-                Ok parsedNodes ->
-                    Html.Parser.Util.toVirtualDom parsedNodes
-
-                Err _ ->
-                    []
+            createBeautifiedContentText htmlText
     in
-    div [ class "contentTextDiv contentFont" ] nodes
+    div [ class "contentInSearchPage" ] [ nodes ]

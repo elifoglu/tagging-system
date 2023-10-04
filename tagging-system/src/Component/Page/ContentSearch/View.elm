@@ -2,7 +2,7 @@ module ContentSearch.View exposing (..)
 
 import App.Msg exposing (Msg(..))
 import Content.Model exposing (Content)
-import Content.View exposing (viewContentDiv)
+import Content.View exposing (viewContentDivOnSearchPage)
 import Html exposing (Html, div, hr, input, span, text)
 import Html.Attributes exposing (class, id, placeholder, style, type_, value)
 import Html.Events exposing (onInput)
@@ -24,9 +24,9 @@ viewSearchContentDiv searchKeyword contents =
                     "please enter at least 3 chars"
                 )
             ]
-        , div [ style "margin-top" "20px" ]
+        , div [ class "contentSeparatorOnSearchPage" ]
             (contents
-                |> List.map (viewContentDiv (Just searchKeyword))
+                |> List.map (viewContentDivOnSearchPage (Just searchKeyword))
                 |> List.intersperse (hr [] [])
             )
         ]

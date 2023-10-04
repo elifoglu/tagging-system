@@ -1,23 +1,488 @@
+:root {
+    --base-color: #181a1b;
+    --font-color: #b3b3b3;
+    --font-color-hover: #cbcbcb;
+
+    --input-placeholder-font-color: rgba(212,212,212,0.5);
+    --input-background: #323638;
+    --input-background-hover: #656464;
+    --input-border-color: rgba(179,179,179,0.5);
+
+    --tag-option-selector-background: #393939;
+    --tag-option-selector-background-hover: #727272;
+    --selected-tag-option-background: #616161;
+    --selected-tag-option-background-hover: #9a9a9a;
+    --selected-tag-option-font-color-hover: #202020;
+
+    --buttons-background: #424242;
+    --buttons-background-hover: #656464;
+    --buttons-border: #444444;
+    --buttons-font-color: rgba(212,212,212,0.5);
+
+    --content-a-link-font-color: #e59c08;
+    --content-a-link-font-color-hover: #b47901;
+    --content-separator-hr-color: rgba(255,255,255,0.3);
+
+    --home-navigator-background-hover: #343434;
+    --undo-icon-background-hover: #2d2d2d;
+    --tag-edit-icon-background-hover: rgba(255, 163, 0, 0.5);
+    --content-edit-delete-icons-background-hover: rgba(255, 163, 0, 0.5);
+
+    --content-line-hover: #424141;
+    --search-keyword-highlight-background-color: rgb(203, 188, 104);
+    --tag-title-in-tag-text-font-color: rgb(85, 210, 232);
+
+    --drag-drop-separator-color: rgba(85, 210, 232, 0.7);
+    --quick-content-adder-separator-color:  rgba(255, 163, 0, 0.7);
+}
+
 html, body {
-    background: rgb(23, 20, 20);
-    color: #e7e7e7;
+    background: var(--base-color);
+    color: var(--font-color);
+    padding-bottom: 70px;
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    text-decoration: none;
+    font-style: normal;
+    font-variant: normal;
+    text-transform: none;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.2px;
+    line-height: 20px;
+    max-width: 1000px;
+    display: block;
+}
+
+.header {
+    margin-left: 10px;
+}
+
+.body {
+    margin-left: 10px;
+}
+
+.searchBoxInHeader {
+    padding: 5px;
+    display: inline-block;
+}
+
+.undoDivInHeader {
+    padding: 5px;
+    display: inline-block;
+    margin: 0;
+}
+
+.undoIcon {
+    width: 22px;
+    height: auto;
+    align-content: center;
+    align-self: center;
+}
+
+.undoIcon:hover {
+    background-color: var(--undo-icon-background-hover);
+    border-radius: 3px;
+    padding: 1px;
+    cursor: pointer;
+}
+
+button, input[type="submit"], input[type="reset"] {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+input, textarea {
+    border: 1px dashed var(--font-color);
+    border-radius: 3px;
+    color: var(--font-color);
+    background-color: var(--input-background);
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--input-placeholder-font-color);
+}
+
+input:focus, textarea:focus {
+    outline: none;
 }
 
 a {
-    color: white;
+    text-decoration: none;
+    color: var(--base-color);
 }
 
-a:hover {
-    color: #c9c9c9;
+
+select {
+    border: 1px solid var(--input-border-color);
+    padding-left: 3px;
+    padding-right: 3px;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    border-radius: 3px;
+    background-color: var(--input-background);
+    width: 105px;
+    color: var(--font-color);
+}
+
+select:hover {
+    background-color: var(--input-background-hover);
+}
+
+select option {
+    color: var(--font-color);
+}
+
+.contentTitleOnSearchContentPage {
+    font-weight: bold;
+}
+
+.contentInSearchPage a {
+    color: var(--content-a-link-font-color);
+}
+
+.contentInSearchPage a:visited {
+    color: var(--content-a-link-font-color-hover);
+    text-decoration: underline var(--font-color);
+}
+
+.contentInSearchPage a:hover {
+    color: var(--content-a-link-font-color-hover);
+    text-decoration: underline var(--font-color);
+}
+
+.contentInfoDivOnSearchPage {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+    margin-top: 10px;
+}
+
+.contentSeparatorOnSearchPage hr {
+    background: var(--content-separator-hr-color);
+}
+
+.contentInfoDivOnUpdateContentModule {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    margin: 20px 0 20px 0;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.homeNavigator {
+    padding: 10px;
+    display: inline-block;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    color: var(--font-color);
 }
 
 .homeNavigator:hover {
-    background: #c9c9c9;
+    background: var(--home-navigator-background-hover);
 }
 
-.tagLink {
-    color: gray;
+.leftFrameOnTagPage {
+    width: 15%;
+    float: left;
+    margin-left: 10px;
+    color: var(--font-color);
 }
-.tagLink:hover {
-    color: white;
+
+.midFrameOnTagPage {
+    width: 60%;
+    float: left;
+}
+
+.contentLineParent {
+    width: 600px;
+    display: flex;
+}
+
+.contentLineFirstChild {
+    max-width: 550px;
+    float: left;
+}
+
+.contentLineSecondChild {
+    display: inline-block;
+    float: left;
+    opacity: 0.01;
+    position: relative;
+}
+
+.iconHolderDivInSecondChild {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 50px;
+}
+
+.contentLineFirstChild:hover + .contentLineSecondChild {
+    display: inline-block;
+    opacity: 1;
+}
+
+.contentLineSecondChild:hover {
+    opacity: 1;
+}
+
+.contentLine {
+    padding-right: 5px;
+    padding-left: 5px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.contentLine a {
+    color: var(--content-a-link-font-color);
+}
+
+.contentLine a:visited {
+    color: var(--content-a-link-font-color-hover);
+    text-decoration: underline var(--font-color);
+}
+.contentLine a:hover {
+    color: var(--content-a-link-font-color-hover);
+    text-decoration: underline var(--font-color);
+}
+
+.contentLine:hover {
+    cursor: pointer;
+    background-color: var(--content-line-hover);
+    border-radius: 5px;
+}
+
+.emptyContentLine {
+    padding-left: 250px;
+}
+
+.contentLineFirstChild span {
+    display: block;
+}
+
+.contentEditAndDeleteIcons {
+    width: 13px;
+    height: auto;
+    align-content: center;
+    align-self: center;
+    padding: 2px;
+    float: left;
+}
+
+
+.contentEditAndDeleteIcons:hover {
+    background-color: var(--content-edit-delete-icons-background-hover);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.rightFrameOnTagPage {
+    width: 15%;
+    float: left;
+}
+
+.createUpdateContentTagButtons {
+    padding: 3px 10px 3px 10px;
+    background-color: var(--buttons-background);
+    border: 1px solid var(--buttons-border);
+    border-radius: 3px;
+    color: var(--buttons-font-color);
+    width: 33px;
+}
+
+.createUpdateContentTagButtons:hover {
+    background-color: var(--buttons-background-hover);
+}
+
+.tagPageTagA {
+    color: var(--font-color);
+}
+
+.tagPageTagA:hover {
+    font-size: 14px;
+}
+
+.tagLinkOnSearchPage {
+    color: var(--font-color);
+}
+
+.tagLinkOnSearchPage:hover {
+    color: var(--font-color-hover);
+}
+
+/* Content Search Page */
+
+.contentSearchPageDiv {
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.contentSearchInput {
+    border: 1px solid var(--input-border-color);
+    border-radius: 3px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    width: 55px;
+    font-size: 13px;
+}
+
+.textToHighlight {
+    background-color: var(--search-keyword-highlight-background-color);
+    color: var(--base-color);
+}
+
+.searchContentInfoText {
+    padding-left: 10px;
+}
+
+/* Tag Page */
+
+.tagTextView a {
+    text-decoration: none;
+}
+
+.tagTextView a:hover {
+    color: var(--content-a-link-font-color-hover);
+    font-size: 13.5px;
+}
+
+.tagTextView .tagAsATitle a {
+    color: var(--tag-title-in-tag-text-font-color);
+}
+
+.tagEditIcon {
+    margin-left: 5px;
+    width: 13px;
+    padding: 3px;
+}
+
+.tagEditIcon:hover {
+    background-color: var(--tag-edit-icon-background-hover);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* "Create Tag" and "Update Tag" modules */
+
+.createOrUpdateTagDiv {
+    margin-top: 25px;
+}
+
+.deleteTagIcon {
+    padding: 6px 8px 6px 8px;
+    background: var(--buttons-background);
+    border: 1px solid var(--buttons-border);
+    color: var(--buttons-font-color);
+    width: 15px;
+    border-radius: 3px;
+    margin-top: 10px;
+}
+
+.deleteTagIcon:hover {
+    background-color: var(--buttons-background-hover);
+    cursor: pointer;
+}
+
+.dropdown-content1 {
+    padding: 10px;
+    border-radius: 5px;
+    width: 100px;
+
+    font-size: 12px;
+    letter-spacing: 0.7px;
+    word-spacing: 0.2px;
+}
+
+.dropdown-content2 {
+    padding: 10px;
+    background-color: var(--tag-option-selector-background);
+    border-radius: 5px;
+    width: 100px;
+
+    font-size: 12px;
+    letter-spacing: 0.7px;
+    word-spacing: 0.2px;
+}
+
+.tagOptionToSelect {
+    background-color: var(--tag-option-selector-background);
+    border-radius: 2px;
+}
+
+.tagOptionToSelect:hover {
+    background-color: var(--tag-option-selector-background-hover);
+    cursor: pointer;
+}
+
+.selectedTagOptionWithX {
+    float: left;
+}
+
+.selectedTagOption {
+    display: block;
+    float: left;
+    background-color: var(--selected-tag-option-background);
+    border-radius: 2px;
+}
+
+.selectedTagOption:hover {
+    background-color: var(--selected-tag-option-background-hover);
+    color: var(--selected-tag-option-font-color-hover);
+    cursor: pointer;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.selectedTagOption:hover + .hide {
+    display: block;
+    background-color: var(--selected-tag-option-background-hover);
+    color: var(--selected-tag-option-font-color-hover);
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+
+.hide {
+    float: left;
+    display: none;
+}
+
+.dragDropSeparatorDiv hr {
+    margin: 0;
+    background-color: var(--drag-drop-separator-color);
+}
+
+.separatorForQuickContentAdderDiv hr {
+    margin: 0;
+    background-color: var(--quick-content-adder-separator-color);
+}
+
+#quickContentAdder {
+    background-color: var(--input-background);
+    border: 1px solid var(--base-color);
+    border-radius: 3px;
+    max-width: 570px;
+}
+
+#quickEditBox {
+    background-color: var(--input-background);
+    border: 1px solid var(--base-color);
+    border-radius: 3px;
+    max-width: 570px;
 }
