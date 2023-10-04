@@ -22,6 +22,16 @@ html, body {
     width: auto;
 }
 
+input {
+    border: 1px solid #202020;
+    border-radius: 3px;
+}
+
+textarea {
+    border: 1px solid #202020;
+    border-radius: 3px;
+}
+
 .title {
     font-size: 15px;
     letter-spacing: 0.3px;
@@ -127,8 +137,17 @@ hr {
     display: inline-block;
     float: left;
     opacity: 0.01;
+    position: relative;
 }
 
+.iconHolderDivInSecondChild {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 50px;
+}
 .contentLineFirstChild:hover + .contentLineSecondChild {
 
     display: inline-block;
@@ -160,6 +179,7 @@ hr {
     align-content: center;
     align-self: center;
     padding: 2px;
+    float: left;
 }
 
 .contentEditAndDeleteIcons:hover {
@@ -215,10 +235,6 @@ a {
     align-content: center;
     align-self: center;
     cursor: pointer;
-}
-
-input[type='radio'] {
-    accent-color: #202020;
 }
 
 .contentSearchInput {
@@ -404,5 +420,10 @@ input:focus {
 }
 
 #quickEditBox {
-    width: 530px;
+    max-width: 570px;
+}
+
+#quickEditBox:focus {
+    border: 0px #202020;
+    border-radius: 3px;
 }

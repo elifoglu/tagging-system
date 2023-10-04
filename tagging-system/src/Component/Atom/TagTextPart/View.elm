@@ -5,7 +5,7 @@ import App.Msg exposing (KeyDownPlace(..), Msg(..))
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, input, span, text, textarea)
-import Html.Attributes exposing (class, href, id, placeholder, rows, spellcheck, src, style, type_, value)
+import Html.Attributes exposing (class, cols, href, id, placeholder, rows, spellcheck, src, style, type_, value)
 import Html.Events exposing (keyCode, on, onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
 import Html.Parser
@@ -45,7 +45,7 @@ viewContentsLineByLine model currentTagTextPart tagIdOfTagPage quickContentEditM
 viewContentLineWithAllStuff : Model -> TagTextPart -> TagID -> QuickContentEditModel -> Content -> Html Msg
 viewContentLineWithAllStuff model currentTagTextPart tagIdOfTagPage quickContentEditModel content =
     div []
-        [ viewContentSeparatorAdder model content Top
+        [viewContentSeparatorAdder model content Top
         , viewTopDownHrLineOfContent model content currentTagTextPart Top
         , viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage quickContentEditModel content
         , viewTopDownHrLineOfContent model content currentTagTextPart Down
@@ -69,7 +69,29 @@ viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage qui
             viewContentLine model currentTagTextPart tagIdOfTagPage content
 
 
-updateContentTextWithClickableLinks : String -> Html Msg
+createBeautifiedContentText : String -> Html Msg
+createBeautifiedContentText contentText =
+    let
+        beautified =
+            contentText
+                |> replaceNewLineIdentifiersWithBrTags
+                |> updateContentTextWithClickableLinks
+    in
+    span []
+        (case Html.Parser.run beautified of
+            Ok parsedNodes ->
+                Html.Parser.Util.toVirtualDom parsedNodes
+
+            Err _ ->
+                []
+        )
+
+
+
+--[ text beautified]
+
+
+updateContentTextWithClickableLinks : String -> String
 updateContentTextWithClickableLinks contentText =
     let
         wrapLinkWordWithA : String -> String
@@ -88,14 +110,12 @@ updateContentTextWithClickableLinks contentText =
                     )
                 |> String.join " "
     in
-    span []
-        (case Html.Parser.run textWithAddedATagsToLinks of
-            Ok parsedNodes ->
-                Html.Parser.Util.toVirtualDom parsedNodes
+    textWithAddedATagsToLinks
 
-            Err _ ->
-                []
-        )
+
+replaceNewLineIdentifiersWithBrTags : String -> String
+replaceNewLineIdentifiersWithBrTags contentText =
+    String.replace "\n" " <br> " contentText
 
 
 wordIsALink : String -> Bool
@@ -112,9 +132,9 @@ contentHasLinkInside contentText =
 
 viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
-    div [ id (content.contentId ++ content.tagIdOfCurrentTextPart), class "contentLineParent", onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
+    div [  class "contentLineParent" ]
         [ div [ class "contentLineFirstChild" ]
-            [ span [ class "contentLine" ]
+            [ span [ class "contentLine", id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver content, onMouseLeave, onRightClick content ]
                 [ if String.trim content.text == "" then
                     span [ style "padding-left" "250px" ] [ text "" ]
 
@@ -123,37 +143,39 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
                         Just draggedContent ->
                             if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
                                 --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
-                                updateContentTextWithClickableLinks (" • " ++ content.text)
+                                createBeautifiedContentText (" • " ++ content.text)
 
                             else
-                                updateContentTextWithClickableLinks (" • " ++ content.text)
+                                createBeautifiedContentText (" • " ++ content.text)
 
                         Nothing ->
-                            updateContentTextWithClickableLinks (" • " ++ content.text)
+                            createBeautifiedContentText (" • " ++ content.text)
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
-            [ if String.trim content.text == "" then
-                text ""
+            [ div [ class "iconHolderDivInSecondChild" ]
+                [ if String.trim content.text == "" then
+                    text ""
 
-              else
-                img
-                    [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
+                  else
+                    img
+                        [ class "contentEditAndDeleteIcons", onClick (ToggleUpdateContentModuleFor content), style "margin-left" "5px", src "/edit.png" ]
+                        []
+                , img
+                    [ class "contentEditAndDeleteIcons"
+                    , onClick (DeleteContent content)
+                    , style "margin-left" "5px"
+                    , style "margin-right"
+                        (if String.trim content.text == "" then
+                            "250px"
+
+                         else
+                            "0px"
+                        )
+                    , src "/delete.png"
+                    ]
                     []
-            , img
-                [ class "contentEditAndDeleteIcons"
-                , onClick (DeleteContent content)
-                , style "margin-left" "5px"
-                , style "margin-right"
-                    (if String.trim content.text == "" then
-                        "250px"
-
-                     else
-                        "0px"
-                    )
-                , src "/delete.png"
                 ]
-                []
             ]
         ]
 
@@ -321,7 +343,21 @@ viewQuickContentAdder inputText =
 
 viewQuickContentEditInput : String -> Html Msg
 viewQuickContentEditInput inputText =
-    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows ((toFloat (String.length inputText) / 70) |> ceiling) ] []
+    textarea [ id "quickEditBox", placeholder "", value inputText, spellcheck False, onInput QuickContentEditInputChanged, onKeyDown (KeyDown QuickContentEditInput), rows (calculateRow inputText), cols (calculateCol inputText) ] []
+
+
+calculateRow : String -> Int
+calculateRow inputText =
+    let
+        newLineSlashNCountInText =
+            (List.length (String.split "\n" inputText) - 1) * 70
+    in
+    (toFloat (String.length inputText + newLineSlashNCountInText) / 70) |> ceiling
+
+
+calculateCol : String -> Int
+calculateCol inputText =
+    String.length inputText + 5
 
 
 onKeyDown : (Int -> msg) -> Attribute msg
