@@ -582,7 +582,7 @@ update msg model =
                                 TagPage (Initialized tagPage) ->
                                     case tagPage.quickContentAdderModule of
                                         JustQuickContentAdderData _ text ->
-                                            ( { model | activePage = TagPage (Initialized { tagPage | quickContentAdderModule = NothingButTextToStore text }) }, Cmd.none )
+                                            ( { model | activePage = TagPage (Initialized { tagPage | quickContentAdderModule = NothingButTextToStore (String.trim text) }) }, Cmd.none )
 
                                         NothingButTextToStore _ ->
                                             ( model, Cmd.none )
