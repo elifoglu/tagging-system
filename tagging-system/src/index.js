@@ -1,5 +1,6 @@
 import './style.css';
-//import './style_dark.css';
+import './theme-light.css';
+//import './theme-dark.css';
 
 import {Elm} from './Main.elm';
 

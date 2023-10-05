@@ -1,48 +1,3 @@
-:root {
-    --base-color: #FAF8F8;
-    --font-color: #202020;
-    --font-color-hover: #cbcbcb;
-
-    --input-placeholder-font-color: rgba(99, 99, 99, 0.5);
-    --input-background: #f5f0f0;
-    --input-background-hover: #faf6f6;
-    --input-border-color: rgba(179,179,179,0.5);
-    --quick-edit-and-adder-box-border-color: rgba(99, 99, 99, 0.5);
-
-    --tag-option-selector-background: #eeeeee;
-    --tag-option-selector-background-hover: #dcdcdc;
-    --selected-tag-option-background: rgba(199, 195, 178, 0.3);
-    --selected-tag-option-font-color: #202020;
-    --selected-tag-option-background-hover: rgb(255, 227, 206);
-    --selected-tag-option-font-color-hover: #202020;
-
-    --buttons-background: #eeeeee;
-    --buttons-background-hover: rgba(238, 238, 238, 0.45);
-    --buttons-border: rgba(215, 215, 215, 0.85);
-    --buttons-font-color: #494949;
-
-    --content-a-link-font-color: #d06d28;
-    --content-a-link-text-decoration: underline;
-    --content-a-link-text-decoration-visited: underline;
-    --content-a-link-text-decoration-hover: underline;
-    --tag-as-a-title-text-decoration: none;
-    --content-a-link-font-color-hover: #a55318;
-    --content-separator-hr-color: rgba(255,255,255,0.3);
-
-    --home-navigator-background-hover: #c9c9c9;
-    --undo-icon-background: #d4d4d4;
-    --undo-icon-background-hover: #bbbbbb;
-    --tag-edit-icon-background-hover: rgba(255, 163, 0, 0.5);
-    --content-edit-delete-icons-background-hover: rgba(255, 163, 0, 0.5);
-
-    --content-line-hover: rgba(0, 0, 0, 0.05);
-    --search-keyword-highlight-background-color: rgb(203, 188, 104);
-    --tag-title-in-tag-text-font-color: rgb(6, 146, 170);
-
-    --drag-drop-separator-color: rgba(255, 163, 0, 0.7);
-    --quick-content-adder-separator-color: rgba(85, 210, 232, 0.7);
-}
-
 html, body {
     background: var(--base-color);
     color: var(--font-color);
@@ -261,7 +216,7 @@ hr {
 
 .contentLineA {
     color: var(--content-a-link-font-color);
-    text-decoration: var(--content-a-link-text-decoration);
+    text-decoration: var(--content-a-link-text-decoration) var(--font-color);
 }
 
 .contentLineA:visited {

@@ -1,0 +1,44 @@
+:root {
+    --base-color: #181a1b;
+    --font-color: #b3b3b3;
+    --font-color-hover: #cbcbcb;
+
+    --input-placeholder-font-color: rgba(212,212,212,0.5);
+    --input-background: #323638;
+    --input-background-hover: #656464;
+    --input-border-color: rgba(179,179,179,0.5);
+    --quick-edit-and-adder-box-border-color: rgba(212,212,212,0.5);
+
+    --tag-option-selector-background: #282525;
+    --tag-option-selector-background-hover: #2f2e2e;
+    --selected-tag-option-background: rgba(83, 83, 69, 0.5);
+    --selected-tag-option-font-color: #cbd2d2;
+    --selected-tag-option-background-hover: #423b39;
+    --selected-tag-option-font-color-hover: #a09d9d;
+
+    --buttons-background: #424242;
+    --buttons-background-hover: #656464;
+    --buttons-border: #444444;
+    --buttons-font-color: rgba(212,212,212,0.5);
+
+    --content-a-link-font-color: #e59c08;
+    --content-a-link-text-decoration: none;
+    --content-a-link-text-decoration-visited: none;
+    --content-a-link-text-decoration-hover: underline;
+    --tag-as-a-title-text-decoration: none;
+    --content-a-link-font-color-hover: #b47901;
+    --content-separator-hr-color: rgba(255,255,255,0.3);
+
+    --home-navigator-background-hover: #343434;
+    --undo-icon-background: #3e3e3e;
+    --undo-icon-background-hover: #535353;
+    --tag-edit-icon-background-hover: rgba(255, 163, 0, 0.5);
+    --content-edit-delete-icons-background-hover: rgba(255, 163, 0, 0.5);
+
+    --content-line-hover: #424141;
+    --search-keyword-highlight-background-color: rgb(203, 188, 104);
+    --tag-title-in-tag-text-font-color: rgb(85, 210, 232);
+
+    --drag-drop-separator-color: rgba(85, 210, 232, 0.7);
+    --quick-content-adder-separator-color:  rgba(255, 163, 0, 0.7);
+}
