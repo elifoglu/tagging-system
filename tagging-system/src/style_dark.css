@@ -473,10 +473,12 @@ hr {
 }
 
 .dragDropSeparatorDiv hr {
+    margin: 0;
     border-top: 1px solid var(--drag-drop-separator-color);
 }
 
 .separatorForQuickContentAdderDiv hr {
+    margin: 0;
     border-top: 1px solid var(--quick-content-adder-separator-color);
 }
 
