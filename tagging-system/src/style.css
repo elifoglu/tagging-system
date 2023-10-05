@@ -327,67 +327,6 @@ hr {
     cursor: pointer;
 }
 
-.dropdown-content1 {
-    padding: 10px;
-    border-radius: 5px;
-    width: 100px;
-
-    font-size: 12px;
-    letter-spacing: 0.7px;
-    word-spacing: 0.2px;
-}
-
-.dropdown-content2 {
-    padding: 10px;
-    background-color: #dbf2f5;
-    border-radius: 5px;
-    width: 100px;
-
-    font-size: 12px;
-    letter-spacing: 0.7px;
-    word-spacing: 0.2px;
-}
-
-.tagOptionToSelect {
-    background-color: #dbf2f5;
-    border-radius: 2px;
-}
-
-.tagOptionToSelect:hover {
-    background-color: #afe4ec;
-    cursor: pointer;
-}
-
-.selectedTagOptionWithX {
-    float: left;
-}
-
-.selectedTagOption {
-    display: block;
-    float: left;
-    background-color: #eae6e6;
-    border-radius: 2px;
-}
-
-.selectedTagOption:hover {
-    background-color: #c7c6c6;
-    cursor: pointer;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-}
-
-.selectedTagOption:hover + .hide {
-    display: block;
-    background-color: #c7c6c6;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
-}
-
-.hide {
-    float: left;
-    display: none;
-}
-
 .dragDropSeparatorDiv hr {
     margin: 0;
     background-color: rgb(255, 163, 0);

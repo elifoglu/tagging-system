@@ -8,11 +8,12 @@
     --input-background-hover: #656464;
     --input-border-color: rgba(179,179,179,0.5);
 
-    --tag-option-selector-background: #393939;
-    --tag-option-selector-background-hover: #727272;
-    --selected-tag-option-background: #616161;
-    --selected-tag-option-background-hover: #9a9a9a;
-    --selected-tag-option-font-color-hover: #202020;
+    --tag-option-selector-background: #282525;
+    --tag-option-selector-background-hover: #2f2e2e;
+    --selected-tag-option-background: rgba(83, 83, 69, 0.5);
+    --selected-tag-option-font-color: #cbd2d2;
+    --selected-tag-option-background-hover: #423b39;
+    --selected-tag-option-font-color-hover: #a09d9d;
 
     --buttons-background: #424242;
     --buttons-background-hover: #656464;
@@ -400,46 +401,51 @@ hr {
     cursor: pointer;
 }
 
-.dropdown-content1 {
-    padding: 10px;
-    border-radius: 5px;
-    width: 100px;
-
+.baseTagPickerDiv {
     font-size: 12px;
     letter-spacing: 0.7px;
     word-spacing: 0.2px;
 }
 
-.dropdown-content2 {
+.selectedTagOptionsDiv {
+    display: inline-block;
+    overflow: auto;
+    margin-top: 10px;
+}
+
+.tagOptionsToSelectDiv {
+    margin-top: 10px;
     padding: 10px;
     background-color: var(--tag-option-selector-background);
     border-radius: 5px;
     width: 100px;
-
-    font-size: 12px;
-    letter-spacing: 0.7px;
-    word-spacing: 0.2px;
 }
 
-.tagOptionToSelect {
+.selectedTagOptionDiv {
+    float: left;
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.tagOptionToSelectDiv {
     background-color: var(--tag-option-selector-background);
     border-radius: 2px;
 }
 
-.tagOptionToSelect:hover {
+.tagOptionToSelectDiv:hover {
     background-color: var(--tag-option-selector-background-hover);
     cursor: pointer;
 }
 
-.selectedTagOptionWithX {
-    float: left;
-}
-
 .selectedTagOption {
+    padding-left: 5px;
+    padding-right: 5px;
     display: block;
     float: left;
     background-color: var(--selected-tag-option-background);
-    border-radius: 2px;
+    color: var(--selected-tag-option-font-color);
+    border-radius: 3px;
+    max-width: 90px;
 }
 
 .selectedTagOption:hover {
@@ -450,16 +456,21 @@ hr {
     border-bottom-right-radius: 0;
 }
 
+.selectedTagOptionWithX {
+    float: left;
+}
+
 .selectedTagOption:hover + .hide {
     display: block;
     background-color: var(--selected-tag-option-background-hover);
     color: var(--selected-tag-option-font-color-hover);
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
 }
 
 .hide {
     float: left;
+    padding-right: 3px;
     display: none;
 }
 
