@@ -289,7 +289,7 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
 
 viewQuickContentAdder : String -> Html Msg
 viewQuickContentAdder inputText =
-    textarea [ id "quickContentAdder", placeholder "add new content...", value inputText, onInput QuickContentAdderInputChanged, onKeyDown (KeyDown QuickContentAdderInput), rows (calculateRowForContentAdderInput inputText), cols (calculateColForContentAdderInput inputText) ] []
+    textarea [ id "quickContentAdder", placeholder "add new content...", value inputText, spellcheck False, onInput QuickContentAdderInputChanged, onKeyDown (KeyDown QuickContentAdderInput), rows (calculateRowForContentAdderInput inputText), cols (calculateColForContentAdderInput inputText) ] []
 
 
 calculateRowForContentAdderInput : String -> Int

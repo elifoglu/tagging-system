@@ -27,7 +27,7 @@ updateContentTextWithClickableLinks contentText =
     let
         wrapLinkWordWithA : String -> String
         wrapLinkWordWithA link =
-            "<a href=\"" ++ link ++ "\">link</a>"
+            "<a class=\"contentLineA\" href=\"" ++ link ++ "\">link</a>"
 
         textWithAddedATagsToLinks =
             String.split " " contentText

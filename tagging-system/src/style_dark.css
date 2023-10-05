@@ -21,11 +21,15 @@
     --buttons-font-color: rgba(212,212,212,0.5);
 
     --content-a-link-font-color: #e59c08;
+    --content-a-link-font-color-visited: #e59c08;
+    --content-a-link-text-decoration: none;
+    --tag-as-a-title-text-decoration: none;
     --content-a-link-font-color-hover: #b47901;
     --content-separator-hr-color: rgba(255,255,255,0.3);
 
     --home-navigator-background-hover: #343434;
-    --undo-icon-background-hover: #262626;
+    --undo-icon-background: #3e3e3e;
+    --undo-icon-background-hover: #535353;
     --tag-edit-icon-background-hover: rgba(255, 163, 0, 0.5);
     --content-edit-delete-icons-background-hover: rgba(255, 163, 0, 0.5);
 
@@ -78,12 +82,15 @@ html, body {
     height: auto;
     align-content: center;
     align-self: center;
+    background-color: var(--undo-icon-background);
+    padding: 3px;
+    border-radius: 3px;
 }
 
 .undoIcon:hover {
     background-color: var(--undo-icon-background-hover);
-    border-radius: 2px;
-    padding: 3px;
+    border-radius: 3px;
+    padding: 4px;
     cursor: pointer;
 }
 
@@ -148,7 +155,7 @@ select option {
 }
 
 .contentInSearchPage a:visited {
-    color: var(--content-a-link-font-color-hover);
+    color: var(--content-a-link-font-color-visited);
     text-decoration: underline var(--font-color);
 }
 
@@ -249,15 +256,15 @@ hr {
     padding-bottom: 2px;
 }
 
-.contentLine a {
+.contentLineA {
     color: var(--content-a-link-font-color);
 }
 
-.contentLine a:visited {
-    color: var(--content-a-link-font-color-hover);
+.contentLineA:visited {
+    color: var(--content-a-link-font-color-visited);
     text-decoration: underline var(--font-color);
 }
-.contentLine a:hover {
+.contentLineA:hover {
     color: var(--content-a-link-font-color-hover);
     text-decoration: underline var(--font-color);
 }
@@ -353,17 +360,13 @@ hr {
 
 /* Tag Page */
 
-.tagTextView a {
-    text-decoration: none;
-}
-
-.tagTextView a:hover {
-    color: var(--content-a-link-font-color-hover);
-    font-size: 13.5px;
-}
-
 .tagTextView .tagAsATitle a {
     color: var(--tag-title-in-tag-text-font-color);
+    text-decoration: var(--tag-as-a-title-text-decoration);
+}
+
+.tagTextView .tagAsATitle a:hover {
+    font-size: 13.5px;
 }
 
 .tagEditIcon {
