@@ -7,6 +7,7 @@
     --input-background: #323638;
     --input-background-hover: #656464;
     --input-border-color: rgba(179,179,179,0.5);
+    --quick-edit-and-adder-box-border-color: rgba(212,212,212,0.5);
 
     --tag-option-selector-background: #282525;
     --tag-option-selector-background-hover: #2f2e2e;
@@ -21,8 +22,9 @@
     --buttons-font-color: rgba(212,212,212,0.5);
 
     --content-a-link-font-color: #e59c08;
-    --content-a-link-font-color-visited: #e59c08;
     --content-a-link-text-decoration: none;
+    --content-a-link-text-decoration-visited: none;
+    --content-a-link-text-decoration-hover: underline;
     --tag-as-a-title-text-decoration: none;
     --content-a-link-font-color-hover: #b47901;
     --content-separator-hr-color: rgba(255,255,255,0.3);
@@ -152,10 +154,11 @@ select option {
 
 .contentInSearchPage a {
     color: var(--content-a-link-font-color);
+    text-decoration: var(--content-a-link-text-decoration);
 }
 
 .contentInSearchPage a:visited {
-    color: var(--content-a-link-font-color-visited);
+    color: var(--content-a-link-font-color);
     text-decoration: underline var(--font-color);
 }
 
@@ -258,15 +261,18 @@ hr {
 
 .contentLineA {
     color: var(--content-a-link-font-color);
+    text-decoration: var(--content-a-link-text-decoration) var(--font-color);
 }
 
 .contentLineA:visited {
-    color: var(--content-a-link-font-color-visited);
-    text-decoration: underline var(--font-color);
+    color: var(--content-a-link-font-color);
+    text-decoration: var(--content-a-link-text-decoration-visited) var(--font-color);
 }
+
 .contentLineA:hover {
     color: var(--content-a-link-font-color-hover);
-    text-decoration: underline var(--font-color);
+    text-decoration: var(--content-a-link-text-decoration-hover) var(--font-color);
+    font-size: 14px;
 }
 
 .contentLine:hover {
@@ -487,14 +493,16 @@ hr {
 
 #quickContentAdder {
     background-color: var(--input-background);
-    border: 1px solid var(--base-color);
+    border: 1px solid var(--quick-edit-and-adder-box-border-color);
     border-radius: 3px;
     max-width: 570px;
+    font-size: 12px;
 }
 
 #quickEditBox {
     background-color: var(--input-background);
-    border: 1px solid var(--base-color);
+    border: 1px solid var(--quick-edit-and-adder-box-border-color);
     border-radius: 3px;
     max-width: 570px;
+    font-size: 12px;
 }
