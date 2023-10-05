@@ -165,7 +165,7 @@ select option {
 }
 
 .contentSeparatorOnSearchPage hr {
-    background: var(--content-separator-hr-color);
+    border-top: 1px solid var(--content-separator-hr-color);
 }
 
 .contentInfoDivOnUpdateContentModule {
@@ -176,9 +176,7 @@ select option {
 
 hr {
     border: none;
-    height: 1px;
-    margin: 20px 0 20px 0;
-    background: rgba(0, 0, 0, 0.15);
+    height: 0;
 }
 
 .homeNavigator {
@@ -475,13 +473,11 @@ hr {
 }
 
 .dragDropSeparatorDiv hr {
-    margin: 0;
-    background-color: var(--drag-drop-separator-color);
+    border-top: 1px solid var(--drag-drop-separator-color);
 }
 
 .separatorForQuickContentAdderDiv hr {
-    margin: 0;
-    background-color: var(--quick-content-adder-separator-color);
+    border-top: 1px solid var(--quick-content-adder-separator-color);
 }
 
 #quickContentAdder {
