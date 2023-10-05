@@ -9,6 +9,7 @@ import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.stereotype.Component
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Component
 open class DataHolder {
@@ -147,6 +148,10 @@ open class DataHolder {
     private val undoLimit: Int = 20
 
     private var undoStack: ArrayList<AtomicRollbackOperationOnData> = ArrayList()
+
+    fun clearUndoStack() {
+        undoStack = ArrayList()
+    }
 
     private fun groupedUndoStack(): ArrayList<OperationGroup> {
         val distinctRollbackIds = undoStack.map { it.rollbackId }.distinct()

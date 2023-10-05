@@ -9,8 +9,6 @@ import com.philocoder.tagging_system.model.request.GenerateDataRequest
 import com.philocoder.tagging_system.model.request.GetAllDataResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -24,7 +22,9 @@ class DataService(
 
     @ExperimentalStdlibApi
     fun addAllData(req: AddAllDataRequest): String {
-        return setWholeData(GenerateDataRequest(req.contents, req.tags, req.contentViewOrder, req.homeTagId))
+        val result = setWholeData(GenerateDataRequest(req.contents, req.tags, req.contentViewOrder, req.homeTagId))
+        dataHolder.clearUndoStack()
+        return result
     }
 
     @ExperimentalStdlibApi
