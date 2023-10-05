@@ -3,17 +3,18 @@ module TagTextPart.View exposing (viewTextPart)
 import App.Model exposing (..)
 import App.Msg exposing (KeyDownPlace(..), KeyDownType(..), Msg(..))
 import Component.ContentTextUtil exposing (contentHasLinkInside, createBeautifiedContentText)
+import Component.KeydownHandler exposing (onKeyDown)
 import Content.Model exposing (Content)
 import DataResponse exposing (TagID)
 import Html exposing (Attribute, Html, a, b, div, hr, img, span, text, textarea)
 import Html.Attributes exposing (class, cols, href, id, placeholder, rows, spellcheck, src, style, value)
-import Html.Events exposing ( onClick, onInput)
+import Html.Events exposing (onClick, onInput)
 import Html.Events.Extra.Mouse as Mouse exposing (Button(..), Event)
 import List.Extra
 import Tag.Model exposing (Tag)
 import TagTextPart.Model exposing (TagTextPart)
 import Tuple exposing (second)
-import Component.KeydownHandler exposing (onKeyDown)
+
 
 viewTextPart : Model -> Tag -> QuickContentEditModel -> TagTextPart -> Html Msg
 viewTextPart model baseTag quickContentEditModel tagTextPart =
@@ -43,11 +44,11 @@ viewContentsLineByLine model currentTagTextPart tagIdOfTagPage quickContentEditM
 viewContentLineWithAllStuff : Model -> TagTextPart -> TagID -> QuickContentEditModel -> Content -> Html Msg
 viewContentLineWithAllStuff model currentTagTextPart tagIdOfTagPage quickContentEditModel content =
     div []
-        [ viewContentSeparatorAdder model content Top
+        [ viewContentSeparatorAdder model content Top currentTagTextPart.contents
         , viewDragDropSeparator model content currentTagTextPart Top
         , viewContentLineOrQuickContentEditBox model currentTagTextPart tagIdOfTagPage quickContentEditModel content
         , viewDragDropSeparator model content currentTagTextPart Down
-        , viewContentSeparatorAdder model content Down
+        , viewContentSeparatorAdder model content Down currentTagTextPart.contents
         ]
 
 
@@ -124,13 +125,15 @@ type WhichHrLine
     | Down
 
 
-ifActiveViewTypeIsLineView: Model -> Bool
+ifActiveViewTypeIsLineView : Model -> Bool
 ifActiveViewTypeIsLineView model =
     case model.activePage of
         TagPage (Initialized t) ->
             t.activeTagTextViewType == LineView
 
-        _ -> False
+        _ ->
+            False
+
 
 currentTextPartDoesNotHaveSameContentWithBeingDraggedContent : ContentTagIdDuo -> TagTextPart -> Bool
 currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart =
@@ -175,10 +178,19 @@ beingDraggedContentIsNotAtNear whichHrLine tagTextPart beingDraggedContent possi
     result
 
 
-viewContentSeparatorAdder : Model -> Content -> WhichHrLine -> Html Msg
-viewContentSeparatorAdder model content whichHrLine =
+viewContentSeparatorAdder : Model -> Content -> WhichHrLine -> List Content -> Html Msg
+viewContentSeparatorAdder model content whichHrLine contentsOfCurrentTextPart =
     case model.activePage of
         TagPage (Initialized tagPage) ->
+            let
+                maybeContentOfCurrentlyOpenQuickContentEditBox =
+                    case tagPage.quickContentEditModule of
+                        Open contentOfCurrentlyOpenQuickContentEditBox _ ->
+                            Just contentOfCurrentlyOpenQuickContentEditBox
+
+                        ClosedButTextToStore _ _ ->
+                            Nothing
+            in
             case tagPage.quickContentAdderModule of
                 JustQuickContentAdderData boxLocation text ->
                     if
@@ -193,17 +205,17 @@ viewContentSeparatorAdder model content whichHrLine =
                             ]
 
                     else
-                        viewSeparatorForQuickContentAdder model content whichHrLine (Just boxLocation)
+                        viewSeparatorForQuickContentAdder model content whichHrLine (Just boxLocation) maybeContentOfCurrentlyOpenQuickContentEditBox contentsOfCurrentTextPart
 
                 NothingButTextToStore _ ->
-                    viewSeparatorForQuickContentAdder model content whichHrLine Nothing
+                    viewSeparatorForQuickContentAdder model content whichHrLine Nothing maybeContentOfCurrentlyOpenQuickContentEditBox contentsOfCurrentTextPart
 
         _ ->
             text ""
 
 
-viewSeparatorForQuickContentAdder : Model -> Content -> WhichHrLine -> Maybe QuickContentAdderLocation -> Html Msg
-viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdderLocation =
+viewSeparatorForQuickContentAdder : Model -> Content -> WhichHrLine -> Maybe QuickContentAdderLocation -> Maybe Content -> List Content -> Html Msg
+viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdderLocation maybeContentOfCurrentlyOpenQuickContentEditBox contentsOfCurrentTextPart =
     case model.contentTagIdDuoThatIsBeingDragged of
         Just _ ->
             text ""
@@ -231,8 +243,8 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
                                                 Nothing ->
                                                     True
 
-                                                Just nextLineContentIdOfOpenQuickContentAdder ->
-                                                    if nextLineContentIdOfOpenQuickContentAdder == content.contentId && quickContentAdderLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
+                                                Just nextLineContentIdOfOpenQuickContentAdderBox ->
+                                                    if nextLineContentIdOfOpenQuickContentAdderBox == content.contentId && quickContentAdderLocation.contentLineTagId == content.tagIdOfCurrentTextPart then
                                                         if quickContentAdderLocation.locatedAt == AfterContentLine then
                                                             False
 
@@ -241,8 +253,69 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
 
                                                     else
                                                         True
+
+                                showOnlyIfThisIsntOneOfTheSeparatorsOfOpenQuickContentEditBox =
+                                    case maybeContentOfCurrentlyOpenQuickContentEditBox of
+                                        Nothing ->
+                                            True
+
+                                        Just contentOfCurrentlyOpenQuickContentEditBox ->
+                                            if contentOfCurrentlyOpenQuickContentEditBox.contentId == content.contentId && contentOfCurrentlyOpenQuickContentEditBox.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                                                False
+
+                                            else
+                                                True
+
+                                showOnlyIfThisIsntOneOfTheSeparatorsOfThatIsAroundOfOpenQuickContentEditBox =
+                                    case maybeContentOfCurrentlyOpenQuickContentEditBox of
+                                        Nothing ->
+                                            True
+
+                                        Just contentOfCurrentlyOpenQuickContentEditBox ->
+                                            let
+                                                indexOfContentOnItsTagTextPart : Int
+                                                indexOfContentOnItsTagTextPart =
+                                                    Maybe.withDefault -1 (List.Extra.elemIndex contentOfCurrentlyOpenQuickContentEditBox contentsOfCurrentTextPart)
+
+                                                prevLineContent : Maybe Content
+                                                prevLineContent =
+                                                    List.Extra.getAt (indexOfContentOnItsTagTextPart - 1) contentsOfCurrentTextPart
+
+                                                prevLineContentId : Maybe String
+                                                prevLineContentId =
+                                                    Maybe.map (\a -> a.contentId) prevLineContent
+
+                                                nextLineContent : Maybe Content
+                                                nextLineContent =
+                                                    List.Extra.getAt (indexOfContentOnItsTagTextPart + 1) contentsOfCurrentTextPart
+
+                                                nextLineContentId : Maybe String
+                                                nextLineContentId =
+                                                    Maybe.map (\a -> a.contentId) nextLineContent
+
+                                                prevOrNextContentId =
+                                                    if whichHrLine == Down then
+                                                        prevLineContentId
+
+                                                    else
+                                                        nextLineContentId
+                                            in
+                                            case prevOrNextContentId of
+                                                Nothing ->
+                                                    True
+
+                                                Just prevOrNextLineContentIdOfOpenQuickContentEditBox ->
+                                                    if prevOrNextLineContentIdOfOpenQuickContentEditBox == content.contentId && contentOfCurrentlyOpenQuickContentEditBox.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                                                        False
+
+                                                    else
+                                                        True
                             in
-                            if showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator then
+                            if
+                                showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator
+                                    && showOnlyIfThisIsntOneOfTheSeparatorsOfOpenQuickContentEditBox
+                                    && showOnlyIfThisIsntOneOfTheSeparatorsOfThatIsAroundOfOpenQuickContentEditBox
+                            then
                                 div [ class "separatorForQuickContentAdderDiv" ] [ hr [] [] ]
 
                             else
@@ -270,8 +343,69 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
 
                                                     else
                                                         True
+
+                                showOnlyIfThisIsntOneOfTheSeparatorsOfOpenQuickContentEditBox =
+                                    case maybeContentOfCurrentlyOpenQuickContentEditBox of
+                                        Nothing ->
+                                            True
+
+                                        Just contentOfCurrentlyOpenQuickContentEditBox ->
+                                            if contentOfCurrentlyOpenQuickContentEditBox.contentId == content.contentId && contentOfCurrentlyOpenQuickContentEditBox.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                                                False
+
+                                            else
+                                                True
+
+                                showOnlyIfThisIsntOneOfTheSeparatorsOfThatIsAroundOfOpenQuickContentEditBox =
+                                    case maybeContentOfCurrentlyOpenQuickContentEditBox of
+                                        Nothing ->
+                                            True
+
+                                        Just contentOfCurrentlyOpenQuickContentEditBox ->
+                                            let
+                                                indexOfContentOnItsTagTextPart : Int
+                                                indexOfContentOnItsTagTextPart =
+                                                    Maybe.withDefault -1 (List.Extra.elemIndex contentOfCurrentlyOpenQuickContentEditBox contentsOfCurrentTextPart)
+
+                                                prevLineContent : Maybe Content
+                                                prevLineContent =
+                                                    List.Extra.getAt (indexOfContentOnItsTagTextPart - 1) contentsOfCurrentTextPart
+
+                                                prevLineContentId : Maybe String
+                                                prevLineContentId =
+                                                    Maybe.map (\a -> a.contentId) prevLineContent
+
+                                                nextLineContent : Maybe Content
+                                                nextLineContent =
+                                                    List.Extra.getAt (indexOfContentOnItsTagTextPart + 1) contentsOfCurrentTextPart
+
+                                                nextLineContentId : Maybe String
+                                                nextLineContentId =
+                                                    Maybe.map (\a -> a.contentId) nextLineContent
+
+                                                prevOrNextContentId =
+                                                    if whichHrLine == Down then
+                                                        prevLineContentId
+
+                                                    else
+                                                        nextLineContentId
+                                            in
+                                            case prevOrNextContentId of
+                                                Nothing ->
+                                                    True
+
+                                                Just prevOrNextLineContentIdOfOpenQuickContentEditBox ->
+                                                    if prevOrNextLineContentIdOfOpenQuickContentEditBox == content.contentId && contentOfCurrentlyOpenQuickContentEditBox.tagIdOfCurrentTextPart == content.tagIdOfCurrentTextPart then
+                                                        False
+
+                                                    else
+                                                        True
                             in
-                            if showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator then
+                            if
+                                showOnlyIfQuickContentAdderIsNotOnAroundThisSeparator
+                                    && showOnlyIfThisIsntOneOfTheSeparatorsOfOpenQuickContentEditBox
+                                    && showOnlyIfThisIsntOneOfTheSeparatorsOfThatIsAroundOfOpenQuickContentEditBox
+                            then
                                 div [ class "separatorForQuickContentAdderDiv" ] [ hr [] [] ]
 
                             else
@@ -295,9 +429,14 @@ viewQuickContentAdder inputText =
 calculateRowForContentAdderInput : String -> Int
 calculateRowForContentAdderInput inputText =
     let
-        row = (toFloat (recalculatedTextLengthBasedOnNewLineCounts inputText) / 70) |> ceiling
+        row =
+            (toFloat (recalculatedTextLengthBasedOnNewLineCounts inputText) / 70) |> ceiling
     in
-        if row == 0 then 1 else row
+    if row == 0 then
+        1
+
+    else
+        row
 
 
 calculateColForContentAdderInput : String -> Int
@@ -317,9 +456,15 @@ viewQuickContentEditInput inputText =
 calculateRowForContentEditInput : String -> Int
 calculateRowForContentEditInput inputText =
     let
-        row = (toFloat (recalculatedTextLengthBasedOnNewLineCounts inputText) / 70) |> ceiling
+        row =
+            (toFloat (recalculatedTextLengthBasedOnNewLineCounts inputText) / 70) |> ceiling
     in
-        if row == 0 then 1 else row
+    if row == 0 then
+        1
+
+    else
+        row
+
 
 calculateColForContentEditInput : String -> Int
 calculateColForContentEditInput inputText =
