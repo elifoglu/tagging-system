@@ -12,7 +12,7 @@ let obj = {
     tagTextViewType: tagTextViewType
 };
 
-document.documentElement.setAttribute("data-theme", activeTheme)
+document.documentElement.setAttribute("data-theme", (activeTheme != null) ? activeTheme : "light");
 
 let elm = Elm.Main.init({
     node: document.getElementById('root'),
