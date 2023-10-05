@@ -124,6 +124,14 @@ type WhichHrLine
     | Down
 
 
+ifActiveViewTypeIsLineView: Model -> Bool
+ifActiveViewTypeIsLineView model =
+    case model.activePage of
+        TagPage (Initialized t) ->
+            t.activeTagTextViewType == LineView
+
+        _ -> False
+
 currentTextPartDoesNotHaveSameContentWithBeingDraggedContent : ContentTagIdDuo -> TagTextPart -> Bool
 currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart =
     if currentTagTextPart.tag.tagId == beingDraggedContent.tagId then
@@ -333,7 +341,7 @@ viewDragDropSeparator model content currentTagTextPart whichHrLine =
                         (contentWhichCursorIsOnItNow.contentId == content.contentId)
                             && (contentWhichCursorIsOnItNow.tagId == content.tagIdOfCurrentTextPart)
                             && contentWhichCursorIsOnItNowIsNotSameWithDraggedContent beingDraggedContent contentWhichCursorIsOnItNow
-                            && currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart
+                            && (ifActiveViewTypeIsLineView model || currentTextPartDoesNotHaveSameContentWithBeingDraggedContent beingDraggedContent currentTagTextPart)
                             && beingDraggedContentIsNotAtNear whichHrLine currentTagTextPart beingDraggedContent contentWhichCursorIsOnItNow
                     then
                         if contentWhichCursorIsOnItNow.offsetPosY < topOffsetForContentLine contentWhichCursorIsOnItNow.contentLineHeight && whichHrLine == Top then
