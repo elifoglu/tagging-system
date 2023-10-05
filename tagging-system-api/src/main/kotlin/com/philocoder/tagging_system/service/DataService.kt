@@ -1,6 +1,8 @@
 package com.philocoder.tagging_system.service
 
+import com.google.gson.GsonBuilder
 import com.philocoder.tagging_system.model.AllData
+import com.philocoder.tagging_system.model.UserConfig
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.AddAllDataRequest
 import com.philocoder.tagging_system.model.request.GenerateDataRequest
@@ -9,11 +11,15 @@ import com.philocoder.tagging_system.repository.DataHolder
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.*
 
 @Service
 class DataService(
-    private val dataHolder: DataHolder
+    private val dataHolder: DataHolder,
+    private val userConfig: UserConfig
 ) {
 
     @ExperimentalStdlibApi
@@ -61,8 +67,6 @@ class DataService(
     }
 
     @ExperimentalStdlibApi
-    @CrossOrigin
-    @PostMapping("/get-all-data")
     fun getAllData(): GetAllDataResponse? {
         val allData: AllData = dataHolder.getAllData() ?: return null
         return GetAllDataResponse(
@@ -71,5 +75,14 @@ class DataService(
             allData.contentViewOrder,
             allData.homeTagId
         )
+    }
+
+    @ExperimentalStdlibApi
+    fun writeAllDataToDataFile() {
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val str: String = gson.toJson(getAllData())
+        val path: Path = Paths.get(userConfig.dataFilePath)
+        val strToBytes = str.toByteArray()
+        Files.write(path, strToBytes)
     }
 }

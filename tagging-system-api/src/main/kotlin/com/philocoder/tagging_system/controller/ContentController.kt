@@ -7,6 +7,7 @@ import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.service.ContentService
 import com.philocoder.tagging_system.service.ContentViewOrderService
+import com.philocoder.tagging_system.service.DataService
 import com.philocoder.tagging_system.service.drag.DragService
 import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.web.bind.annotation.*
@@ -17,7 +18,8 @@ class ContentController(
     private val contentService: ContentService,
     private val contentViewOrderService: ContentViewOrderService,
     private val dragService: DragService,
-    private val dataHolder: DataHolder
+    private val dataHolder: DataHolder,
+    private val dataService: DataService
 ) {
 
     @ExperimentalStdlibApi
@@ -51,6 +53,8 @@ class ContentController(
                 }
 
                 //dataService.regenerateWholeData() for now, i do not know if i gonna need this
+
+                dataService.writeAllDataToDataFile()
                 "done"
             }
 
@@ -75,9 +79,12 @@ class ContentController(
         dataHolder.updateContent(content, now)
         contentViewOrderService.updateContentViewOrderForUpdatedContent(previousVersionOfContent, content, now)
         //dataService.regenerateWholeData() for now, i do not know if i gonna need this
+
+        dataService.writeAllDataToDataFile()
         return "done"
     }
 
+    @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/delete-content/{contentId}")
     fun deleteContent(
@@ -88,6 +95,8 @@ class ContentController(
                 val now = now()
                 dataHolder.deleteContent(content.contentId, now)
                 contentViewOrderService.updateContentViewOrderForDeletedContent(content, now)
+
+                dataService.writeAllDataToDataFile()
                 "done"
             }
             )
@@ -102,6 +111,9 @@ class ContentController(
     @CrossOrigin
     @PostMapping("/drag-content")
     fun dragContent(@RequestBody req: DragContentRequest): String {
-        return dragService.dragContent(req, now())
+        val result = dragService.dragContent(req, now())
+
+        dataService.writeAllDataToDataFile()
+        return result;
     }
 }

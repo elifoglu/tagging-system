@@ -47,6 +47,8 @@ class TagController(
             .run {
                 dataHolder.addTag(this, now())
                 dataService.regenerateWholeData()
+
+                dataService.writeAllDataToDataFile()
                 "done"
             }
 
@@ -61,6 +63,8 @@ class TagController(
             .run {
                 dataHolder.updateTag(this, now())
                 dataService.regenerateWholeData()
+
+                dataService.writeAllDataToDataFile()
                 "done"
             }
 
@@ -76,6 +80,8 @@ class TagController(
                 val now = now()
                 tagDeletionService.deleteTagWithStrategy(tag.tagId, req.tagDeletionStrategy, now)
                 dataService.regenerateWholeData()
+
+                dataService.writeAllDataToDataFile()
                 "done"
             })
 }
