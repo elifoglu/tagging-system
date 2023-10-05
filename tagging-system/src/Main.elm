@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import App.Model exposing (..)
 import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), CrudAction(..), KeyDownPlace(..), Msg(..), TagInputType(..), TagPickerInputType(..), WorkingOnWhichModule(..))
-import App.Ports exposing (sendTitle, storeTagTextViewType)
+import App.Ports exposing (sendTitle, storeTagTextViewType, storeTheme)
 import App.UrlParser exposing (pageBy)
 import App.View exposing (view)
 import Browser exposing (UrlRequest)
@@ -39,7 +39,7 @@ main =
         }
 
 
-init : { tagTextViewType : Maybe String } -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init : { activeTheme: Maybe String, tagTextViewType : Maybe String } -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         page =
@@ -59,8 +59,19 @@ init flags url key =
                 _ ->
                     GroupView
 
+        activeTheme =
+            case flags.activeTheme of
+                Just "light" ->
+                    Light
+
+                Just "dark" ->
+                    Dark
+
+                _ ->
+                    Light
+
         model =
-            Model "log" key [] "" False Nothing Nothing page (LocalStorage tagTextViewType) False Time.utc Nothing
+            Model "log" key [] "" False Nothing Nothing page (LocalStorage activeTheme tagTextViewType) False Time.utc Nothing activeTheme
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -281,6 +292,27 @@ update msg model =
 
                 _ ->
                     ( model, Cmd.none )
+
+        ThemeChanged selection ->
+                let
+                    localStorage =
+                        model.localStorage
+
+                    newLocalStorage =
+                        { localStorage | activeTheme = selection }
+
+                in
+                ( { model | activeTheme = selection, localStorage = newLocalStorage }
+                , storeTheme
+                    (case selection of
+                        Light ->
+                            "light"
+
+                        Dark ->
+                               "dark"
+                    )
+                )
+
 
         -- CREATE/UPDATE CONTENT MODULES --
         CreateContentModuleInputChanged inputType input ->

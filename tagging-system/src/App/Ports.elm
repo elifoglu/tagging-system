@@ -1,4 +1,4 @@
-port module App.Ports exposing (consoleLog, sendTitle, title, storeTagTextViewType)
+port module App.Ports exposing (consoleLog, sendTitle, title, storeTagTextViewType, storeTheme)
 
 import App.Model exposing (Initializable(..), Model, Page(..))
 
@@ -23,6 +23,8 @@ sendTitle model =
         NotFoundPage ->
             title "oops - tagging system"
 
+
+port storeTheme : String -> Cmd msg
 
 port storeTagTextViewType : String -> Cmd msg
 

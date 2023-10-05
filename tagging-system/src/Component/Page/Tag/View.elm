@@ -1,7 +1,8 @@
 module Tag.View exposing (..)
 
-import App.Model exposing (ContentModuleVisibility(..), InitializedTagPageModel, Model, TagModuleVisibility(..), UpdateContentModuleModel)
+import App.Model exposing (ContentModuleVisibility(..), InitializedTagPageModel, Model, TagModuleVisibility(..), Theme, UpdateContentModuleModel)
 import App.Msg exposing (Msg(..))
+import App.ThemeSelector exposing (viewThemeSelectorBoxDiv)
 import CreateContent.View exposing (viewCreateContentDiv)
 import CreateTag.View exposing (viewCreateTagDiv)
 import Html exposing (Html, a, b, br, div, img, span, text)
@@ -18,7 +19,7 @@ import UpdateTag.View exposing (viewUpdateTagDiv)
 viewTagPageDiv : Model -> InitializedTagPageModel -> Html Msg
 viewTagPageDiv model initialized =
     div [ style "margin-top" "25px" ]
-        [ viewLeftFrame model.homeTagId initialized model.allTags
+        [ viewLeftFrame model.homeTagId initialized model.allTags model.activeTheme
         , viewMidFrame model initialized
         , viewRightFrame initialized
         ]
@@ -36,8 +37,8 @@ viewRightFrame initialized =
         ]
 
 
-viewLeftFrame : String -> InitializedTagPageModel -> List Tag -> Html Msg
-viewLeftFrame homeTagId initialized allTags =
+viewLeftFrame : String -> InitializedTagPageModel -> List Tag -> Theme -> Html Msg
+viewLeftFrame homeTagId initialized allTags activeTheme =
     div [ class "leftFrameOnTagPage" ]
         [ viewTagsDiv initialized.tag.parentTags allTags Parent
         , div
@@ -61,6 +62,7 @@ viewLeftFrame homeTagId initialized allTags =
 
             UpdateTagModuleIsVisible ->
                 viewUpdateTagDiv homeTagId initialized.updateTagModule
+        , viewThemeSelectorBoxDiv activeTheme
         ]
 
 

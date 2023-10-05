@@ -1,6 +1,6 @@
 module App.Msg exposing (..)
 
-import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, LocatedAt, TagDeleteStrategyChoice, TagOption, TagTextViewType)
+import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, LocatedAt, TagDeleteStrategyChoice, TagOption, TagTextViewType, Theme)
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
@@ -48,6 +48,7 @@ type Msg
     | KeyDown KeyDownPlace KeyDownType
     | GotContentLineElementToGetItsHeight (Result Dom.Error Dom.Element)
     | DragEnd ( Float, Float )
+    | ThemeChanged Theme
     | GotTimeZone Time.Zone
     | DoNothing
 

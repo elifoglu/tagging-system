@@ -64,7 +64,7 @@ button, input[type="submit"], input[type="reset"] {
 input, textarea {
     border: 1px dashed var(--font-color);
     border-radius: 3px;
-    color: var(--font-color);
+    color: var(--input-font-color);
     background-color: var(--input-background);
 }
 
@@ -460,4 +460,8 @@ hr {
     border-radius: 3px;
     max-width: 570px;
     font-size: 12px;
+}
+
+.themeSelector select {
+    width: 55px;
 }

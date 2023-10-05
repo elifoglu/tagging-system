@@ -1,9 +1,10 @@
-:root {
+:root[data-theme='light'] {
     --base-color: #FAF8F8;
     --font-color: #202020;
     --font-color-hover: #cbcbcb;
 
     --input-placeholder-font-color: rgba(99, 99, 99, 0.5);
+    --input-font-color: #3e3e3e;
     --input-background: #f5f0f0;
     --input-background-hover: #faf6f6;
     --input-border-color: rgba(179,179,179,0.5);
