@@ -254,6 +254,7 @@ viewSeparatorForQuickContentAdder model content whichHrLine maybeQuickContentAdd
                                                     else
                                                         True
 
+                                --showOnlyIfThisIsntOneOfTheSeparatorsOfOpenQuickContentEditBox and showOnlyIfThisIsntOneOfTheSeparatorsOfThatIsAroundOfOpenQuickContentEditBox fns (actually, bool values) are completely identical with the other definitions of them that can seen on the "else" branch of this code part. I just kept them duplicated like that to not waste time by unnecessary generalization
                                 showOnlyIfThisIsntOneOfTheSeparatorsOfOpenQuickContentEditBox =
                                     case maybeContentOfCurrentlyOpenQuickContentEditBox of
                                         Nothing ->
