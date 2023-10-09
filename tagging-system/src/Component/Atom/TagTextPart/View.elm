@@ -74,7 +74,7 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
         [ div [ class "contentLineFirstChild" ]
             [ span [ id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver model content, onMouseLeave, onRightClick content ]
                 [ if String.trim content.text == "" then
-                    span [ class "emptyContentLine" ] [ createBeautifiedContentText "<br>" ]
+                    span [ class "emptyContentLine" ] [ createBeautifiedContentText "&nbsp;" ]
 
                   else
                     span [ class "contentLine" ]

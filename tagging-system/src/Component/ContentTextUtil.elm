@@ -1,8 +1,8 @@
 module Component.ContentTextUtil exposing (createBeautifiedContentText, contentHasLinkInside)
 
 import Html exposing (Attribute, Html, span)
-import Html.Parser
-import Html.Parser.Util
+import Html.Attributes exposing (class)
+import Markdown
 
 
 createBeautifiedContentText : String -> Html msg
@@ -13,27 +13,20 @@ createBeautifiedContentText contentText =
                 |> replaceNewLineIdentifiersWithBrTags
                 |> updateContentTextWithClickableLinks
     in
-    span []
-        (case Html.Parser.run beautified of
-            Ok parsedNodes ->
-                Html.Parser.Util.toVirtualDom parsedNodes
-
-            Err _ ->
-                []
-        )
+    span [] [Markdown.toHtml [ class "contentLineMarkdown" ] beautified]
 
 updateContentTextWithClickableLinks : String -> String
 updateContentTextWithClickableLinks contentText =
     let
         wrapLinkWordWithA : String -> String
         wrapLinkWordWithA link =
-            "<a class=\"contentLineA\" href=\"" ++ link ++ "\">link</a>"
+            "[link](" ++ link ++ ")"
 
         textWithAddedATagsToLinks =
             String.split " " contentText
                 |> List.map
                     (\word ->
-                        if wordIsALink word then
+                        if wordIsARawLink word then
                             wrapLinkWordWithA word
 
                         else
@@ -46,16 +39,21 @@ updateContentTextWithClickableLinks contentText =
 
 replaceNewLineIdentifiersWithBrTags : String -> String
 replaceNewLineIdentifiersWithBrTags contentText =
-    String.replace "\n" " <br> " contentText
+    contentText
 
 
-wordIsALink : String -> Bool
-wordIsALink word =
-    List.any (\httpPrefix -> String.contains httpPrefix word) [ "http://", "https://" ]
+wordIsARawLink : String -> Bool
+wordIsARawLink word =
+    List.any (\httpPrefix -> String.startsWith httpPrefix word) [ "http://", "https://" ]
+
+
+wordIsAMarkdownLink : String -> Bool
+wordIsAMarkdownLink word =
+    String.startsWith "[" word && String.contains "](" word  && String.endsWith ")" word
 
 
 contentHasLinkInside : String -> Bool
 contentHasLinkInside contentText =
     String.split " " contentText
-        |> List.map (\word -> wordIsALink word)
+        |> List.map (\word -> wordIsARawLink word || wordIsAMarkdownLink word)
         |> List.any (\isALink -> isALink == True)
