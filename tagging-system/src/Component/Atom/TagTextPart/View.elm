@@ -76,6 +76,9 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
                 [ if String.trim content.text == "" then
                     span [ class "emptyContentLine" ] [ createBeautifiedContentText "&nbsp;" ]
 
+                  else if String.trim content.text == "-" then
+                    span [ ] [ createBeautifiedContentText " &nbsp;\n&nbsp;---\n&nbsp;" ]
+
                   else
                     span [ class "contentLine" ]
                         [ case model.contentTagIdDuoThatIsBeingDragged of
@@ -94,7 +97,7 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
             ]
         , div [ class "contentLineSecondChild" ]
             [ div [ class "iconHolderDivInSecondChild" ]
-                [ if String.trim content.text == "" then
+                [ if String.trim content.text == "" || String.trim content.text == "-" then
                     text ""
 
                   else
@@ -106,7 +109,7 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
                     , onClick (DeleteContent content)
                     , style "margin-left" "5px"
                     , style "margin-right"
-                        (if String.trim content.text == "" then
+                        (if String.trim content.text == "" || String.trim content.text == "-" then
                             "250px"
 
                          else

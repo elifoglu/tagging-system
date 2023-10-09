@@ -98,7 +98,7 @@ open class ContentService(
             tagTextPartsWithDistinctContentsForDistinctGroupView.add(
                 TagTextResponse.TagTextPart(
                     a,
-                    ArrayList(b.filter { it.content != null && it.content != "" })
+                    ArrayList(b.filter { it.content != null && it.content != "" && it.content != "-" })
                 )
             )
         }
@@ -117,7 +117,7 @@ open class ContentService(
                 .filter { allTagsUnderBaseTag.contains(it.b) }
                 .distinctBy { it.a }
                 .map { ContentResponse.createWith(findEntity(it.a)!!, it.b) }
-                .filter { it.content != null && it.content != "" }
+                .filter { it.content != null && it.content != "" && it.content != "-" }
 
         return Collections.singletonList(
             TagTextResponse.TagTextPart(
