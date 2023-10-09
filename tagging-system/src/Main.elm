@@ -77,7 +77,7 @@ init flags url key =
                     Light
 
         model =
-            Model "log" key [] "" False Nothing Nothing page (LocalStorage activeTheme tagTextViewType) False Time.utc Nothing activeTheme ScrollTo.init
+            Model "log" key [] "" False Nothing Nothing page (LocalStorage activeTheme tagTextViewType) Time.utc Nothing activeTheme ScrollTo.init
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -688,10 +688,17 @@ update msg model =
                     case keyDownType of
                         App.Msg.Escape ->
                             case model.activePage of
-                                ContentSearchPage _ _ tagIdToReturnItsPage ->
+                                ContentSearchPage _ _ idToReturnItsPage ->
                                     let
+                                        newPage = case idToReturnItsPage of
+                                            ReturnToTagPage tagID ->
+                                                TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagID)))
+
+                                            ReturnToContentPage contentID ->
+                                                ContentPage (NonInitialized (NonInitializedYetContentPageModel contentID))
+                                                
                                         newModel =
-                                            { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagIdToReturnItsPage))) }
+                                            { model | allTags = [], activePage = newPage }
                                     in
                                     ( newModel, getCmdToSendByPage newModel )
 
@@ -995,10 +1002,10 @@ update msg model =
                 newPage =
                     case model.activePage of
                         TagPage (Initialized tagPage) ->
-                            ContentSearchPage searchKeyword [] tagPage.tag.tagId
+                            ContentSearchPage searchKeyword [] (ReturnToTagPage tagPage.tag.tagId)
 
-                        ContentPage (Initialized _) ->
-                            ContentSearchPage searchKeyword [] model.homeTagId
+                        ContentPage (Initialized contentPage) ->
+                            ContentSearchPage searchKeyword [] (ReturnToContentPage contentPage.content.contentId)
 
                         ContentSearchPage _ contentList tagIdToReturnItsPage ->
                             ContentSearchPage searchKeyword contentList tagIdToReturnItsPage
