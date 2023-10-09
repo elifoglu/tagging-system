@@ -72,7 +72,7 @@ viewContentLine : Model -> TagTextPart -> TagID -> Content -> Html Msg
 viewContentLine model currentTagTextPart tagIdOfTagPage content =
     div [ class "contentLineParent" ]
         [ div [ class "contentLineFirstChild" ]
-            [ span [ id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver model content, onMouseLeave, onRightClick content ]
+            [ span [ id (content.contentId ++ content.tagIdOfCurrentTextPart), onMouseDown model content tagIdOfTagPage currentTagTextPart.contents, onMouseOver model content, onMouseLeave, onDoubleClick content ]
                 [ if String.trim content.text == "" then
                     span [ class "emptyContentLine" ] [ createBeautifiedContentText "&nbsp;" ]
 
@@ -562,8 +562,8 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
         )
 
 
-onRightClick : Content -> Attribute Msg
-onRightClick content =
+onDoubleClick : Content -> Attribute Msg
+onDoubleClick content =
     Mouse.onDoubleClick
         (\_ ->
             OpenQuickContentEditInput content
