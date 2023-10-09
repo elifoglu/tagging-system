@@ -28,6 +28,7 @@ import Tuple exposing (first, second)
 import Url
 
 
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -39,7 +40,11 @@ main =
         }
 
 
-init : { activeTheme: Maybe String, tagTextViewType : Maybe String } -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+type alias Flags =
+    { activeTheme : Maybe String, tagTextViewType : Maybe String }
+
+
+init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         page =
@@ -294,25 +299,23 @@ update msg model =
                     ( model, Cmd.none )
 
         ThemeChanged selection ->
-                let
-                    localStorage =
-                        model.localStorage
+            let
+                localStorage =
+                    model.localStorage
 
-                    newLocalStorage =
-                        { localStorage | activeTheme = selection }
+                newLocalStorage =
+                    { localStorage | activeTheme = selection }
+            in
+            ( { model | activeTheme = selection, localStorage = newLocalStorage }
+            , storeTheme
+                (case selection of
+                    Light ->
+                        "light"
 
-                in
-                ( { model | activeTheme = selection, localStorage = newLocalStorage }
-                , storeTheme
-                    (case selection of
-                        Light ->
-                            "light"
-
-                        Dark ->
-                               "dark"
-                    )
+                    Dark ->
+                        "dark"
                 )
-
+            )
 
         -- CREATE/UPDATE CONTENT MODULES --
         CreateContentModuleInputChanged inputType input ->
