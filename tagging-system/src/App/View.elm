@@ -64,5 +64,13 @@ viewUndoDiv model =
                         []
                     ]
 
+            ContentPage _ ->
+                div [ class "undoDivInHeader" ]
+                    [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.svg" ]
+                        []
+                    , img [ class "undoIcon", onClick ClearUndoStack, style "margin-left" "5px", src "/clear-undo-stack.png" ]
+                        []
+                    ]
+
             _ ->
                 text ""

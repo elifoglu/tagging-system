@@ -6,16 +6,29 @@ import Component.ContentTextUtil exposing (createBeautifiedContentText)
 import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
 import Html exposing (Html, a, br, div, p, text)
-import Html.Attributes exposing (class, href)
+import Html.Attributes exposing (class, href, style)
 import Tag.Model exposing (Tag)
+import UpdateContent.View exposing (viewUpdateContentDiv)
 
 
 viewContentPageDiv : InitializedContentPageModel -> Html Msg
 viewContentPageDiv contentPageModel =
-    div [ class "contentPageDiv"]
-        [ viewContentDiv contentPageModel.content
+    div [ style "margin-top" "25px" ]
+        [ viewLeftFrame contentPageModel
+        , viewRightFrame contentPageModel
         ]
 
+viewLeftFrame : InitializedContentPageModel -> Html Msg
+viewLeftFrame contentPageModel =
+    div [ class "leftFrameOnContentPage" ]
+        [ viewContentDiv contentPageModel.content ]
+
+
+viewRightFrame : InitializedContentPageModel -> Html Msg
+viewRightFrame contentPageModel =
+    div [ class "rightFrameOnContentPage" ]
+        [ viewUpdateContentDiv contentPageModel.updateContentModule
+        ]
 
 viewContentDiv : Content -> Html Msg
 viewContentDiv content =

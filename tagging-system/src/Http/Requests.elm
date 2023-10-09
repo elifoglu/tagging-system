@@ -95,12 +95,12 @@ createContentViaQuickContentAdder text tagIdOfTagTextPart tagIdOfActiveTagPage a
         }
 
 
-updateContent : UpdateContentModuleModel -> Cmd Msg
-updateContent model =
+updateContent : CrudAction -> UpdateContentModuleModel -> Cmd Msg
+updateContent actionType model =
     Http.post
         { url = apiURL ++ "contents/" ++ model.content.contentId
         , body = Http.jsonBody (updateContentRequestEncoder model)
-        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse UpdateContentAct)
+        , expect = Http.expectString (GotTagOrContentCreateUpdateDeleteDoneResponse actionType)
         }
 
 updateContentViaQuickContentEditor : Content -> String -> Cmd Msg

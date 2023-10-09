@@ -229,10 +229,7 @@ hr {
 }
 
 .contentLine {
-    padding-right: 5px;
-    padding-left: 5px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding: 2px 5px;
 }
 
 .contentLine:hover {
@@ -271,6 +268,18 @@ hr {
 }
 
 .rightFrameOnTagPage {
+    width: 15%;
+    float: left;
+}
+
+.leftFrameOnContentPage {
+    width: 75%;
+    float: left;
+    margin-left: 10px;
+    color: var(--font-color);
+}
+
+.rightFrameOnContentPage {
     width: 15%;
     float: left;
 }

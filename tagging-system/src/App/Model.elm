@@ -1,4 +1,4 @@
-module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetTagContentsRequestModel, IconInfo, Initializable(..), InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetTagPageModel, Page(..), QuickContentAdderLocation, QuickContentAdderModel(..), QuickContentEditModel(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), Theme(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, dummyContent, getDataOfTagRequestModelEncoder, homepage, requestEncoderForContentUpdateViaQuickContentEditBox, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder, NonInitializedYetContentPageModel, InitializedContentPageModel, GetContentRequestModel, getContentRequestModelEncoder, IDToReturnItsPage(..))
+module App.Model exposing (ContentIDToColorize, ContentModuleVisibility(..), ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, DropSection(..), GetContentRequestModel, GetTagContentsRequestModel, IDToReturnItsPage(..), IconInfo, Initializable(..), InitializedContentPageModel, InitializedTagPageModel, LocalStorage, LocatedAt(..), MaybeTextToHighlight, Model, NonInitializedYetContentPageModel, NonInitializedYetTagPageModel, Page(..), QuickContentAdderLocation, QuickContentAdderModel(..), QuickContentEditModel(..), TagDeleteStrategyChoice(..), TagIdInputType(..), TagModuleVisibility(..), TagOption, TagPickerModuleModel, TagTextViewType(..), Theme(..), UpdateContentModuleModel, UpdateTagModuleModel, allTagOptions, createContentRequestEncoder, createTagRequestEncoder, defaultCreateContentModule, defaultCreateTagModule, defaultUpdateContentModule, defaultUpdateTagModule, deleteTagRequestEncoder, downOffsetForContentLine, dragContentRequestEncoder, dummyContent, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, homepage, requestEncoderForContentUpdateViaQuickContentEditBox, selectedTagOptionsForContent, selectedTagOptionsForTag, topOffsetForContentLine, updateContentRequestEncoder, updateTagRequestEncoder)
 
 import Browser.Navigation as Nav
 import Content.Model exposing (Content)
@@ -26,7 +26,7 @@ type alias Model =
     , timeZone : Time.Zone
     , previousQuickContentAdderLocationToKeepOpenAfterEnter : Maybe QuickContentAdderLocation
     , activeTheme : Theme
-    , scrollTo: ScrollTo.State
+    , scrollTo : ScrollTo.State
     }
 
 
@@ -67,8 +67,8 @@ type Page
     | NotFoundPage
 
 
-type IDToReturnItsPage =
-    ReturnToTagPage TagID
+type IDToReturnItsPage
+    = ReturnToTagPage TagID
     | ReturnToContentPage ContentID
 
 
@@ -126,6 +126,7 @@ type alias InitializedTagPageModel =
 
 type alias InitializedContentPageModel =
     { content : Content
+    , updateContentModule : UpdateContentModuleModel
     }
 
 
@@ -270,6 +271,7 @@ type alias ContentIDToColorize =
 type alias GetTagContentsRequestModel =
     { tagId : String
     }
+
 
 type alias GetContentRequestModel =
     { contentId : String

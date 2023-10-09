@@ -1,4 +1,4 @@
-module Tag.View exposing (..)
+module Tag.View exposing (viewTagPageDiv)
 
 import App.Model exposing (ContentModuleVisibility(..), InitializedTagPageModel, Model, TagModuleVisibility(..), Theme, UpdateContentModuleModel)
 import App.Msg exposing (Msg(..))

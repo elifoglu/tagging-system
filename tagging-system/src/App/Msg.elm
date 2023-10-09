@@ -71,7 +71,8 @@ type KeyDownType
 
 type CrudAction =
     CreateContentAct
-    | UpdateContentAct
+    | UpdateContentActOnTagPage
+    | UpdateContentActOnContentPage
     | DeleteContentAct
     | CreateTagAct
     | UpdateTagAct

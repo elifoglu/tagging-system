@@ -212,6 +212,28 @@ update msg model =
                             else
                                 ( model, Cmd.none )
 
+
+                        ContentPage (Initialized a) ->
+                            if message == "done" then
+                                case crudAction of
+                                    UpdateContentActOnContentPage ->
+                                        let
+                                            newModel =
+                                                { model | allTags = [], activePage = ContentPage (NonInitialized (NonInitializedYetContentPageModel a.content.contentId)) }
+                                        in
+                                        ( newModel, getCmdToSendByPage newModel )
+
+                                    _ ->
+                                        let
+                                            newModel =
+                                                { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput)) }
+                                        in
+                                        ( newModel, getCmdToSendByPage newModel )
+
+
+                            else
+                                ( model, Cmd.none )
+
                         _ ->
                             ( { model | activePage = NotFoundPage }, Cmd.none )
 
@@ -227,9 +249,23 @@ update msg model =
                             case status of
                                 NonInitialized _ ->
                                     let
+                                        setUpdateContentPageModel : Content -> UpdateContentModuleModel
+                                        setUpdateContentPageModel c =
+                                            { content = c
+                                            , title = Maybe.withDefault "" c.title
+                                            , text = c.text
+                                            , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) False (selectedTagOptionsForContent c model.allTags) Nothing
+                                            }
+
+                                        content = (gotContentToContent model gotContentResponse.content)
+
+                                        newUpdateContentModuleModel : UpdateContentModuleModel
+                                        newUpdateContentModuleModel =
+                                            setUpdateContentPageModel content
+
                                         newPage =
                                             ContentPage <|
-                                                Initialized (InitializedContentPageModel (gotContentToContent model gotContentResponse.content))
+                                                Initialized (InitializedContentPageModel content newUpdateContentModuleModel)
 
                                         newModel =
                                             { model | activePage = newPage }
@@ -400,6 +436,26 @@ update msg model =
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
 
+                ContentPage (Initialized contentPage) ->
+                    let
+                        currentUpdateContentModuleModel : UpdateContentModuleModel
+                        currentUpdateContentModuleModel =
+                            contentPage.updateContentModule
+
+                        newUpdateContentModuleModel : UpdateContentModuleModel
+                        newUpdateContentModuleModel =
+                            case inputType of
+                                Title ->
+                                    { currentUpdateContentModuleModel | title = input }
+
+                                Text ->
+                                    { currentUpdateContentModuleModel | text = input }
+
+                        newTagPage =
+                            ContentPage (Initialized { contentPage | updateContentModule = newUpdateContentModuleModel })
+                    in
+                    ( { model | activePage = newTagPage }, Cmd.none )
+
                 _ ->
                     createNewModelAndCmdMsg model NotFoundPage
 
@@ -425,7 +481,16 @@ update msg model =
                         Cmd.none
 
                       else
-                        updateContent a.updateContentModule
+                        updateContent UpdateContentActOnTagPage a.updateContentModule
+                    )
+
+                ContentPage (Initialized a) ->
+                    ( model
+                    , if String.trim a.updateContentModule.text == "" then
+                        Cmd.none
+
+                      else
+                        updateContent UpdateContentActOnContentPage a.updateContentModule
                     )
 
                 _ ->
@@ -1054,6 +1119,11 @@ update msg model =
                     , undo
                     )
 
+                ContentPage (Initialized _) ->
+                    ( model
+                    , undo
+                    )
+
                 _ ->
                     ( model, Cmd.none )
 
@@ -1076,6 +1146,13 @@ update msg model =
                             let
                                 newModel =
                                     { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput a.tag.tagId))) }
+                            in
+                            ( newModel, getCmdToSendByPage newModel )
+
+                        ContentPage (Initialized a) ->
+                            let
+                                newModel =
+                                    { model | allTags = [], activePage = ContentPage (NonInitialized (NonInitializedYetContentPageModel a.content.contentId)) }
                             in
                             ( newModel, getCmdToSendByPage newModel )
 
