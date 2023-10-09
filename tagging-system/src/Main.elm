@@ -453,8 +453,10 @@ update msg model =
                         newTagPage =
                             TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel, oneOfContentModuleIsVisible = UpdateContentModuleIsVisible })
                     in
-                    ( { model | activePage = newTagPage }, Cmd.map ScrollToMsg <|
-                                                                           ScrollTo.scrollToTop)
+                    ( { model | activePage = newTagPage }
+                    , Cmd.map ScrollToMsg <|
+                        ScrollTo.scrollToTop
+                    )
 
                 _ ->
                     ( model, Cmd.none )
@@ -690,13 +692,14 @@ update msg model =
                             case model.activePage of
                                 ContentSearchPage _ _ idToReturnItsPage ->
                                     let
-                                        newPage = case idToReturnItsPage of
-                                            ReturnToTagPage tagID ->
-                                                TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagID)))
+                                        newPage =
+                                            case idToReturnItsPage of
+                                                ReturnToTagPage tagID ->
+                                                    TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tagID)))
 
-                                            ReturnToContentPage contentID ->
-                                                ContentPage (NonInitialized (NonInitializedYetContentPageModel contentID))
-                                                
+                                                ReturnToContentPage contentID ->
+                                                    ContentPage (NonInitialized (NonInitializedYetContentPageModel contentID))
+
                                         newModel =
                                             { model | allTags = [], activePage = newPage }
                                     in
@@ -1281,10 +1284,10 @@ findNextLocationOfQuickContentAdder tagTextParts prevQuickContentAdderLocation a
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [
-    Browser.Events.onMouseUp (Decode.map (\event -> DragEnd ( setX event, setY event )) Mouse.eventDecoder)
-    , Sub.map ScrollToMsg (ScrollTo.subscriptions model.scrollTo)
-    ]
+    Sub.batch
+        [ Browser.Events.onMouseUp (Decode.map (\event -> DragEnd ( setX event, setY event )) Mouse.eventDecoder)
+        , Sub.map ScrollToMsg (ScrollTo.subscriptions model.scrollTo)
+        ]
 
 
 setX : Event -> Float
