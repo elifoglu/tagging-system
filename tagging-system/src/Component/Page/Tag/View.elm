@@ -51,7 +51,7 @@ viewLeftFrame homeTagId initialized allTags activeTheme =
                     "0px"
                 )
             ]
-            [ b [] [ text ("#" ++ initialized.tag.name) ]
+            [ b [] [ text ("# " ++ initialized.tag.name) ]
             , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, src "/edit.png" ] []
             ]
         , viewTagsDiv initialized.tag.childTags allTags Child
@@ -112,6 +112,6 @@ viewTag tagType tag =
                     ++ tag.tagId
                 )
             ]
-            [ text tag.name ]
+            [ b [] [ text "# " ], text tag.name ]
         , text " "
         ]
