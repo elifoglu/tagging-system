@@ -1014,6 +1014,44 @@ update msg model =
                                     TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
+                ContentPage (Initialized a) ->
+                    let
+                        currentTagPickerModuleModel : TagPickerModuleModel
+                        currentTagPickerModuleModel = a.updateContentModule.tagPickerModelForTags
+
+                        newTagPickerModuleModel =
+                            case inputType of
+                                SearchInput text ->
+                                    { currentTagPickerModuleModel | input = text, showTagOptionList = True }
+
+                                OptionClicked tagOption ->
+                                    let
+                                        newSelectedTagOptions =
+                                            currentTagPickerModuleModel.selectedTagOptions ++ [ tagOption ]
+                                    in
+                                    { currentTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
+
+                                OptionRemoved tagOption ->
+                                    let
+                                        newSelectedTagOptions =
+                                            currentTagPickerModuleModel.selectedTagOptions
+                                                |> List.filter (\t -> t.tagId /= tagOption.tagId)
+                                    in
+                                    { currentTagPickerModuleModel | selectedTagOptions = newSelectedTagOptions }
+
+                                ToggleSelectionList ->
+                                    { currentTagPickerModuleModel | showTagOptionList = not currentTagPickerModuleModel.showTagOptionList }
+
+                        currentUpdateContentModuleModel =
+                            a.updateContentModule
+
+                        newUpdateContentModuleModel =
+                            { currentUpdateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
+
+                        newContentPage =
+                             ContentPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
+                    in
+                    ( { model | activePage = newContentPage }, Cmd.none )
 
                 _ ->
                     ( model, Cmd.none )

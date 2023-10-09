@@ -73,6 +73,7 @@ createContentViaQuickContentAdder text tagIdOfTagTextPart tagIdOfActiveTagPage a
                 (Encode.object
                     [ ( "title", Encode.string "" )
                     , ( "text", Encode.string text )
+                    , ( "asADoc", Encode.string "" )
                     , ( "tags"
                       , Encode.list Encode.string
                             [ case activeTagTextViewType of

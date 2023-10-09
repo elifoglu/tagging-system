@@ -77,21 +77,27 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
                     span [ class "emptyContentLine" ] [ createBeautifiedContentText "&nbsp;" ]
 
                   else if String.trim content.text == "-" then
-                    span [ ] [ createBeautifiedContentText " &nbsp;\n&nbsp;---\n&nbsp;" ]
+                    span [] [ createBeautifiedContentText " &nbsp;\n&nbsp;---\n&nbsp;" ]
 
                   else
+                    let
+                        classes : String
+                        classes =
+                            case model.contentTagIdDuoThatIsBeingDragged of
+                                Just draggedContent ->
+                                    if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
+                                        "contentLine contentLineBeingDragged"
 
-                        case model.contentTagIdDuoThatIsBeingDragged of
-                            Just draggedContent ->
-                                if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
-                                    span [ class "contentLine contentLineBeingDragged" ] [ createBeautifiedContentText (" • " ++ content.text) ]
+                                    else
+                                        "contentLine"
 
-                                else
-                                    span [ class "contentLine" ] [ createBeautifiedContentText (" • " ++ content.text) ]
+                                Nothing ->
+                                    "contentLine"
 
-                            Nothing ->
-                                span [ class "contentLine" ] [ createBeautifiedContentText (" • " ++ content.text) ]
+                        contentTextIfContentIsADoc = if content.asADoc == "" then content.text else ("*[" ++ content.asADoc ++ "](/contents/" ++ content.contentId ++ ")*")
 
+                    in
+                    span [ class classes ] [ createBeautifiedContentText (" • " ++ contentTextIfContentIsADoc) ]
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
