@@ -26,9 +26,9 @@ class ContentController(
     @ExperimentalStdlibApi
     @CrossOrigin
     @PostMapping("/get-content")
-    fun getContent(@RequestBody req: GetContentRequest): ContentPageResponse {
-        val content = contentService.findExistingEntity(req.contentId)!!
-        return ContentPageResponse(ContentResponse.createWith(content, null))
+    fun getContentForContentPage(@RequestBody req: GetContentRequest): ContentPageResponse? {
+        val maybeContent = contentService.findExistingEntity(req.contentId) ?: return null
+        return ContentPageResponse(ContentResponse.createWith(maybeContent, null))
     }
 
     @ExperimentalStdlibApi
