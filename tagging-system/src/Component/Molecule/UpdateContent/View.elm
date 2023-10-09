@@ -18,6 +18,7 @@ viewUpdateContentDiv updateContentModuleModel =
             , viewContentDates updateContentModuleModel.content
             , viewInput "text" "title" updateContentModuleModel.title (UpdateContentModuleInputChanged Title)
             , viewContentTextArea "content*" updateContentModuleModel.text (UpdateContentModuleInputChanged Text)
+            , viewInput "text" "is a doc" updateContentModuleModel.asADoc (UpdateContentModuleInputChanged AsADoc)
             , viewTagPickerDiv updateContentModuleModel.tagPickerModelForTags WorkingOnUpdateContentModule
             , viewUpdateContentButton UpdateContent
             ]
@@ -36,7 +37,7 @@ viewContentDates content =
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, onInput toMsg, style "width" "100px" ] []
+    input [ type_ t, placeholder p, value v, onInput toMsg, style "width" "100px", style "margin-bottom" "6px" ] []
 
 
 viewContentTextArea : String -> String -> (String -> msg) -> Html msg

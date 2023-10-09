@@ -10,6 +10,7 @@ data class ContentResponse(
     val content: String?,
     val tagIds: List<TagID>,
     val tagIdOfCurrentTextPart: TagID?,
+    val asADoc: String,
     val createdAt: String,
     val lastModifiedAt: String,
     val isDeleted: Boolean
@@ -23,6 +24,7 @@ data class ContentResponse(
                 content = content.content,
                 tagIds = content.tags,
                 tagIdOfCurrentTextPart = tagIdOfCurrentTextPart,
+                asADoc = content.asADoc,
                 createdAt = content.createdAt.toString(),
                 lastModifiedAt = content.lastModifiedAt.toString(),
                 isDeleted = content.isDeleted

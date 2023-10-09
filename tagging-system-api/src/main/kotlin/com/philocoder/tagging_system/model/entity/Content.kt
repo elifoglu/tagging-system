@@ -13,6 +13,7 @@ data class Content(
     val title: String?,
     val content: String?,
     val tags: List<String>,
+    val asADoc: String,
     val createdAt: Long,
     val lastModifiedAt: Long,
     val isDeleted: Boolean
@@ -20,10 +21,10 @@ data class Content(
 
     companion object {
         @ExperimentalStdlibApi
-        fun createIfValidForCreation(
+        fun createFromRequest(
             req: CreateContentRequest,
             service: ContentService,
-        ): Content? {
+        ): Content {
             var uniqueContentId: String
             do {
                 uniqueContentId = RandomStringUtils.randomAlphanumeric(4).lowercase()
@@ -34,6 +35,7 @@ data class Content(
                 contentId = uniqueContentId,
                 content = req.text,
                 tags = req.tags,
+                asADoc = req.asADoc,
                 createdAt = now(),
                 lastModifiedAt = now(),
                 isDeleted = false
@@ -58,6 +60,7 @@ data class Content(
                 contentId = contentId,
                 content = req.text,
                 tags = req.tags,
+                asADoc = req.asADoc,
                 createdAt = existingContent.createdAt,
                 lastModifiedAt = now(),
                 isDeleted = existingContent.isDeleted

@@ -88,6 +88,7 @@ type WorkingOnWhichModule
 type ContentInputTypeForContentCreationOrUpdate
     = Title
     | Text
+    | AsADoc
 
 
 type TagInputType

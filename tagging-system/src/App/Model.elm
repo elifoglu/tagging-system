@@ -187,17 +187,17 @@ downOffsetForContentLine contentLineHeight =
 
 defaultCreateContentModule : Tag -> List Tag -> CreateContentModuleModel
 defaultCreateContentModule currentTag allTags =
-    CreateContentModuleModel "" "" (TagPickerModuleModel "" (allTagOptions allTags) False [ tagToTagOption currentTag ] Nothing)
+    CreateContentModuleModel "" "" "" (TagPickerModuleModel "" (allTagOptions allTags) False [ tagToTagOption currentTag ] Nothing)
 
 
 defaultUpdateContentModule : UpdateContentModuleModel
 defaultUpdateContentModule =
-    UpdateContentModuleModel dummyContent "" "" (TagPickerModuleModel "" [] False [] Nothing)
+    UpdateContentModuleModel dummyContent "" "" "" (TagPickerModuleModel "" [] False [] Nothing)
 
 
 dummyContent : Content
 dummyContent =
-    Content Nothing (fromPosix utc (millisToPosix 0)) (fromPosix utc (millisToPosix 0)) False "" "" [] ""
+    Content Nothing (fromPosix utc (millisToPosix 0)) (fromPosix utc (millisToPosix 0)) False "" "" [] "" ""
 
 
 defaultCreateTagModule : List Tag -> CreateTagModuleModel
@@ -281,6 +281,7 @@ type alias GetContentRequestModel =
 type alias CreateContentModuleModel =
     { title : String
     , text : String
+    , asADoc : String
     , tagPickerModelForTags : TagPickerModuleModel
     }
 
@@ -289,6 +290,7 @@ type alias UpdateContentModuleModel =
     { content : Content
     , title : String
     , text : String
+    , asADoc : String
     , tagPickerModelForTags : TagPickerModuleModel
     }
 
@@ -349,6 +351,7 @@ createContentRequestEncoder model =
     Encode.object
         [ ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
+        , ( "asADoc", Encode.string model.asADoc )
         , ( "tags", Encode.list Encode.string (model.tagPickerModelForTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
 
@@ -358,6 +361,7 @@ updateContentRequestEncoder model =
     Encode.object
         [ ( "title", Encode.string model.title )
         , ( "text", Encode.string model.text )
+        , ( "asADoc", Encode.string model.asADoc )
         , ( "tags", Encode.list Encode.string (model.tagPickerModelForTags.selectedTagOptions |> List.map (\tagOption -> tagOption.tagId)) )
         ]
 

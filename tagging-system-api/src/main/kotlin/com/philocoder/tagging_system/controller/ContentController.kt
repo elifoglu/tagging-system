@@ -35,7 +35,7 @@ class ContentController(
     @CrossOrigin
     @PostMapping("/contents")
     fun createContent(@RequestBody req: CreateContentRequest): String =
-        Content.createIfValidForCreation(req, contentService)!!
+        Content.createFromRequest(req, contentService)
             .run {
                 val now = now()
                 dataHolder.addContent(this, now)
@@ -68,12 +68,13 @@ class ContentController(
         @PathVariable("contentId") contentId: String,
         @RequestBody req: UpdateContentRequest
     ): String {
-        val content = Content.createIfValidForUpdate(contentId, req, contentService)!!
+         val content = Content.createIfValidForUpdate(contentId, req, contentService)!!
         val previousVersionOfContent = contentService.findEntity(contentId)!!
         if (
             content.title == previousVersionOfContent.title
             && content.content == previousVersionOfContent.content
             && content.tags == previousVersionOfContent.tags
+            && content.asADoc == previousVersionOfContent.asADoc
         ) {
             return "done"
         }

@@ -21,6 +21,7 @@ gotContentToContent model gotContent =
         gotContent.tagIds
             |> List.map (tagById model.allTags)
             |> values
+    , asADoc = gotContent.asADoc
     , tagIdOfCurrentTextPart =
         case gotContent.tagIdOfCurrentTextPart of
             Nothing ->

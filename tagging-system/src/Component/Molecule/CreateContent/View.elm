@@ -15,6 +15,7 @@ viewCreateContentDiv createContentModuleModel =
             [ b [] [ text "create new content" ]
             , viewInput "text" "title" createContentModuleModel.title (CreateContentModuleInputChanged Title)
             , viewContentTextArea "content*" createContentModuleModel.text (CreateContentModuleInputChanged Text)
+            , viewInput "text" "is a doc" createContentModuleModel.asADoc (CreateContentModuleInputChanged AsADoc)
             , viewTagPickerDiv createContentModuleModel.tagPickerModelForTags WorkingOnCreateContentModule
             , viewCreateContentButton CreateContent
             ]
@@ -22,7 +23,7 @@ viewCreateContentDiv createContentModuleModel =
 
 viewInput : String -> String -> String -> (String -> msg) -> Html msg
 viewInput t p v toMsg =
-    input [ type_ t, placeholder p, value v, onInput toMsg, style "width" "200px" ] []
+    input [ type_ t, placeholder p, value v, onInput toMsg, style "width" "200px", style "margin-bottom" "6px" ] []
 
 
 viewContentTextArea : String -> String -> (String -> msg) -> Html msg

@@ -254,6 +254,7 @@ update msg model =
                                             { content = c
                                             , title = Maybe.withDefault "" c.title
                                             , text = c.text
+                                            , asADoc = c.asADoc
                                             , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) False (selectedTagOptionsForContent c model.allTags) Nothing
                                             }
 
@@ -406,6 +407,9 @@ update msg model =
                                 Text ->
                                     { currentCreateContentModuleModel | text = input }
 
+                                AsADoc ->
+                                    { currentCreateContentModuleModel | asADoc = input }
+
                         newTagPage =
                             TagPage (Initialized { tagPage | createContentModule = newCreateContentModuleModel })
                     in
@@ -431,6 +435,9 @@ update msg model =
                                 Text ->
                                     { currentUpdateContentModuleModel | text = input }
 
+                                AsADoc ->
+                                    { currentUpdateContentModuleModel | asADoc = input }
+
                         newTagPage =
                             TagPage (Initialized { tagPage | updateContentModule = newUpdateContentModuleModel })
                     in
@@ -450,6 +457,9 @@ update msg model =
 
                                 Text ->
                                     { currentUpdateContentModuleModel | text = input }
+
+                                AsADoc ->
+                                    { currentUpdateContentModuleModel | asADoc = input }
 
                         newTagPage =
                             ContentPage (Initialized { contentPage | updateContentModule = newUpdateContentModuleModel })
@@ -508,6 +518,7 @@ update msg model =
                             { content = c
                             , title = Maybe.withDefault "" c.title
                             , text = c.text
+                            , asADoc = c.asADoc
                             , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) False (selectedTagOptionsForContent c model.allTags) Nothing
                             }
 

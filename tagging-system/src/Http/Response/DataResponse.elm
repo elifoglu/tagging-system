@@ -1,11 +1,11 @@
-module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagTextResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder, TagID, GotContentResponse, gotContentForContentPageDecoder)
+module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotContentResponse, GotTag, GotTagTextPart, InitialDataResponse, TagID, TagTextResponse, contentDecoder, contentSearchResponseDecoder, gotContentForContentPageDecoder, initialDataResponseDecoder, tagTextResponseDecoder)
 
 import Content.Model exposing (Content)
 import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map8, maybe, string)
 
 
 type alias InitialDataResponse =
-    { allTags : List GotTag, homeTagId : String, undoable: Bool }
+    { allTags : List GotTag, homeTagId : String, undoable : Bool }
 
 
 type alias TagTextResponse =
@@ -14,8 +14,9 @@ type alias TagTextResponse =
     , textPartsForDistinctGroupView : List GotTagTextPart
     }
 
+
 type alias GotContentResponse =
-    { content: GotContent
+    { content : GotContent
     }
 
 
@@ -36,7 +37,7 @@ type alias GotTag =
 
 
 type alias GotContent =
-    { title : Maybe String, createdAt : GotContentDate, lastModifiedAt : GotContentDate, isDeleted: Bool, contentId : String, content : String, tagIds : List String, tagIdOfCurrentTextPart: Maybe String }
+    { title : Maybe String, createdAt : GotContentDate, lastModifiedAt : GotContentDate, isDeleted : Bool, contentId : String, content : String, tagIds : List String, asADoc : String, tagIdOfCurrentTextPart : Maybe String }
 
 
 type alias ContentID =
@@ -97,14 +98,21 @@ tagDecoder =
 
 contentDecoder : Decoder GotContent
 contentDecoder =
-    map8 GotContent
-        (maybe (field "title" string))
-        (field "createdAt" dateDecoder)
-        (field "lastModifiedAt" dateDecoder)
-        (field "isDeleted" bool)
-        (field "contentId" string)
-        (field "content" string)
-        (field "tagIds" (D.list string))
+    let
+        decodeFirst8FieldAtFirst =
+            map8 GotContent
+                (maybe (field "title" string))
+                (field "createdAt" dateDecoder)
+                (field "lastModifiedAt" dateDecoder)
+                (field "isDeleted" bool)
+                (field "contentId" string)
+                (field "content" string)
+                (field "tagIds" (D.list string))
+                (field "asADoc" string)
+    in
+    map2
+        (<|)
+        decodeFirst8FieldAtFirst
         (field "tagIdOfCurrentTextPart" (D.maybe string))
 
 
