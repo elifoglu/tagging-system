@@ -93,11 +93,14 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
 
                                 Nothing ->
                                     "contentLine"
-
-                        contentTextIfContentIsADoc = if content.asADoc == "" then content.text else ("*[" ++ content.asADoc ++ "](/contents/" ++ content.contentId ++ ")*")
-
                     in
-                    span [ class classes ] [ createBeautifiedContentText (" • " ++ contentTextIfContentIsADoc) ]
+                    span [ class classes ]
+                        [ if content.asADoc == "" then
+                            createBeautifiedContentText (" • " ++ content.text)
+
+                          else
+                            createBeautifiedContentText (" • " ++ "**[" ++ content.asADoc ++ "](/contents/" ++ content.contentId ++ ")**")
+                        ]
                 ]
             ]
         , div [ class "contentLineSecondChild" ]
