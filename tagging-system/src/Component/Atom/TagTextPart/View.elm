@@ -80,19 +80,18 @@ viewContentLine model currentTagTextPart tagIdOfTagPage content =
                     span [ ] [ createBeautifiedContentText " &nbsp;\n&nbsp;---\n&nbsp;" ]
 
                   else
-                    span [ class "contentLine" ]
-                        [ case model.contentTagIdDuoThatIsBeingDragged of
+
+                        case model.contentTagIdDuoThatIsBeingDragged of
                             Just draggedContent ->
                                 if content.contentId == draggedContent.contentId && currentTagTextPart.tag.tagId == draggedContent.tagId then
-                                    --b [] [ updateContentTextWithClickableLinks (" • " ++ content.text) ]
-                                    createBeautifiedContentText (" • " ++ content.text)
+                                    span [ class "contentLine contentLineBeingDragged" ] [ createBeautifiedContentText (" • " ++ content.text) ]
 
                                 else
-                                    createBeautifiedContentText (" • " ++ content.text)
+                                    span [ class "contentLine" ] [ createBeautifiedContentText (" • " ++ content.text) ]
 
                             Nothing ->
-                                createBeautifiedContentText (" • " ++ content.text)
-                        ]
+                                span [ class "contentLine" ] [ createBeautifiedContentText (" • " ++ content.text) ]
+
                 ]
             ]
         , div [ class "contentLineSecondChild" ]

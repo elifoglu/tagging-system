@@ -37,6 +37,7 @@
     --content-edit-delete-icons-background-hover: rgba(255, 163, 0, 0.5);
 
     --content-line-hover: #424141;
+    --content-line-being-dragged: #0c4141;
     --search-keyword-highlight-background-color: rgb(203, 188, 104);
     --tag-title-in-tag-text-font-color: rgb(85, 210, 232);
 
