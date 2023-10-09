@@ -16,8 +16,18 @@ class UndoController(
     @ExperimentalStdlibApi
     @CrossOrigin
     @GetMapping("/undo")
-    fun getInitialData(): String {
+    fun undo(): String {
         dataHolder.undo()
+
+        dataService.writeAllDataToDataFile()
+        return "ok"
+    }
+
+    @ExperimentalStdlibApi
+    @CrossOrigin
+    @GetMapping("/clear-undo-stack")
+    fun clearUndoStack(): String {
+        dataHolder.clearUndoStack()
 
         dataService.writeAllDataToDataFile()
         return "ok"

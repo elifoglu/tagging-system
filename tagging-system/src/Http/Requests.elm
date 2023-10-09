@@ -1,4 +1,4 @@
-module Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditor)
+module Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditor, clearUndoStack)
 
 import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, requestEncoderForContentUpdateViaQuickContentEditBox, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
@@ -148,7 +148,15 @@ undo : Cmd Msg
 undo =
     Http.get
         { url = apiURL ++ "undo"
-        , expect = Http.expectString UndoDoneResponse
+        , expect = Http.expectString UndoActionDoneResponse
+        }
+
+
+clearUndoStack : Cmd Msg
+clearUndoStack =
+    Http.get
+        { url = apiURL ++ "clear-undo-stack"
+        , expect = Http.expectString UndoActionDoneResponse
         }
 
 

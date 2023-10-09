@@ -18,7 +18,7 @@ import Json.Decode as Decode
 import List
 import List.Extra
 import Process
-import Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
+import Requests exposing (clearUndoStack, createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
@@ -996,7 +996,18 @@ update msg model =
                 _ ->
                     ( model, Cmd.none )
 
-        UndoDoneResponse res ->
+        -- UNDO --
+        ClearUndoStack ->
+            case model.activePage of
+                TagPage (Initialized _) ->
+                    ( model
+                    , clearUndoStack
+                    )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        UndoActionDoneResponse res ->
             case res of
                 Ok _ ->
                     case model.activePage of

@@ -35,8 +35,9 @@ type Msg
     | ChangeTagTextViewTypeSelection TagTextViewType
     | DeleteTag
     | Undo
+    | ClearUndoStack
     | GotTagOrContentCreateUpdateDeleteDoneResponse CrudAction (Result Http.Error String)
-    | UndoDoneResponse (Result Http.Error String)
+    | UndoActionDoneResponse (Result Http.Error String)
     | DragDoneResponse (Result Http.Error String)
     | SetContentTagIdDuoToDragAfterASecond (Maybe ContentTagIdDuo)
     | SetContentTagIdDuoToDrag (Maybe ContentTagIdDuo)

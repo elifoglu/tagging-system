@@ -17,7 +17,7 @@ view : Model -> Document Msg
 view model =
     { title = "tagging system"
     , body =
-        [ div [ ]
+        [ div []
             [ div [ class "header" ] [ viewHomeNavigator model, viewSearchBoxDiv model.activePage, viewUndoDiv model ]
             , div [ class "body" ]
                 (case model.activePage of
@@ -29,7 +29,7 @@ view model =
                             _ ->
                                 []
 
-                    ContentSearchPage searchKeyword contents tagIdToReturnItsPage ->
+                    ContentSearchPage searchKeyword contents _ ->
                         [ viewSearchContentDiv searchKeyword contents ]
 
                     NotFoundPage ->
@@ -45,11 +45,15 @@ viewUndoDiv model =
     if not model.undoable then
         text ""
 
-    else case model.activePage of
-        TagPage _ ->
-            div [ class "undoDivInHeader" ]
-                [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.svg" ]
-                    []
-                ]
-        _ -> text ""
+    else
+        case model.activePage of
+            TagPage _ ->
+                div [ class "undoDivInHeader" ]
+                    [ img [ class "undoIcon", onClick Undo, style "margin-left" "5px", src "/undo.svg" ]
+                        []
+                    , img [ class "undoIcon", onClick ClearUndoStack, style "margin-left" "5px", src "/clear-undo-stack.png" ]
+                        []
+                    ]
 
+            _ ->
+                text ""
