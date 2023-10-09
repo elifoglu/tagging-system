@@ -27,7 +27,7 @@ class ContentController(
     @CrossOrigin
     @PostMapping("/get-content")
     fun getContent(@RequestBody req: GetContentRequest): ContentPageResponse {
-        val content = contentService.findEntity(req.contentId)!!
+        val content = contentService.findExistingEntity(req.contentId)!!
         return ContentPageResponse(ContentResponse.createWith(content, null))
     }
 
@@ -99,7 +99,7 @@ class ContentController(
                 contentViewOrderService.updateContentViewOrderForDeletedContent(content, now)
 
                 dataService.writeAllDataToDataFile()
-                "done"
+                 "done"
             }
             )
 

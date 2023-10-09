@@ -53,9 +53,8 @@ type Msg
     | DragEnd ( Float, Float )
     | ThemeChanged Theme
     | GotTimeZone Time.Zone
-    | DoNothing
     | ScrollToMsg ScrollTo.Msg
-    | Cancel
+    | DoNothing
 
 type KeyDownPlace =
     QuickContentAdderInput

@@ -190,9 +190,20 @@ open class ContentService(
         return entities.filter { it.tags.contains(tagName) }.count()
     }
 
+    private fun getEntities(): List<Content> {
+        return dataHolder.getAllData().contents
+    }
+
+    private fun getNotDeletedEntities(): List<Content> {
+        return getEntities().filter { !it.isDeleted }
+    }
+
     fun findEntity(id: String): Content? {
-        val contents = dataHolder.getAllData().contents
-        return contents.find { it.contentId == id }
+        return getEntities().find { it.contentId == id }
+    }
+
+    fun findExistingEntity(id: String): Content? {
+        return getNotDeletedEntities().find { it.contentId == id }
     }
 }
 

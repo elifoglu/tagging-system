@@ -19,7 +19,7 @@ open class TagService(
     }
 
     private fun getNotDeletedEntities(): List<Tag> {
-        return dataHolder.getAllData().tags.filter { !it.isDeleted }
+        return getEntities().filter { !it.isDeleted }
     }
 
     fun findEntity(id: String): Tag? {

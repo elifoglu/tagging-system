@@ -31,7 +31,7 @@ viewDeleteBox homeTagId updateTagModuleModel =
 
     else
         div
-            [ style "margin-top" "20px"]
+            [ style "margin-top" "20px" ]
             [ b [] [ text "delete," ]
             , viewDeleteTagStrategySelectionBoxDiv updateTagModuleModel.tagDeleteStrategy
             , viewDeleteTagButton DeleteTag
@@ -45,14 +45,14 @@ viewInput t p v toMsg =
 
 viewUpdateTagButton : msg -> Html msg
 viewUpdateTagButton msg =
-    div [ class "updateOrDeleteTagButtonDiv" ]
+    div []
         [ button [ class "createUpdateContentTagButtons", onClick msg ] [ text "✓" ]
         ]
 
 
 viewDeleteTagButton : msg -> Html msg
 viewDeleteTagButton msg =
-    div [ class "updateOrDeleteTagButtonDiv" ]
+    div []
         [ img [ class "deleteTagIcon", onClick msg, style "margin-left" "5px", src "/delete.png" ]
             []
         ]
