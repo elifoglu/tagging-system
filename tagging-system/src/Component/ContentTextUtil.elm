@@ -2,7 +2,7 @@ module Component.ContentTextUtil exposing (createBeautifiedContentText, contentH
 
 import Html exposing (Attribute, Html, span)
 import Html.Attributes exposing (class)
-import Markdown
+import Markdown exposing (defaultOptions)
 
 
 createBeautifiedContentText : String -> Html msg
@@ -13,7 +13,7 @@ createBeautifiedContentText contentText =
                 |> makeNewLineIdentifiersSuitableForMarkdown
                 |> updateContentTextWithClickableLinks
     in
-    span [] [Markdown.toHtml [ class "contentLineMarkdown" ] beautified]
+    span [] [Markdown.toHtmlWith { defaultOptions | sanitize = False } [ class "contentLineMarkdown" ] beautified]
 
 updateContentTextWithClickableLinks : String -> String
 updateContentTextWithClickableLinks contentText =

@@ -1,9 +1,9 @@
-module Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditor, clearUndoStack)
+module Requests exposing (createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateTag, updateContentViaQuickContentEditor, clearUndoStack, getContent)
 
-import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getDataOfTagRequestModelEncoder, requestEncoderForContentUpdateViaQuickContentEditBox, updateContentRequestEncoder, updateTagRequestEncoder)
+import App.Model exposing (CreateContentModuleModel, CreateTagModuleModel, DragContentRequestModel, GetContentRequestModel, GetTagContentsRequestModel, IconInfo, LocatedAt, Model, TagTextViewType(..), UpdateContentModuleModel, UpdateTagModuleModel, createContentRequestEncoder, createTagRequestEncoder, deleteTagRequestEncoder, dragContentRequestEncoder, getContentRequestModelEncoder, getDataOfTagRequestModelEncoder, requestEncoderForContentUpdateViaQuickContentEditBox, updateContentRequestEncoder, updateTagRequestEncoder)
 import App.Msg exposing (CrudAction(..), Msg(..))
 import Content.Model exposing (Content)
-import DataResponse exposing (ContentID, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder)
+import DataResponse exposing (ContentID, contentSearchResponseDecoder, gotContentForContentPageDecoder, initialDataResponseDecoder, tagTextResponseDecoder)
 import Http
 import Json.Encode as Encode
 import Tag.Model exposing (Tag)
@@ -39,6 +39,19 @@ getTagContents tag =
         { url = apiURL ++ "tag-text"
         , body = Http.jsonBody (getDataOfTagRequestModelEncoder getTagContentsRequestModel)
         , expect = Http.expectJson (GotTagTextOfTag tag) tagTextResponseDecoder
+        }
+
+getContent : ContentID -> Cmd Msg
+getContent contentId =
+    let
+        getContentRequestModel : GetContentRequestModel
+        getContentRequestModel =
+            GetContentRequestModel contentId
+    in
+    Http.post
+        { url = apiURL ++ "get-content"
+        , body = Http.jsonBody (getContentRequestModelEncoder getContentRequestModel)
+        , expect = Http.expectJson GotContent gotContentForContentPageDecoder
         }
 
 

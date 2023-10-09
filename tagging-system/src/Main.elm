@@ -18,7 +18,7 @@ import Json.Decode as Decode
 import List
 import List.Extra
 import Process
-import Requests exposing (clearUndoStack, createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
+import Requests exposing (clearUndoStack, createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
 import ScrollTo
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
@@ -115,6 +115,14 @@ getCmdToSendByPage model =
                         Initialized _ ->
                             Cmd.none
 
+                ContentPage status ->
+                    case status of
+                        NonInitialized initializableContentPageModel ->
+                            getContent initializableContentPageModel.contentId
+
+                        Initialized _ ->
+                            Cmd.none
+
                 _ ->
                     Cmd.none
         ]
@@ -206,6 +214,33 @@ update msg model =
 
                         _ ->
                             ( { model | activePage = NotFoundPage }, Cmd.none )
+
+                Err _ ->
+                    createNewModelAndCmdMsg model NotFoundPage
+
+        -- TAG PAGE --
+        GotContent result ->
+            case result of
+                Ok gotContentResponse ->
+                    case model.activePage of
+                        ContentPage status ->
+                            case status of
+                                NonInitialized _ ->
+                                    let
+                                        newPage =
+                                            ContentPage <|
+                                                Initialized (InitializedContentPageModel (gotContentToContent model gotContentResponse.content))
+
+                                        newModel =
+                                            { model | activePage = newPage }
+                                    in
+                                    ( newModel, Cmd.none )
+
+                                _ ->
+                                    createNewModelAndCmdMsg model NotFoundPage
+
+                        _ ->
+                            createNewModelAndCmdMsg model NotFoundPage
 
                 Err _ ->
                     createNewModelAndCmdMsg model NotFoundPage
@@ -961,6 +996,9 @@ update msg model =
                     case model.activePage of
                         TagPage (Initialized tagPage) ->
                             ContentSearchPage searchKeyword [] tagPage.tag.tagId
+
+                        ContentPage (Initialized _) ->
+                            ContentSearchPage searchKeyword [] model.homeTagId
 
                         ContentSearchPage _ contentList tagIdToReturnItsPage ->
                             ContentSearchPage searchKeyword contentList tagIdToReturnItsPage

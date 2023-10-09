@@ -7,6 +7,7 @@ import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
 import Html exposing (Html, a, br, div, p, text)
 import Html.Attributes exposing (class, href, title)
+import Markdown exposing (defaultOptions)
 import Tag.Model exposing (Tag)
 
 
@@ -33,7 +34,7 @@ viewContentTitle maybeTitle =
 
 viewContentInfoDiv : Content -> Html Msg
 viewContentInfoDiv content =
-    div [ class "contentInfoDivOnSearchPage" ]
+    div [ class "contentInfoDivOnSearchContentPage" ]
         (viewTagLinks content.tags
             ++ [ if List.length content.tags > 0 then
                     br [] []
@@ -71,7 +72,7 @@ viewTextOfContent content maybeTextToHighlight =
                 Nothing ->
                     content.text
 
-        nodes =
+        beautifiedContentText =
             createBeautifiedContentText htmlText
     in
-    div [ class "contentInSearchPage" ] [ nodes ]
+    div [ class "contentInSearchPage" ] [ beautifiedContentText ]

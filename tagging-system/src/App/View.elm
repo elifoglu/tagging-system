@@ -3,6 +3,7 @@ module App.View exposing (view)
 import App.Model exposing (..)
 import App.Msg exposing (Msg(..))
 import Browser exposing (Document)
+import ContentPage.View exposing (viewContentPageDiv)
 import ContentSearch.View exposing (viewSearchContentDiv)
 import HomeNavigator.View exposing (viewHomeNavigator)
 import Html exposing (..)
@@ -25,6 +26,14 @@ view model =
                         case status of
                             Initialized initialized ->
                                 [ viewTagPageDiv model initialized ]
+
+                            _ ->
+                                []
+
+                    ContentPage status ->
+                        case status of
+                            Initialized initialized ->
+                                [ viewContentPageDiv initialized ]
 
                             _ ->
                                 []

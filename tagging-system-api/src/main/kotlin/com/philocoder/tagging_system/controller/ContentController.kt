@@ -2,8 +2,9 @@ package com.philocoder.tagging_system.controller
 
 import com.philocoder.tagging_system.model.entity.Content
 import com.philocoder.tagging_system.model.request.*
+import com.philocoder.tagging_system.model.response.ContentPageResponse
+import com.philocoder.tagging_system.model.response.ContentResponse
 import com.philocoder.tagging_system.model.response.SearchContentResponse
-import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
 import com.philocoder.tagging_system.service.ContentService
 import com.philocoder.tagging_system.service.ContentViewOrderService
@@ -24,9 +25,10 @@ class ContentController(
 
     @ExperimentalStdlibApi
     @CrossOrigin
-    @PostMapping("/tag-text")
-    fun get(@RequestBody req: TagTextRequest): TagTextResponse {
-        return contentService.getTagTextResponse(req)
+    @PostMapping("/get-content")
+    fun getContent(@RequestBody req: GetContentRequest): ContentPageResponse {
+        val content = contentService.findEntity(req.contentId)!!
+        return ContentPageResponse(ContentResponse.createWith(content, null))
     }
 
     @ExperimentalStdlibApi

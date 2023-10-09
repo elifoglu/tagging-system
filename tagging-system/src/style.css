@@ -107,6 +107,10 @@ select option {
     font-weight: bold;
 }
 
+.contentTitleOnContentPage {
+    font-weight: bold;
+}
+
 .contentInSearchPage a {
     color: var(--content-a-link-font-color);
     text-decoration: var(--content-a-link-text-decoration);
@@ -122,7 +126,14 @@ select option {
     text-decoration: underline var(--font-color);
 }
 
-.contentInfoDivOnSearchPage {
+.contentInfoDivOnSearchContentPage {
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    word-spacing: 0.1px;
+    margin-top: 10px;
+}
+
+.contentInfoDivOnContentPage {
     font-size: 12px;
     letter-spacing: 0.5px;
     word-spacing: 0.1px;

@@ -1,5 +1,6 @@
-module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagTextResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder, TagID)
+module DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentDate, GotTag, GotTagTextPart, InitialDataResponse, TagTextResponse, contentDecoder, contentSearchResponseDecoder, initialDataResponseDecoder, tagTextResponseDecoder, TagID, GotContentResponse, gotContentForContentPageDecoder)
 
+import Content.Model exposing (Content)
 import Json.Decode as D exposing (Decoder, bool, field, int, map, map2, map3, map6, map8, maybe, string)
 
 
@@ -11,6 +12,10 @@ type alias TagTextResponse =
     { textPartsForGroupView : List GotTagTextPart
     , textPartsForLineView : List GotTagTextPart
     , textPartsForDistinctGroupView : List GotTagTextPart
+    }
+
+type alias GotContentResponse =
+    { content: GotContent
     }
 
 
@@ -65,6 +70,12 @@ tagTextResponseDecoder =
         (field "textPartsForGroupView" (D.list tagTextPartDecoder))
         (field "textPartsForLineView" (D.list tagTextPartDecoder))
         (field "textPartsForDistinctGroupView" (D.list tagTextPartDecoder))
+
+
+gotContentForContentPageDecoder : Decoder GotContentResponse
+gotContentForContentPageDecoder =
+    map GotContentResponse
+        (field "content" contentDecoder)
 
 
 contentSearchResponseDecoder : Decoder ContentSearchResponse

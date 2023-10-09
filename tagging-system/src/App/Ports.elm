@@ -17,6 +17,14 @@ sendTitle model =
                 Initialized initialized ->
                     title (initialized.tag.name ++ " - tagging system")
 
+        ContentPage status ->
+            case status of
+                NonInitialized _ ->
+                    Cmd.none
+
+                Initialized initialized ->
+                    title (initialized.content.contentId ++ " - tagging system")
+
         ContentSearchPage _ _ _ ->
             title "search - tagging system"
 

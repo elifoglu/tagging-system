@@ -4,7 +4,7 @@ import App.Model exposing (ContentTagIdDuo, ContentTagIdDuoWithOffsetPosY, Locat
 import Browser
 import Browser.Dom as Dom
 import Content.Model exposing (Content)
-import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagTextResponse, TagID)
+import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, GotContentResponse, InitialDataResponse, TagID, TagTextResponse)
 import Http
 import ScrollTo
 import Tag.Model exposing (Tag)
@@ -20,6 +20,7 @@ type Msg
     | GotContentSearchResponse (Result Http.Error ContentSearchResponse)
     | FocusResult (Result Dom.Error ())
     | GotTagTextOfTag Tag (Result Http.Error TagTextResponse)
+    | GotContent (Result Http.Error GotContentResponse)
     | CreateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | UpdateContentModuleInputChanged ContentInputTypeForContentCreationOrUpdate String
     | CreateTagModuleInputChanged TagInputType

@@ -3,11 +3,16 @@ package com.philocoder.tagging_system.controller
 import com.philocoder.tagging_system.model.entity.Tag
 import com.philocoder.tagging_system.model.request.CreateTagRequest
 import com.philocoder.tagging_system.model.request.DeleteTagRequest
+import com.philocoder.tagging_system.model.request.TagTextRequest
 import com.philocoder.tagging_system.model.request.UpdateTagRequest
 import com.philocoder.tagging_system.model.response.InitialDataResponse
 import com.philocoder.tagging_system.model.response.TagResponse
+import com.philocoder.tagging_system.model.response.TagTextResponse
 import com.philocoder.tagging_system.repository.DataHolder
-import com.philocoder.tagging_system.service.*
+import com.philocoder.tagging_system.service.ContentService
+import com.philocoder.tagging_system.service.DataService
+import com.philocoder.tagging_system.service.TagDeletionService
+import com.philocoder.tagging_system.service.TagService
 import com.philocoder.tagging_system.util.DateUtils.now
 import org.springframework.web.bind.annotation.*
 
@@ -16,7 +21,6 @@ import org.springframework.web.bind.annotation.*
 class TagController(
     private val tagService: TagService,
     private val contentService: ContentService,
-    private val contentViewOrderService: ContentViewOrderService,
     private val dataService: DataService,
     private val tagDeletionService: TagDeletionService,
     private val dataHolder: DataHolder
@@ -37,6 +41,13 @@ class TagController(
             homeTagId = tagService.getHomeTag(),
             undoable = !dataHolder.isRollbackStackEmpty()
         )
+    }
+
+    @ExperimentalStdlibApi
+    @CrossOrigin
+    @PostMapping("/tag-text")
+    fun getTagText(@RequestBody req: TagTextRequest): TagTextResponse {
+        return contentService.getTagTextResponse(req)
     }
 
     @CrossOrigin
