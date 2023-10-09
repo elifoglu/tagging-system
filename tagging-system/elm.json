@@ -30,6 +30,7 @@
             "hecrj/html-parser": "2.4.0",
             "justinmimbs/date": "3.2.1",
             "mpizenberg/elm-pointer-events": "4.0.2",
+            "rl-king/elm-scroll-to": "1.1.2",
             "sporto/elm-select": "6.2.1"
         },
         "indirect": {
@@ -51,7 +52,8 @@
             "ianmackenzie/elm-units-prefixed": "2.7.0",
             "justinmimbs/time-extra": "1.1.0",
             "rtfeldman/elm-hex": "1.0.0",
-            "ryannhg/date-format": "2.3.0"
+            "ryannhg/date-format": "2.3.0",
+            "tad-lispy/springs": "1.0.5"
         }
     },
     "test-dependencies": {

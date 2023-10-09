@@ -5,6 +5,7 @@ import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, GotContent, GotTagTextPart, TagID)
 import Date exposing (fromPosix)
 import Json.Encode as Encode
+import ScrollTo
 import Tag.Model exposing (Tag)
 import Tag.Util exposing (tagByIdForced)
 import TagTextPart.Model exposing (TagTextPart)
@@ -26,6 +27,7 @@ type alias Model =
     , timeZone : Time.Zone
     , previousQuickContentAdderLocationToKeepOpenAfterEnter : Maybe QuickContentAdderLocation
     , activeTheme : Theme
+    , scrollTo: ScrollTo.State
     }
 
 

@@ -19,6 +19,7 @@ import List
 import List.Extra
 import Process
 import Requests exposing (clearUndoStack, createContent, createContentViaQuickContentAdder, createTag, deleteContent, deleteTag, dragContent, getInitialData, getSearchResult, getTagContents, getTimeZone, undo, updateContent, updateContentViaQuickContentEditor, updateTag)
+import ScrollTo
 import Tag.Util exposing (tagById)
 import TagTextPart.Model exposing (TagTextPart)
 import TagTextPart.Util exposing (toGotTagTextPartToTagTextPart)
@@ -76,7 +77,7 @@ init flags url key =
                     Light
 
         model =
-            Model "log" key [] "" False Nothing Nothing page (LocalStorage activeTheme tagTextViewType) False Time.utc Nothing activeTheme
+            Model "log" key [] "" False Nothing Nothing page (LocalStorage activeTheme tagTextViewType) False Time.utc Nothing activeTheme ScrollTo.init
     in
     ( model
     , Cmd.batch [ getCmdToSendByPage model, getTimeZone ]
@@ -417,10 +418,22 @@ update msg model =
                         newTagPage =
                             TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel, oneOfContentModuleIsVisible = UpdateContentModuleIsVisible })
                     in
-                    ( { model | activePage = newTagPage }, Cmd.none )
+                    ( { model | activePage = newTagPage }, Cmd.map ScrollToMsg <|
+                                                                           ScrollTo.scrollToTop)
 
                 _ ->
                     ( model, Cmd.none )
+
+        ScrollToMsg scrollToMsg ->
+            let
+                ( scrollToModel, scrollToCmds ) =
+                    ScrollTo.update
+                        scrollToMsg
+                        model.scrollTo
+            in
+            ( { model | scrollTo = scrollToModel }
+            , Cmd.map ScrollToMsg scrollToCmds
+            )
 
         ToggleQuickContentAdderBox contentId tagIdOfTagPage tagIdOfTextPartThatContentBelongs locatedAt prevLineContentId nextLineContentId ->
             case model.activePage of
@@ -1222,8 +1235,11 @@ findNextLocationOfQuickContentAdder tagTextParts prevQuickContentAdderLocation a
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
+subscriptions model =
+    Sub.batch [
     Browser.Events.onMouseUp (Decode.map (\event -> DragEnd ( setX event, setY event )) Mouse.eventDecoder)
+    , Sub.map ScrollToMsg (ScrollTo.subscriptions model.scrollTo)
+    ]
 
 
 setX : Event -> Float

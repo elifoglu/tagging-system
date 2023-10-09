@@ -6,6 +6,7 @@ import Browser.Dom as Dom
 import Content.Model exposing (Content)
 import DataResponse exposing (ContentID, ContentSearchResponse, GotContent, InitialDataResponse, TagTextResponse, TagID)
 import Http
+import ScrollTo
 import Tag.Model exposing (Tag)
 import Time
 import Url
@@ -52,6 +53,8 @@ type Msg
     | ThemeChanged Theme
     | GotTimeZone Time.Zone
     | DoNothing
+    | ScrollToMsg ScrollTo.Msg
+    | Cancel
 
 type KeyDownPlace =
     QuickContentAdderInput
