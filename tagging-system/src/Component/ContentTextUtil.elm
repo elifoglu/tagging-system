@@ -10,7 +10,7 @@ createBeautifiedContentText contentText =
     let
         beautified =
             contentText
-                |> replaceNewLineIdentifiersWithBrTags
+                |> makeNewLineIdentifiersSuitableForMarkdown
                 |> updateContentTextWithClickableLinks
     in
     span [] [Markdown.toHtml [ class "contentLineMarkdown" ] beautified]
@@ -37,9 +37,9 @@ updateContentTextWithClickableLinks contentText =
     textWithAddedATagsToLinks
 
 
-replaceNewLineIdentifiersWithBrTags : String -> String
-replaceNewLineIdentifiersWithBrTags contentText =
-    contentText
+makeNewLineIdentifiersSuitableForMarkdown : String -> String
+makeNewLineIdentifiersSuitableForMarkdown contentText =
+    String.replace "\n" "&nbsp;  \n" contentText
 
 
 wordIsARawLink : String -> Bool
