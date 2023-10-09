@@ -564,7 +564,7 @@ onMouseDown model content tagIdOfTagPage contentsOfCurrentTextPart =
 
 onRightClick : Content -> Attribute Msg
 onRightClick content =
-    Mouse.onContextMenu
+    Mouse.onDoubleClick
         (\_ ->
             OpenQuickContentEditInput content
         )
