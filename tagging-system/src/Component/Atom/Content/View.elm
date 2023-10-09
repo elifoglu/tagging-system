@@ -7,7 +7,6 @@ import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
 import Html exposing (Html, a, br, div, p, text)
 import Html.Attributes exposing (class, href, title)
-import Markdown exposing (defaultOptions)
 import Tag.Model exposing (Tag)
 
 
@@ -67,7 +66,7 @@ viewTextOfContent content maybeTextToHighlight =
             case maybeTextToHighlight of
                 Just textToHighlight ->
                     -- Note: This highlighting feature is unfortunately case sensitive for now
-                    String.replace textToHighlight ("<span class=textToHighlight>" ++ textToHighlight ++ "</span>") content.text
+                    String.replace textToHighlight ("[" ++ textToHighlight ++ "](/this-is-a-search-highlight-not-a-link)") content.text
 
                 Nothing ->
                     content.text

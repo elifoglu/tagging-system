@@ -228,17 +228,6 @@ hr {
     text-decoration: var(--content-a-link-text-decoration) var(--font-color);
 }
 
-.contentLineMarkdown a:visited {
-    color: var(--content-a-link-font-color);
-    text-decoration: var(--content-a-link-text-decoration-visited) var(--font-color);
-}
-
-.contentLineMarkdown a:hover {
-    color: var(--content-a-link-font-color-hover);
-    text-decoration: var(--content-a-link-text-decoration-hover) var(--font-color);
-    font-size: 14px;
-}
-
 .contentLine {
     padding-right: 5px;
     padding-left: 5px;
@@ -329,11 +318,6 @@ hr {
     padding-bottom: 3px;
     width: 55px;
     font-size: 13px;
-}
-
-.textToHighlight {
-    background-color: var(--search-keyword-highlight-background-color);
-    color: var(--base-color);
 }
 
 .searchContentInfoText {
