@@ -18,6 +18,7 @@ tagging-system-api/target/
 tagging-system-api/!.mvn/wrapper/maven-wrapper.jar
 tagging-system-api/!**/src/main/**
 tagging-system-api/!**/src/test/**
+tagging-system-api/nohup.out
 
 ### STS ###
 tagging-system-api/.apt_generated
