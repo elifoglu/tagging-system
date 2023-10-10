@@ -150,6 +150,15 @@ select option {
     word-spacing: 0.1px;
 }
 
+.navigateToContentPageA {
+    color: var(--font-color);
+}
+
+.navigateToContentPageA:hover {
+    text-decoration: underline;
+    color: var(--font-color-hover);
+}
+
 hr {
     border: none;
     height: 0;

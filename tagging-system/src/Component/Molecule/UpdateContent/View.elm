@@ -4,8 +4,8 @@ import App.Model exposing (CreateContentModuleModel, Model, UpdateContentModuleM
 import App.Msg exposing (ContentInputTypeForContentCreationOrUpdate(..), Msg(..), WorkingOnWhichModule(..))
 import Content.Model exposing (Content)
 import Content.Util exposing (createdDateOf, lastModifiedDateOf)
-import Html exposing (Html, b, br, button, div, input, text, textarea)
-import Html.Attributes exposing (class, placeholder, spellcheck, style, type_, value)
+import Html exposing (Html, a, b, br, button, div, input, span, text, textarea)
+import Html.Attributes exposing (class, href, placeholder, spellcheck, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import TagPicker.View exposing (viewTagPickerDiv)
 
@@ -27,7 +27,7 @@ viewUpdateContentDiv updateContentModuleModel =
 viewContentDates : Content -> Html Msg
 viewContentDates content =
     div [ class "contentInfoDivOnUpdateContentModule" ]
-        [ text ("id: " ++ content.contentId)
+        [ span [] [ text "id: ", a [ class "navigateToContentPageA", href ("/contents/" ++ content.contentId) ] [ text content.contentId ] ]
         , br [] []
         , text ("created at: " ++ createdDateOf content)
         , br [] []

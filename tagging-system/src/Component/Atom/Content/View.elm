@@ -41,8 +41,11 @@ viewContentInfoDiv content =
                  else
                     text ""
                ]
-            ++ [ text ("created at: " ++ createdDateOf content) ]
-            ++ [ text (", modified at: " ++ lastModifiedDateOf content) ]
+            ++ [ a [ class "navigateToContentPageA", href ("/contents/" ++ content.contentId) ]
+                    [ text ("created at: " ++ createdDateOf content)
+                    , text (", modified at: " ++ lastModifiedDateOf content)
+                    ]
+               ]
         )
 
 
