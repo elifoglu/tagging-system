@@ -9,7 +9,8 @@ import Html exposing (Html, a, b, br, div, img, span, text)
 import Html.Attributes exposing (class, href, src, style)
 import Html.Events exposing (onClick)
 import Tag.Model exposing (Tag)
-import Tag.TagTextTypeSelectionBox exposing (viewTagTextTypeSelectionBoxDiv)
+import Tag.TagSelectionBox exposing (viewTagSelectionBoxDiv)
+import Tag.TagTextTypeSelectionBox exposing (viewTagTextViewTypeSelectionBoxDiv)
 import Tag.TagTextUtil exposing (viewTagText)
 import Tag.Util exposing (tagByIdForced)
 import UpdateContent.View exposing (viewUpdateContentDiv)
@@ -55,7 +56,8 @@ viewLeftFrame homeTagId initialized allTags activeTheme =
             , img [ class "tagEditIcon", onClick ToggleUpdateTagModuleVisibility, src "/edit.png" ] []
             ]
         , viewTagsDiv initialized.tag.childTags allTags Child
-        , viewTagTextTypeSelectionBoxDiv initialized.activeTagTextViewType
+        , viewTagTextViewTypeSelectionBoxDiv initialized.activeTagTextViewType
+        , viewTagSelectionBoxDiv allTags initialized.tag
         , case initialized.oneOfTagModuleIsVisible of
             CreateTagModuleIsVisible ->
                 viewCreateTagDiv initialized.createTagModule

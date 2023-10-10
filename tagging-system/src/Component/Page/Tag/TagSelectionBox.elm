@@ -1,6 +1,5 @@
-module Tag.TagTextTypeSelectionBox exposing (viewTagTextViewTypeSelectionBoxDiv)
+module Tag.TagSelectionBox exposing (viewTagSelectionBoxDiv)
 
-import App.Model exposing (TagTextViewType(..))
 import App.Msg exposing (Msg(..))
 import Dict
 import Html exposing (Html, b, div, option, text)
@@ -8,6 +7,7 @@ import Html.Attributes exposing (selected, style, value)
 import Html.Events exposing (on, targetValue)
 import Html.Keyed as Keyed
 import Json.Decode as Json
+import Tag.Model exposing (Tag)
 
 
 type alias SelectTagConfig a msg =
@@ -18,14 +18,14 @@ type alias SelectTagConfig a msg =
     }
 
 
-viewTagTextViewTypeSelectionBoxDiv : TagTextViewType -> Html Msg
-viewTagTextViewTypeSelectionBoxDiv activeViewType =
+viewTagSelectionBoxDiv : List Tag -> Tag -> Html Msg
+viewTagSelectionBoxDiv allTags activeTag =
     div [ style "margin-top" "20px" ]
-        [ b [] [ text "view type" ], selectTag
-            { onSelect = ChangeTagTextViewTypeSelection
-            , toString = tagTextViewTypeToTextToShow
-            , selected = activeViewType
-            , tags = allViewTypes
+        [ b [] [ text "go to tag" ], selectTag
+            { onSelect = ChangeTagSelection
+            , toString = tagToTagName
+            , selected = activeTag
+            , tags = allTags
             }
         ]
 
@@ -68,21 +68,6 @@ selectTag cfg =
     Keyed.node "select" [ on "change" decoder ] (addEmpty options)
 
 
-tagTextViewTypeToTextToShow : TagTextViewType -> String
-tagTextViewTypeToTextToShow val =
-    case val of
-        GroupView ->
-            "group"
-
-        DistinctGroupView ->
-            "distinct"
-
-        LineView ->
-            "condensed"
-
-
-
-
-allViewTypes : List TagTextViewType
-allViewTypes =
-    [ GroupView, DistinctGroupView, LineView ]
+tagToTagName : Tag -> String
+tagToTagName tag =
+    tag.name

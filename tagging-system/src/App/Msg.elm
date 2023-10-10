@@ -35,6 +35,7 @@ type Msg
     | UpdateTag
     | ChangeTagDeleteStrategySelection TagDeleteStrategyChoice
     | ChangeTagTextViewTypeSelection TagTextViewType
+    | ChangeTagSelection Tag
     | DeleteTag
     | Undo
     | ClearUndoStack

@@ -212,7 +212,6 @@ update msg model =
                             else
                                 ( model, Cmd.none )
 
-
                         ContentPage (Initialized a) ->
                             if message == "done" then
                                 case crudAction of
@@ -229,7 +228,6 @@ update msg model =
                                                 { model | allTags = [], activePage = TagPage (NonInitialized (NonInitializedYetTagPageModel HomeInput)) }
                                         in
                                         ( newModel, getCmdToSendByPage newModel )
-
 
                             else
                                 ( model, Cmd.none )
@@ -258,7 +256,8 @@ update msg model =
                                             , tagPickerModelForTags = TagPickerModuleModel "" (allTagOptions model.allTags) False (selectedTagOptionsForContent c model.allTags) Nothing
                                             }
 
-                                        content = (gotContentToContent model gotContentResponse.content)
+                                        content =
+                                            gotContentToContent model gotContentResponse.content
 
                                         newUpdateContentModuleModel : UpdateContentModuleModel
                                         newUpdateContentModuleModel =
@@ -367,6 +366,18 @@ update msg model =
                                 "distinct-group"
                         )
                     )
+
+                _ ->
+                    ( model, Cmd.none )
+
+        ChangeTagSelection tag ->
+            case model.activePage of
+                TagPage (Initialized _) ->
+                    let
+                        newTagPage =
+                            TagPage (NonInitialized (NonInitializedYetTagPageModel (IdInput tag.tagId)))
+                    in
+                        createNewModelAndCmdMsg model newTagPage
 
                 _ ->
                     ( model, Cmd.none )
@@ -1014,10 +1025,12 @@ update msg model =
                                     TagPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
                     in
                     ( { model | activePage = newTagPage }, Cmd.none )
+
                 ContentPage (Initialized a) ->
                     let
                         currentTagPickerModuleModel : TagPickerModuleModel
-                        currentTagPickerModuleModel = a.updateContentModule.tagPickerModelForTags
+                        currentTagPickerModuleModel =
+                            a.updateContentModule.tagPickerModelForTags
 
                         newTagPickerModuleModel =
                             case inputType of
@@ -1049,7 +1062,7 @@ update msg model =
                             { currentUpdateContentModuleModel | tagPickerModelForTags = newTagPickerModuleModel }
 
                         newContentPage =
-                             ContentPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
+                            ContentPage (Initialized { a | updateContentModule = newUpdateContentModuleModel })
                     in
                     ( { model | activePage = newContentPage }, Cmd.none )
 
