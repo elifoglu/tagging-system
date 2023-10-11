@@ -54,3 +54,6 @@ data.json
 ### Data push and pull scripts ###
 push_data.sh
 pull_data.sh
+
+### Folder to store screenshots from previous versions of the app
+old_version_images/*
