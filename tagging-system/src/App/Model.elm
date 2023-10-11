@@ -371,6 +371,7 @@ requestEncoderForContentUpdateViaQuickContentEditBox content updatedText =
     Encode.object
         [ ( "title", Encode.string (Maybe.withDefault "" content.title) )
         , ( "text", Encode.string updatedText )
+        , ( "asADoc", Encode.string content.asADoc )
         , ( "tags", Encode.list Encode.string (content.tags |> List.map (\t -> t.tagId)) )
         ]
 
